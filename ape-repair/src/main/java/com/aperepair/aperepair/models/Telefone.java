@@ -1,9 +1,20 @@
 package com.aperepair.aperepair.models;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 public class Telefone {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column
     private String fixo;
+
+    @Column
     private String movel;
 
     public Telefone(String fixo, String movel) {

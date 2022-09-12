@@ -1,9 +1,13 @@
 package com.aperepair.aperepair.models;
 
 import com.aperepair.aperepair.enums.Genero;
+import com.aperepair.aperepair.interfaces.Contrato;
+
+import javax.persistence.Entity;
 import java.util.List;
 
-public class Cliente extends Usuario{
+@Entity(name="cliente")
+public class Cliente extends Usuario implements Contrato {
 
     private Boolean isPago;
 
@@ -26,8 +30,10 @@ public class Cliente extends Usuario{
     }
 
     @Override
-    public Double getValorServico() {
-        return null;
+    public Double getValorServico(Servico servico) {
+        Double total = 0.0;
+        total = (servico.getCustoServico() * servico.getDuracaoServicoDias()) * 1.1;
+        return total;
     }
 
     //GETTERS AND SETTERS

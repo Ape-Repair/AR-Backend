@@ -6,7 +6,7 @@ import com.aperepair.aperepair.interfaces.Contrato;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Prestador extends Usuario{
+public class Prestador extends Usuario implements Contrato{
 
     private String cnpj;
 
@@ -49,8 +49,10 @@ public class Prestador extends Usuario{
     }
 
     @Override
-    public Double getValorServico() {
-        return null;
+    public Double getValorServico(Servico servico) {
+        Double total = 0.0;
+        total = (servico.getCustoServico() * servico.getDuracaoServicoDias());
+        return total;
     }
 
     //GETTERS AND SETTERS

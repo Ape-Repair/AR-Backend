@@ -3,6 +3,7 @@ package com.aperepair.aperepair.models;
 import com.aperepair.aperepair.enums.Zonas;
 import com.aperepair.aperepair.interfaces.Contrato;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,12 @@ import java.util.List;
 public class Match {
 
     private List<Contrato> contratos; //por instancia deve ter um cliente, um prestador e um servico
+    //esta lista virará um repository(conexão com banco de dados) acho, ponto a validar
 
-    private LocalDateTime dataHora;
+    private LocalDateTime dataHora; //avaliar necessidade deste atributo
 
+    @Column(name="zona")
+    @Enumerated(EnumType.STRING)
     private Zonas local;
 
     public Match() {

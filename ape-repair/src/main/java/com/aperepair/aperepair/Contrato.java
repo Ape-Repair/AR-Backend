@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.interfaces;
+package com.aperepair.aperepair;
 
 import com.aperepair.aperepair.models.Servico;
 

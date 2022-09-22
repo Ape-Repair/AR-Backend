@@ -2,27 +2,20 @@ package com.aperepair.aperepair.models;
 
 import javax.persistence.*;
 
-@Entity(name = "especialidade")
 public class Especialidade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
     private String tipo;
 
-    @Column //ENUM?!
     private String categoria;
 
-    @Column
     private Double valorHora;
 
-    @Column
     private Integer qtdMinutosServico;
 
-    @ManyToOne
-    @JoinColumn(name = "id_prestador")
     private Integer idPrestador;
 
     public Especialidade(

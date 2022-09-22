@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.models;
 import com.aperepair.aperepair.enums.Genero;
-import com.aperepair.aperepair.interfaces.Contrato;
+import com.aperepair.aperepair.Contrato;
 
 import javax.persistence.*;
 
@@ -10,26 +10,18 @@ public abstract class Usuario implements Contrato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
     private String nome;
 
-    @Column
     private String email;
 
-    @Column
     private String senha;
 
-    @Column
-    @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    @Column
     private String cpf;
 
-    @JoinTable(name="telefone")
     private Telefone telefone;
 
-    @JoinTable(name="endereco")
     private Endereco endereco;
 
     public Usuario(

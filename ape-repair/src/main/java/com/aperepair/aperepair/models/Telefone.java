@@ -11,10 +11,8 @@ public class Telefone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
     private String fixo;
 
-    @Column
     private String movel;
 
     public Telefone(String fixo, String movel) {

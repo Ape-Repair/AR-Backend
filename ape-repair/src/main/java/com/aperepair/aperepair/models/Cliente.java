@@ -1,12 +1,11 @@
 package com.aperepair.aperepair.models;
 
 import com.aperepair.aperepair.enums.Genero;
-import com.aperepair.aperepair.interfaces.Contrato;
-
+import com.aperepair.aperepair.Contrato;
 import javax.persistence.Entity;
 import java.util.List;
 
-@Entity(name="cliente")
+
 public class Cliente extends Usuario implements Contrato {
 
     private Boolean isPago;

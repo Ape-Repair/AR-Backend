@@ -6,30 +6,20 @@ import javax.persistence.*;
 
 public class Endereco {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
     private String rua;
 
-    @Column
     private Integer numero;
 
-    @Column
     private String complemento;
 
-    @Column
     private String cep;
 
-    @Column
     private String bairro;
 
-    @Column
     private String cidade;
 
-    @Column
-    @Enumerated(EnumType.STRING)
     private Uf uf;
 
     public Endereco(

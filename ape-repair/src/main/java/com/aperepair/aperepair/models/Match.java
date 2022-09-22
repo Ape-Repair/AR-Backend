@@ -1,8 +1,7 @@
 package com.aperepair.aperepair.models;
 
 import com.aperepair.aperepair.enums.Zonas;
-import com.aperepair.aperepair.interfaces.Contrato;
-
+import com.aperepair.aperepair.Contrato;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

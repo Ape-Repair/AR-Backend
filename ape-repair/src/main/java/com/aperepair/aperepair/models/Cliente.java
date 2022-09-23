@@ -5,7 +5,7 @@ import com.aperepair.aperepair.Contrato;
 import javax.persistence.Entity;
 import java.util.List;
 
-
+@Entity
 public class Cliente extends Usuario implements Contrato {
 
     private Boolean isPago;

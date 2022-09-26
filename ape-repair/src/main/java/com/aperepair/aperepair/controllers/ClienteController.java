@@ -5,7 +5,6 @@ import com.aperepair.aperepair.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -38,13 +37,7 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> buscarPorId(@PathVariable Integer id) {
-//       Optional<Cliente> optionalCliente = clienteRepository.findById(id);
         return ResponseEntity.of(clienteRepository.findById(id));
-//        if (optionalCliente.isPresent()) {
-//            return ResponseEntity.status(200).body(optionalCliente.get());
-//        }
-//
-//        return ResponseEntity.status(404).build();
     }
 
     @PutMapping("/{id}")

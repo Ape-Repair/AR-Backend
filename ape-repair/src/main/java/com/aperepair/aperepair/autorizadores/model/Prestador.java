@@ -1,75 +1,32 @@
 package com.aperepair.aperepair.autorizadores.model;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genero;
-import com.aperepair.aperepair.matchs.service.Contrato;
-import com.aperepair.aperepair.matchs.models.Servico;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-public class Prestador extends Usuario implements Contrato{
+@Entity
+public class Prestador {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String nome;
+
+    private String email;
+
+    private String senha;
+
+    private Genero genero;
+
+    private String cpf;
+
+    private Telefone telefone;
+
+    private Endereco endereco;
 
     private String cnpj;
-
-    private Boolean hasPago; //analisar necessidade deste atributo
-
-    private List<Especialidade> especialidades;
-
-    public Prestador(
-            Integer id,
-            String nome,
-            String email,
-            String senha,
-            Genero genero,
-            String cpf,
-            Telefone telefone,
-            Endereco endereco,
-            String cnpj,
-            Boolean hasPago,
-            List<Especialidade> especialidades
-    ) {
-        super(id, nome, email, senha, genero, cpf, telefone, endereco);
-        this.cnpj = cnpj;
-        this.hasPago = hasPago;
-        especialidades = new ArrayList();
-    }
-
-    public List<Servico> getServicoById() {
-        return null;
-    }
-
-    public void addEspecialidade(Especialidade especialidade) {
-        for (Especialidade especial : especialidades) {
-            if (especial.equals(especialidade)) {
-                System.out.println(String.format("%s já é uma especialidade deste prestador", especialidade));
-                return;
-            }
-        }
-        especialidades.add(especialidade);
-        System.out.println("A especialidade %s foi cadastrada");
-    }
-
-    @Override
-    public Double getValorServico(Servico servico) {
-        Double total = 0.0;
-        total = (servico.getCustoServico() * servico.getDuracaoServicoDias());
-        return total;
-    }
-
-    //GETTERS AND SETTERS
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    public Boolean getHasPago() {
-        return hasPago;
-    }
-
-    public void setHasPago(Boolean hasPago) {
-        this.hasPago = hasPago;
-    }
 }

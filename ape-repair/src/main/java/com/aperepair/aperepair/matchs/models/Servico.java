@@ -4,10 +4,9 @@ import com.aperepair.aperepair.autorizadores.model.Cliente;
 import com.aperepair.aperepair.autorizadores.model.Prestador;
 import com.aperepair.aperepair.autorizadores.model.enums.Categoria;
 import com.aperepair.aperepair.autorizadores.model.enums.Status;
-import com.aperepair.aperepair.matchs.service.Contrato;
 import javax.persistence.*;
 
-public class Servico implements Contrato {
+public class Servico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,13 +64,6 @@ public class Servico implements Contrato {
         this.avaliacao = avaliacao;
         this.cliente = cliente;
         this.prestador = prestador;
-    }
-
-    @Override
-    public Double getValorServico(Servico servico) {
-        Double total = 0.0;
-        total = (servico.getCustoServico() * servico.getDuracaoServicoDias());
-        return total;
     }
 
     //GETTERS AND SETTERS

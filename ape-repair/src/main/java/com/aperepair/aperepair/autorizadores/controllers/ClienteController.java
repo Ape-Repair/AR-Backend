@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.autorizadores.controller;
+package com.aperepair.aperepair.autorizadores.controllers;
 
 import com.aperepair.aperepair.autorizadores.model.Cliente;
 import com.aperepair.aperepair.autorizadores.repository.ClienteRepository;

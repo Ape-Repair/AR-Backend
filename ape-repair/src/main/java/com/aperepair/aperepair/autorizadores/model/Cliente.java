@@ -1,55 +1,30 @@
 package com.aperepair.aperepair.autorizadores.model;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genero;
-import com.aperepair.aperepair.matchs.service.Contrato;
-import com.aperepair.aperepair.matchs.models.Servico;
 
 import javax.persistence.Entity;
-import java.util.List;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-public class Cliente extends Usuario implements Contrato {
+public class Cliente {
 
-    private Boolean isPago;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public Cliente(
-            Integer id,
-            String nome,
-            String email,
-            String senha,
-            Genero genero,
-            String cpf,
-            Telefone telefone,
-            Endereco endereco
-    ) {
-        super(id, nome, email, senha, genero, cpf, telefone, endereco);
-        isPago = false;
-    }
+    private String nome;
 
-    public List<Servico> getServicoById(){
-        return null;
-    }
+    private String email;
 
-    @Override
-    public Double getValorServico(Servico servico) {
-        Double total = 0.0;
-        total = (servico.getCustoServico() * servico.getDuracaoServicoDias()) * 1.1;
-        return total;
-    }
+    private String senha;
 
-    //GETTERS AND SETTERS
-    public Boolean getPago() {
-        return isPago;
-    }
+    private Genero genero;
 
-    public void setPago(Boolean pago) {
-        isPago = pago;
-    }
+    private String cpf;
 
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "isPago=" + isPago +
-                "} " + super.toString();
-    }
+    private Telefone telefone;
+
+    private Endereco endereco;
 }

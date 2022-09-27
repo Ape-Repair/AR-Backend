@@ -1,8 +1,6 @@
-package com.aperepair.aperepair.models;
-import com.aperepair.aperepair.enums.Uf;
-import com.aperepair.aperepair.enums.Zonas;
-
-import javax.persistence.*;
+package com.aperepair.aperepair.autorizadores.model;
+import com.aperepair.aperepair.autorizadores.model.enums.Uf;
+import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
 
 public class Endereco {
 

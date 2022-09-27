@@ -1,6 +1,6 @@
-package com.aperepair.aperepair;
+package com.aperepair.aperepair.matchs.service;
 
-import com.aperepair.aperepair.models.Servico;
+import com.aperepair.aperepair.matchs.models.Servico;
 
 public interface Contrato {
 

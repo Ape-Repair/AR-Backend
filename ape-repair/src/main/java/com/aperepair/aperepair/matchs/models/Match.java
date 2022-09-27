@@ -1,7 +1,7 @@
-package com.aperepair.aperepair.models;
+package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.enums.Zonas;
-import com.aperepair.aperepair.Contrato;
+import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
+import com.aperepair.aperepair.matchs.service.Contrato;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package com.aperepair.aperepair.repository;
+package com.aperepair.aperepair.autorizadores.repository;
 
-import com.aperepair.aperepair.models.Cliente;
+import com.aperepair.aperepair.autorizadores.model.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

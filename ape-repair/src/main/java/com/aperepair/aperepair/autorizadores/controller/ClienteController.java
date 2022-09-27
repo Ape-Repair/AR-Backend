@@ -1,7 +1,7 @@
-package com.aperepair.aperepair.controllers;
+package com.aperepair.aperepair.autorizadores.controller;
 
-import com.aperepair.aperepair.models.Cliente;
-import com.aperepair.aperepair.repository.ClienteRepository;
+import com.aperepair.aperepair.autorizadores.model.Cliente;
+import com.aperepair.aperepair.autorizadores.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

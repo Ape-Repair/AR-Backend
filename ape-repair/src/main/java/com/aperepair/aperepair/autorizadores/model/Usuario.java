@@ -1,6 +1,7 @@
-package com.aperepair.aperepair.models;
-import com.aperepair.aperepair.enums.Genero;
-import com.aperepair.aperepair.Contrato;
+package com.aperepair.aperepair.autorizadores.model;
+import com.aperepair.aperepair.autorizadores.model.enums.Genero;
+import com.aperepair.aperepair.matchs.service.Contrato;
+import com.aperepair.aperepair.matchs.models.Servico;
 
 import javax.persistence.*;
 

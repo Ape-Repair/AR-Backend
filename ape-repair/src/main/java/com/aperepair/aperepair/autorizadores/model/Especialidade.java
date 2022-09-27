@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.models;
+package com.aperepair.aperepair.autorizadores.model;
 
 import javax.persistence.*;
 

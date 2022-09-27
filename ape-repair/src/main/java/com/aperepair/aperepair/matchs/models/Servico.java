@@ -1,8 +1,10 @@
-package com.aperepair.aperepair.models;
+package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.enums.Categoria;
-import com.aperepair.aperepair.enums.Status;
-import com.aperepair.aperepair.Contrato;
+import com.aperepair.aperepair.autorizadores.model.Cliente;
+import com.aperepair.aperepair.autorizadores.model.Prestador;
+import com.aperepair.aperepair.autorizadores.model.enums.Categoria;
+import com.aperepair.aperepair.autorizadores.model.enums.Status;
+import com.aperepair.aperepair.matchs.service.Contrato;
 import javax.persistence.*;
 
 public class Servico implements Contrato {

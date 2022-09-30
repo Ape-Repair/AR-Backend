@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.autorizadores.model;
 
-import com.aperepair.aperepair.autorizadores.model.enums.Genero;
+import com.aperepair.aperepair.autorizadores.model.enums.Genre;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,13 +20,13 @@ public class Prestador {
 
     private String senha;
 
-    private Genero genero;
+    private Genre genero;
 
     private String cpf;
 
-    private Telefone telefone;
+    private Telephone telefone;
 
-    private Endereco endereco;
+    private Address endereco;
 
     private String cnpj;
 }

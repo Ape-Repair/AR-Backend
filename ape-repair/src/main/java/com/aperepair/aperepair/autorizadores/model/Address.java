@@ -2,7 +2,7 @@ package com.aperepair.aperepair.autorizadores.model;
 import com.aperepair.aperepair.autorizadores.model.enums.Uf;
 import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
 
-public class Endereco {
+public class Address {
 
     private Integer id;
 
@@ -20,7 +20,7 @@ public class Endereco {
 
     private Uf uf;
 
-    public Endereco(
+    public Address(
             Integer id,
             String rua,
             Integer numero,

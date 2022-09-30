@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.autorizadores.model.Cliente;
+import com.aperepair.aperepair.autorizadores.model.Customer;
 import com.aperepair.aperepair.autorizadores.model.Prestador;
 import com.aperepair.aperepair.autorizadores.model.enums.Categoria;
 import com.aperepair.aperepair.autorizadores.model.enums.Status;
@@ -32,7 +32,7 @@ public class Servico {
 
     private Integer avaliacao;
 
-    private Cliente cliente;
+    private Customer customer;
 
     private Prestador prestador;
 
@@ -48,7 +48,7 @@ public class Servico {
             Double custoServico,
             Integer duracaoServicoDias,
             Integer avaliacao,
-            Cliente cliente,
+            Customer customer,
             Prestador prestador
     ) {
         this.id = id;
@@ -62,7 +62,7 @@ public class Servico {
         this.custoServico = custoServico;
         this.duracaoServicoDias = duracaoServicoDias;
         this.avaliacao = avaliacao;
-        this.cliente = cliente;
+        this.customer = customer;
         this.prestador = prestador;
     }
 
@@ -155,12 +155,12 @@ public class Servico {
         this.avaliacao = avaliacao;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public Prestador getPrestador() {
@@ -185,7 +185,7 @@ public class Servico {
                 ", custoServico=" + custoServico +
                 ", duracaoServicoDias=" + duracaoServicoDias +
                 ", avaliacao=" + avaliacao +
-                ", cliente=" + cliente +
+                ", customer=" + customer +
                 ", prestador=" + prestador +
                 '}';
     }

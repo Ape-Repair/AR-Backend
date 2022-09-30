@@ -4,7 +4,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-public class Telefone {
+public class Telephone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +14,7 @@ public class Telefone {
 
     private String movel;
 
-    public Telefone(String fixo, String movel) {
+    public Telephone(String fixo, String movel) {
         this.fixo = fixo;
         this.movel = movel;
     }

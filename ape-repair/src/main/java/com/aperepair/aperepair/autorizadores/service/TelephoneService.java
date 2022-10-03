@@ -1,4 +1,4 @@
 package com.aperepair.aperepair.autorizadores.service;
 
-public interface ClienteServico {
+public interface TelephoneService {
 }

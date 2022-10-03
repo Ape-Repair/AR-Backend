@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.matchs.models;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
-import com.aperepair.aperepair.autorizadores.model.Prestador;
+import com.aperepair.aperepair.autorizadores.model.Provider;
 import com.aperepair.aperepair.autorizadores.model.enums.Categoria;
 import com.aperepair.aperepair.autorizadores.model.enums.Status;
 import javax.persistence.*;
@@ -34,7 +34,7 @@ public class Servico {
 
     private Customer customer;
 
-    private Prestador prestador;
+    private Provider prestador;
 
     public Servico(
             Integer id,
@@ -49,7 +49,7 @@ public class Servico {
             Integer duracaoServicoDias,
             Integer avaliacao,
             Customer customer,
-            Prestador prestador
+            Provider prestador
     ) {
         this.id = id;
         this.comodo = comodo;
@@ -163,11 +163,11 @@ public class Servico {
         this.customer = customer;
     }
 
-    public Prestador getPrestador() {
+    public Provider getPrestador() {
         return prestador;
     }
 
-    public void setPrestador(Prestador prestador) {
+    public void setPrestador(Provider prestador) {
         this.prestador = prestador;
     }
 

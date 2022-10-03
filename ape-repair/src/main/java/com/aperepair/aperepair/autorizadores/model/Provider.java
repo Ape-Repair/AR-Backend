@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.autorizadores.model;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genre;
+import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.Entity;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-public class Customer {
+public class Provider {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +39,9 @@ public class Customer {
     private Telephone telephone;
 
     private Address address;
+
+    @CNPJ
+    private String cnpj;
 
     public Integer getId() {
         return id;
@@ -101,5 +105,13 @@ public class Customer {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 }

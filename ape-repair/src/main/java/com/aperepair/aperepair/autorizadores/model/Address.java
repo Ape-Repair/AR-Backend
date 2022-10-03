@@ -2,43 +2,45 @@ package com.aperepair.aperepair.autorizadores.model;
 import com.aperepair.aperepair.autorizadores.model.enums.Uf;
 import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+@Entity
 public class Address {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank
+    @Size(min = 2, max = 30)
     private String rua;
 
+    @Min(value = 1)
     private Integer numero;
 
+    @Size(min = 3, max = 50)
     private String complemento;
 
+    @NotBlank
+    @Size(min = 7, max = 12)
     private String cep;
 
+    @NotBlank
+    @Size(min = 2, max = 20)
     private String bairro;
 
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String cidade;
 
+    @NotBlank
     private Uf uf;
-
-    public Address(
-            Integer id,
-            String rua,
-            Integer numero,
-            String complemento,
-            String cep,
-            String bairro,
-            String cidade,
-            Uf uf
-    ) {
-        this.id = id;
-        this.rua = rua;
-        this.numero = numero;
-        this.complemento = complemento;
-        this.cep = cep;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.uf = uf;
-    }
 
     public Zonas getZona(String bairro) {
         return null;

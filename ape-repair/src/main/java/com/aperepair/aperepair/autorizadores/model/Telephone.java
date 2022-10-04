@@ -14,27 +14,10 @@ public class Telephone {
     private Integer id;
 
     @Size(min = 8, max = 11)
-    private String fixo;
+    private String fixed;
 
     @Size(min = 11, max = 12)
-    private String movel;
-
-    //GETTERS AND SETTERS
-    public String getFixo() {
-        return fixo;
-    }
-
-    public void setFixo(String fixo) {
-        this.fixo = fixo;
-    }
-
-    public String getMovel() {
-        return movel;
-    }
-
-    public void setMovel(String movel) {
-        this.movel = movel;
-    }
+    private String mobile;
 
     public Integer getId() {
         return id;
@@ -44,12 +27,28 @@ public class Telephone {
         this.id = id;
     }
 
+    public String getFixed() {
+        return fixed;
+    }
+
+    public void setFixed(String fixed) {
+        this.fixed = fixed;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
     @Override
     public String toString() {
-        return "Telefone{" +
+        return "Telephone{" +
                 "id=" + id +
-                ", fixo='" + fixo + '\'' +
-                ", movel='" + movel + '\'' +
+                ", fixed='" + fixed + '\'' +
+                ", mobile='" + mobile + '\'' +
                 '}';
     }
 }

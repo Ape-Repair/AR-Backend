@@ -1,7 +1,6 @@
 package com.aperepair.aperepair.autorizadores.model;
-import com.aperepair.aperepair.autorizadores.model.enums.Uf;
-import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
 
+import com.aperepair.aperepair.autorizadores.model.enums.Uf;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,13 +18,13 @@ public class Address {
 
     @NotBlank
     @Size(min = 2, max = 30)
-    private String rua;
+    private String street;
 
     @Min(value = 1)
-    private Integer numero;
+    private Integer number;
 
     @Size(min = 3, max = 50)
-    private String complemento;
+    private String complement;
 
     @NotBlank
     @Size(min = 7, max = 12)
@@ -33,20 +32,15 @@ public class Address {
 
     @NotBlank
     @Size(min = 2, max = 20)
-    private String bairro;
+    private String district;
 
     @NotBlank
     @Size(min = 3, max = 30)
-    private String cidade;
+    private String city;
 
     @NotBlank
     private Uf uf;
 
-    public Zonas getZona(String bairro) {
-        return null;
-    }
-
-    //GETTERS AND SETTERS
     public Integer getId() {
         return id;
     }
@@ -55,28 +49,28 @@ public class Address {
         this.id = id;
     }
 
-    public String getRua() {
-        return rua;
+    public String getStreet() {
+        return street;
     }
 
-    public void setRua(String rua) {
-        this.rua = rua;
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-    public Integer getNumero() {
-        return numero;
+    public Integer getNumber() {
+        return number;
     }
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
-    public String getComplemento() {
-        return complemento;
+    public String getComplement() {
+        return complement;
     }
 
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
+    public void setComplement(String complement) {
+        this.complement = complement;
     }
 
     public String getCep() {
@@ -87,20 +81,20 @@ public class Address {
         this.cep = cep;
     }
 
-    public String getBairro() {
-        return bairro;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
-    public String getCidade() {
-        return cidade;
+    public String getCity() {
+        return city;
     }
 
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public Uf getUf() {
@@ -113,14 +107,14 @@ public class Address {
 
     @Override
     public String toString() {
-        return "Endereco{" +
+        return "Address{" +
                 "id=" + id +
-                ", rua='" + rua + '\'' +
-                ", numero=" + numero +
-                ", complemento='" + complemento + '\'' +
+                ", street='" + street + '\'' +
+                ", number=" + number +
+                ", complement='" + complement + '\'' +
                 ", cep='" + cep + '\'' +
-                ", bairro='" + bairro + '\'' +
-                ", cidade='" + cidade + '\'' +
+                ", district='" + district + '\'' +
+                ", city='" + city + '\'' +
                 ", uf=" + uf +
                 '}';
     }

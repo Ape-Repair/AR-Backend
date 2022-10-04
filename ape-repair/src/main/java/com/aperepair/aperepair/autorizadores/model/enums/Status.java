@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.autorizadores.model.enums;
 
 public enum Status {
-    PENDENTE,
+    PENDING,
     EM_ANDAMENTO,
-    CONCLUIDO
+    DONE
 }

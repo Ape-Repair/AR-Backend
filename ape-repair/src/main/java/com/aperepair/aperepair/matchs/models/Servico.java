@@ -2,7 +2,7 @@ package com.aperepair.aperepair.matchs.models;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
 import com.aperepair.aperepair.autorizadores.model.Provider;
-import com.aperepair.aperepair.autorizadores.model.enums.Categoria;
+import com.aperepair.aperepair.autorizadores.model.enums.Category;
 import com.aperepair.aperepair.autorizadores.model.enums.Status;
 import javax.persistence.*;
 
@@ -22,7 +22,7 @@ public class Servico {
 
     private Double medidaLargura;
 
-    private Categoria categoria;
+    private Category category;
 
     private String itemCategoria;
 
@@ -43,7 +43,7 @@ public class Servico {
             String descricao,
             Double medidaAltura,
             Double medidaLargura,
-            Categoria categoria,
+            Category category,
             String itemCategoria,
             Double custoServico,
             Integer duracaoServicoDias,
@@ -57,7 +57,7 @@ public class Servico {
         this.descricao = descricao;
         this.medidaAltura = medidaAltura;
         this.medidaLargura = medidaLargura;
-        this.categoria = categoria;
+        this.category = category;
         this.itemCategoria = itemCategoria;
         this.custoServico = custoServico;
         this.duracaoServicoDias = duracaoServicoDias;
@@ -115,12 +115,12 @@ public class Servico {
         this.medidaLargura = medidaLargura;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public Category getCategoria() {
+        return category;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setCategoria(Category category) {
+        this.category = category;
     }
 
     public String getItemCategoria() {
@@ -180,7 +180,7 @@ public class Servico {
                 ", descricao='" + descricao + '\'' +
                 ", medidaAltura=" + medidaAltura +
                 ", medidaLargura=" + medidaLargura +
-                ", categoria=" + categoria +
+                ", categoria=" + category +
                 ", itemCategoria='" + itemCategoria + '\'' +
                 ", custoServico=" + custoServico +
                 ", duracaoServicoDias=" + duracaoServicoDias +

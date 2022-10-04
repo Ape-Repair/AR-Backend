@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.autorizadores.model.enums.Zonas;
+import com.aperepair.aperepair.autorizadores.model.enums.Zone;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -12,7 +12,7 @@ public class Match {
 
     @Column(name="zona")
     @Enumerated(EnumType.STRING)
-    private Zonas local;
+    private Zone local;
 
     public void addServico() {
         return;
@@ -37,11 +37,11 @@ public class Match {
         this.dataHora = dataHora;
     }
 
-    public Zonas getLocal() {
+    public Zone getLocal() {
         return local;
     }
 
-    public void setLocal(Zonas local) {
+    public void setLocal(Zone local) {
         this.local = local;
     }
 }

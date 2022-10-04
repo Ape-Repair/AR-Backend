@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.autorizadores.model.enums;
 
-public enum Zonas {
+public enum Zone {
     NORTE,
     SUL,
     LESTE,

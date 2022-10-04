@@ -2,7 +2,6 @@ package com.aperepair.aperepair.autorizadores.model;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genre;
 import org.hibernate.validator.constraints.br.CPF;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

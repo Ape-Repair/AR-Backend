@@ -1,5 +1,5 @@
 package com.aperepair.aperepair.autorizadores.model.enums;
 
-public enum Categoria {
+public enum Category {
     REPARO
 }

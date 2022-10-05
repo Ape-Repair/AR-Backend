@@ -2,7 +2,7 @@ package com.aperepair.aperepair.autorizadores.model.dto;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genre;
 
-public class SaveCustomerDto {
+public class CustomerDto {
 
     private String name;
 
@@ -14,7 +14,7 @@ public class SaveCustomerDto {
 
     private String cpf;
 
-    public SaveCustomerDto(String name, String email, String password, Genre genre, String cpf) {
+    public CustomerDto(String name, String email, String password, Genre genre, String cpf) {
         this.name = name;
         this.email = email;
         this.password = password;

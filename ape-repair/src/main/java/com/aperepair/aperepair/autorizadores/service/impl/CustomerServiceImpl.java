@@ -1,6 +1,8 @@
 package com.aperepair.aperepair.autorizadores.service.impl;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
+import com.aperepair.aperepair.autorizadores.model.dto.CustomerDtoFactory;
+import com.aperepair.aperepair.autorizadores.model.dto.CustomerDto;
 import com.aperepair.aperepair.autorizadores.repository.CustomerRepository;
 import com.aperepair.aperepair.autorizadores.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
@@ -19,15 +21,17 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public ResponseEntity<Customer> create(@RequestBody Customer newCustomer) {
-        if (validateCPFNewClient(newCustomer)) {
-            customerRepository.save(newCustomer);
-            logger.info(String.format("Client: %s registered successfully", newCustomer.toString()));
+    public ResponseEntity<CustomerDto> create(@RequestBody Customer customer) {
+        if (validateCPFNewClient(customer)) {
+            customerRepository.save(customer);
+            logger.info(String.format("Client: %s registered successfully", customer.toString()));
 
-            return ResponseEntity.status(201).body(newCustomer);
+            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+
+            return ResponseEntity.status(201).body(customerDto);
         }
 
-        logger.error(String.format("There was an error registering the client", newCustomer.toString()));
+        logger.error(String.format("There was an error registering the client", customer.toString()));
         return ResponseEntity.status(400).build();
     }
 
@@ -58,7 +62,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public ResponseEntity<Customer> update(Integer id, Customer updatedCustomer) {
-        if (customerRepository.existsById(id)) {
+        if (
+                customerRepository.existsById(id)
+                && customerRepository.findById(id).equals(updatedCustomer.getId())
+        ) {
+
             logger.info(String.format("Client of id %d found", id));
 
             customerRepository.save(updatedCustomer);

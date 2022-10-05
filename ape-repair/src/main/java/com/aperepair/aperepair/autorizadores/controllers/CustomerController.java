@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.autorizadores.controllers;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
-import com.aperepair.aperepair.autorizadores.model.dto.SaveCustomerDto;
+import com.aperepair.aperepair.autorizadores.model.dto.CustomerDto;
 import com.aperepair.aperepair.autorizadores.service.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +18,8 @@ public class CustomerController {
     private CustomerServiceImpl clienteServiceImpl;
 
     @PostMapping
-    public ResponseEntity<Customer> create(@RequestBody @Valid Customer newCliente) {
-        return clienteServiceImpl.create(newCliente);
+    public ResponseEntity<CustomerDto> create(@RequestBody @Valid Customer newCustomer) {
+        return clienteServiceImpl.create(newCustomer);
     }
 
     @GetMapping

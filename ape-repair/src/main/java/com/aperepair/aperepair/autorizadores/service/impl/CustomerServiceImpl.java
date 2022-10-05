@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.autorizadores.service.impl;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
-import com.aperepair.aperepair.autorizadores.model.dto.CustomerDtoFactory;
+import com.aperepair.aperepair.autorizadores.model.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.autorizadores.model.dto.CustomerDto;
 import com.aperepair.aperepair.autorizadores.repository.CustomerRepository;
 import com.aperepair.aperepair.autorizadores.service.CustomerService;
@@ -21,6 +21,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Override
     public ResponseEntity<CustomerDto> create(@RequestBody Customer customer) {
         if (validateCPFNewClient(customer)) {
             customerRepository.save(customer);
@@ -35,6 +36,7 @@ public class CustomerServiceImpl implements CustomerService {
         return ResponseEntity.status(400).build();
     }
 
+    @Override
     public ResponseEntity<List<Customer>> findAll() {
         List<Customer> customers = new ArrayList(customerRepository.findAll());
 
@@ -47,6 +49,7 @@ public class CustomerServiceImpl implements CustomerService {
         return ResponseEntity.status(200).body(customers);
     }
 
+    @Override
     public ResponseEntity<Customer> findById(Integer id) {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
@@ -61,6 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
         return ResponseEntity.status(404).build();
     }
 
+    @Override
     public ResponseEntity<Customer> update(Integer id, Customer updatedCustomer) {
         if (
                 customerRepository.existsById(id)
@@ -79,6 +83,7 @@ public class CustomerServiceImpl implements CustomerService {
         return ResponseEntity.status(404).build();
     }
 
+    @Override
     public ResponseEntity<Boolean> delete(Integer id) {
         Boolean success = false;
         if (customerRepository.existsById(id)) {

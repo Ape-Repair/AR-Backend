@@ -1,6 +1,7 @@
-package com.aperepair.aperepair.autorizadores.model.dto;
+package com.aperepair.aperepair.autorizadores.model.dto.factory;
 
 import com.aperepair.aperepair.autorizadores.model.Customer;
+import com.aperepair.aperepair.autorizadores.model.dto.CustomerDto;
 import com.aperepair.aperepair.autorizadores.service.impl.CustomerServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +12,6 @@ public class CustomerDtoFactory {
         CustomerDto customerDto = new CustomerDto(
                 customer.getName(),
                 customer.getEmail(),
-                customer.getPassword(),
                 customer.getGenre(),
                 customer.getCpf()
         );
@@ -20,5 +20,5 @@ public class CustomerDtoFactory {
         return customerDto;
     }
 
-    private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());
+    private static final Logger logger = LogManager.getLogger(CustomerDtoFactory.class.getName());
 }

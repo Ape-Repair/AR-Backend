@@ -2,7 +2,7 @@ package com.aperepair.aperepair.autorizadores.model.dto;
 
 import com.aperepair.aperepair.autorizadores.model.enums.Genre;
 
-public class CustomerDto {
+public class ProviderDto {
 
     private String name;
 
@@ -12,11 +12,14 @@ public class CustomerDto {
 
     private String cpf;
 
-    public CustomerDto(String name, String email, Genre genre, String cpf) {
+    private String cnpj;
+
+    public ProviderDto(String name, String email, Genre genre, String cpf, String cnpj) {
         this.name = name;
         this.email = email;
         this.genre = genre;
         this.cpf = cpf;
+        this.cnpj = cnpj;
     }
 
     public String getName() {
@@ -51,13 +54,22 @@ public class CustomerDto {
         this.cpf = cpf;
     }
 
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
     @Override
     public String toString() {
-        return "CustomerDto{" +
+        return "ProviderDto{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", genre=" + genre +
                 ", cpf='" + cpf + '\'' +
+                ", cnpj='" + cnpj + '\'' +
                 '}';
     }
 }

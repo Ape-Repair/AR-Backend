@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.autorizadores.controllers;
 
 import com.aperepair.aperepair.autorizadores.model.Provider;
+import com.aperepair.aperepair.autorizadores.model.dto.ProviderDto;
 import com.aperepair.aperepair.autorizadores.service.impl.ProviderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class ProviderController {
     private ProviderServiceImpl providerServiceImpl;
 
     @PostMapping
-    public ResponseEntity<Provider> create(@RequestBody @Valid Provider newProvider) {
+    public ResponseEntity<ProviderDto> create(@RequestBody @Valid Provider newProvider) {
         return providerServiceImpl.create(newProvider);
     }
 

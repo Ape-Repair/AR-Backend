@@ -1,6 +1,8 @@
 package com.aperepair.aperepair.autorizadores.service.impl;
 
 import com.aperepair.aperepair.autorizadores.model.Provider;
+import com.aperepair.aperepair.autorizadores.model.dto.ProviderDto;
+import com.aperepair.aperepair.autorizadores.model.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.autorizadores.repository.ProviderRepository;
 import com.aperepair.aperepair.autorizadores.service.ProviderService;
 import org.apache.logging.log4j.LogManager;
@@ -19,18 +21,22 @@ public class ProviderServiceImpl implements ProviderService {
     @Autowired
     private ProviderRepository providerRepository;
 
-    public ResponseEntity<Provider> create(@RequestBody Provider newProvider) {
-        if (validateCNPJNewProvider(newProvider)) {
-            providerRepository.save(newProvider);
-            logger.info(String.format("Provider: %s registered successfully", newProvider.toString()));
+    @Override
+    public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
+        if (validateCNPJNewProvider(provider)) {
+            providerRepository.save(provider);
+            logger.info(String.format("Provider: %s registered successfully", provider.toString()));
 
-            return ResponseEntity.status(201).body(newProvider);
+            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+
+            return ResponseEntity.status(201).body(providerDto);
         }
 
-        logger.error(String.format("There was an error registering the provider", newProvider.toString()));
+        logger.error(String.format("There was an error registering the provider", provider.toString()));
         return ResponseEntity.status(400).build();
     }
 
+    @Override
     public ResponseEntity<List<Provider>> findAll() {
         List<Provider> providers = new ArrayList(providerRepository.findAll());
 
@@ -43,6 +49,7 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(200).body(providers);
     }
 
+    @Override
     public ResponseEntity<Provider> findById(Integer id) {
         if (providerRepository.existsById(id)) {
             Optional<Provider> optionalProvider = providerRepository.findById(id);
@@ -57,6 +64,7 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(404).build();
     }
 
+    @Override
     public ResponseEntity<Provider> update(Integer id, Provider updatedProvider) {
         if (providerRepository.existsById(id)) {
             logger.info(String.format("Provider of id %d found", id));
@@ -71,6 +79,7 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(404).build();
     }
 
+    @Override
     public ResponseEntity<Boolean> delete(Integer id) {
         Boolean success = false;
         if (providerRepository.existsById(id)) {
@@ -100,5 +109,5 @@ public class ProviderServiceImpl implements ProviderService {
         //TODO (API CNPJ) - implementar API de validar cnpj
     }
 
-    private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());
+    private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());
 }

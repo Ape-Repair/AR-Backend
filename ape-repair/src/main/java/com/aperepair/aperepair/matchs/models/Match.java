@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.autorizadores.model.enums.Zone;
+import com.aperepair.aperepair.authorization.model.enums.Zone;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;

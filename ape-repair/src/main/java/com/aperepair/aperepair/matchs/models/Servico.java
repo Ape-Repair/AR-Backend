@@ -1,9 +1,9 @@
 package com.aperepair.aperepair.matchs.models;
 
-import com.aperepair.aperepair.autorizadores.model.Customer;
-import com.aperepair.aperepair.autorizadores.model.Provider;
-import com.aperepair.aperepair.autorizadores.model.enums.Category;
-import com.aperepair.aperepair.autorizadores.model.enums.Status;
+import com.aperepair.aperepair.authorization.model.Customer;
+import com.aperepair.aperepair.authorization.model.Provider;
+import com.aperepair.aperepair.authorization.model.enums.Category;
+import com.aperepair.aperepair.authorization.model.enums.Status;
 import javax.persistence.*;
 
 public class Servico {

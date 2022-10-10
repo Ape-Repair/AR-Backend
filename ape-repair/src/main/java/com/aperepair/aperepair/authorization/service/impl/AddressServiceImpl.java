@@ -1,9 +1,6 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Address;
-import com.aperepair.aperepair.authorization.model.Customer;
-import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.model.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.service.AddressService;
 import org.apache.logging.log4j.LogManager;

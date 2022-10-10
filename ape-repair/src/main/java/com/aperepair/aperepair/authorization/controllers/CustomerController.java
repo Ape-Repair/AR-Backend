@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.controllers;
 
 import com.aperepair.aperepair.authorization.model.Customer;
-import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
+import com.aperepair.aperepair.authorization.model.enums.dto.CustomerDto;
 import com.aperepair.aperepair.authorization.service.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package com.aperepair.aperepair.authorization.model.dto.factory;
+package com.aperepair.aperepair.authorization.model.enums.dto.factory;
 
 import com.aperepair.aperepair.authorization.model.Provider;
-import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.enums.dto.ProviderDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

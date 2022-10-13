@@ -17,6 +17,6 @@ public class LoginController {
     private LoginServiceImpl loginServiceImpl;
 
     public ResponseEntity<Boolean> logon(@RequestBody @Valid LoginDto loginAttempt) {
-
+        return loginServiceImpl.logon(loginAttempt);
     }
 }

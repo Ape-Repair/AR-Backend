@@ -1,8 +1,6 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
-import com.aperepair.aperepair.authorization.model.Address;
 import com.aperepair.aperepair.authorization.model.Telephone;
-import com.aperepair.aperepair.authorization.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.repository.TelephoneRepository;
 import com.aperepair.aperepair.authorization.service.TelephoneService;
 import org.apache.logging.log4j.LogManager;
@@ -95,5 +93,4 @@ public class TelephoneServiceImpl implements TelephoneService {
         return ResponseEntity.status(404).body(success);
     }
     private static final Logger logger = LogManager.getLogger(TelephoneServiceImpl.class.getName());
-
 }

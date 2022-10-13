@@ -19,10 +19,6 @@ public class Telephone {
     @Size(min = 10, max = 20)
     private String mobile;
 
-    @NotBlank
-    @Size(min = 2, max = 3)
-    private String ddd;
-
     public Integer getId() {
         return id;
     }
@@ -39,14 +35,6 @@ public class Telephone {
         this.landline = landline;
     }
 
-    public String getDdd() {
-        return ddd;
-    }
-
-    public void setDdd(String ddd) {
-        this.ddd = ddd;
-    }
-
     public String getMobile() {
         return mobile;
     }
@@ -61,7 +49,6 @@ public class Telephone {
                 "id=" + id +
                 ", landline='" + landline + '\'' +
                 ", mobile='" + mobile + '\'' +
-                ", ddd='" + ddd + '\'' +
                 '}';
     }
 }

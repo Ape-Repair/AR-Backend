@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,19 +23,20 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @Override
     public ResponseEntity<CustomerDto> create(@RequestBody Customer customer) {
-        if (validateCPFNewClient(customer)) {
-            customerRepository.save(customer);
-            logger.info(String.format("Client: %s registered successfully", customer.toString()));
+        customer.setPassword(encoder.encode(customer.getPassword()));
+        logger.info("Customer password encrypted with successfully");
 
-            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+        customerRepository.save(customer);
+        logger.info(String.format("Customer: %s registered successfully", customer.toString()));
 
-            return ResponseEntity.status(201).body(customerDto);
-        }
+        CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
 
-        logger.error(String.format("There was an error registering the client", customer.toString()));
-        return ResponseEntity.status(400).build();
+        return ResponseEntity.status(201).body(customerDto);
     }
 
     @Override
@@ -54,14 +56,14 @@ public class CustomerServiceImpl implements CustomerService {
     public ResponseEntity<Customer> findById(Integer id) {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
-            logger.info(String.format("Client of id %d found", id));
+            logger.info(String.format("Customer of id %d found", id));
 
             Customer customer = optionalCustomer.get();
 
             return ResponseEntity.status(200).body(customer);
         }
 
-        logger.error(String.format("Client of id %d not found", id));
+        logger.error(String.format("Customer of id %d not found", id));
         return ResponseEntity.status(404).build();
     }
 
@@ -69,10 +71,10 @@ public class CustomerServiceImpl implements CustomerService {
     public ResponseEntity<Customer> update(Integer id, Customer updatedCustomer) {
         if (
                 customerRepository.existsById(id)
-                && customerRepository.findById(id).equals(updatedCustomer.getId())
+                        && customerRepository.findById(id).equals(updatedCustomer.getId())
         ) {
 
-            logger.info(String.format("Client of id %d found", id));
+            logger.info(String.format("Customer of id %d found", id));
 
             customerRepository.save(updatedCustomer);
             logger.info(String.format("Updated customer: %s registration data!", updatedCustomer.toString()));
@@ -89,28 +91,17 @@ public class CustomerServiceImpl implements CustomerService {
         Boolean success = false;
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findById(id).get();
-            logger.info(String.format("Client of id %d found", id));
+            logger.info(String.format("Customer of id %d found", id));
 
             customerRepository.deleteById(id);
-            logger.info(String.format("Client: %s successfully deleted", customer.toString()));
+            logger.info(String.format("Customer %s successfully deleted", customer.toString()));
             success = true;
 
             return ResponseEntity.status(200).body(success);
         }
 
-        logger.error(String.format("Client of id %d not found", id));
+        logger.error(String.format("Customer of id %d not found", id));
         return ResponseEntity.status(404).body(success);
-    }
-
-    private boolean validateCPFNewClient(Customer customer) {
-        boolean isValid = true; // alterar aqui apos concluir TODO
-        if (isValid) {
-            logger.info(String.format("CPF: %s is valid", customer.getCpf()));
-            return true;
-        }
-        logger.info("CPF: %s is invalid", customer.getCpf());
-        return false;
-        //TODO (API CPF) - implementar API de validar cpf
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

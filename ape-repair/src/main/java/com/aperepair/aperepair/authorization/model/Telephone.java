@@ -1,9 +1,8 @@
 package com.aperepair.aperepair.authorization.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -13,11 +12,16 @@ public class Telephone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min = 8, max = 11)
-    private String fixed;
+    @Column(name = "landline")
+    @Size(min = 8, max = 20)
+    private String landline;
 
-    @Size(min = 11, max = 12)
+    @Size(min = 10, max = 20)
     private String mobile;
+
+    @NotBlank
+    @Size(min = 2, max = 3)
+    private String ddd;
 
     public Integer getId() {
         return id;
@@ -27,12 +31,20 @@ public class Telephone {
         this.id = id;
     }
 
-    public String getFixed() {
-        return fixed;
+    public String getLandline() {
+        return landline;
     }
 
-    public void setFixed(String fixed) {
-        this.fixed = fixed;
+    public void setLandline(String landline) {
+        this.landline = landline;
+    }
+
+    public String getDdd() {
+        return ddd;
+    }
+
+    public void setDdd(String ddd) {
+        this.ddd = ddd;
     }
 
     public String getMobile() {
@@ -47,8 +59,9 @@ public class Telephone {
     public String toString() {
         return "Telephone{" +
                 "id=" + id +
-                ", fixed='" + fixed + '\'' +
+                ", landline='" + landline + '\'' +
                 ", mobile='" + mobile + '\'' +
+                ", ddd='" + ddd + '\'' +
                 '}';
     }
 }

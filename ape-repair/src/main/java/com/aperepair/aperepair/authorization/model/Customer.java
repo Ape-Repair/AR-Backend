@@ -2,10 +2,9 @@ package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
 import org.hibernate.validator.constraints.br.CPF;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -34,9 +33,11 @@ public class Customer {
     @CPF
     private String cpf;
 
-    private Telephone telephone;
+    @Column(name = "telephone_id")
+    private Integer telephoneId;
 
-    private Address address;
+    @Column(name = "address_id")
+    private Integer addressId;
 
     public Integer getId() {
         return id;
@@ -86,19 +87,19 @@ public class Customer {
         this.cpf = cpf;
     }
 
-    public Telephone getTelephone() {
-        return telephone;
+    public Integer getTelephoneId() {
+        return telephoneId;
     }
 
-    public void setTelephone(Telephone telephone) {
-        this.telephone = telephone;
+    public void setTelephoneId(Integer telephoneId) {
+        this.telephoneId = telephoneId;
     }
 
-    public Address getAddress() {
-        return address;
+    public Integer getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddressId(Integer addressId) {
+        this.addressId = addressId;
     }
 }

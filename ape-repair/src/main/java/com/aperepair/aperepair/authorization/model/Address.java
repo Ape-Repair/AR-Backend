@@ -1,10 +1,8 @@
 package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Uf;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -20,14 +18,16 @@ public class Address {
     @Size(min = 2, max = 30)
     private String street;
 
+    @Column(name = "street_number")
+    @NotBlank
     @Min(value = 1)
-    private Integer number;
+    private Integer streetNumber;
 
     @Size(min = 3, max = 50)
     private String complement;
 
     @NotBlank
-    @Size(min = 7, max = 12)
+    @Size(min = 8, max = 8)
     private String cep;
 
     @NotBlank
@@ -57,12 +57,12 @@ public class Address {
         this.street = street;
     }
 
-    public Integer getNumber() {
-        return number;
+    public Integer getStreetNumber() {
+        return streetNumber;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
+    public void setStreetNumber(Integer streetNumber) {
+        this.streetNumber = streetNumber;
     }
 
     public String getComplement() {
@@ -110,7 +110,7 @@ public class Address {
         return "Address{" +
                 "id=" + id +
                 ", street='" + street + '\'' +
-                ", number=" + number +
+                ", number=" + streetNumber +
                 ", complement='" + complement + '\'' +
                 ", cep='" + cep + '\'' +
                 ", district='" + district + '\'' +

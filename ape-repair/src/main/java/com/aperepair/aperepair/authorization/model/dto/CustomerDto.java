@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.model.enums.dto;
+package com.aperepair.aperepair.authorization.model.dto;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
 

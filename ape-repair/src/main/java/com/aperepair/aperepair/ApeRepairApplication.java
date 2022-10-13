@@ -13,11 +13,4 @@ public class ApeRepairApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ApeRepairApplication.class, args);
 	}
-
-	@Bean
-	public PasswordEncoder getPasswordEncoder() {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		return encoder;
-	}
-
 }

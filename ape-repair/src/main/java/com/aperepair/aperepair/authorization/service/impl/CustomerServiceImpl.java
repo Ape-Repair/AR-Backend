@@ -1,8 +1,8 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Customer;
-import com.aperepair.aperepair.authorization.model.enums.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.model.enums.dto.factory.CustomerDtoFactory;
+import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
+import com.aperepair.aperepair.authorization.model.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

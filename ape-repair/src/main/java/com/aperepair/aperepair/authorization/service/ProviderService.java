@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.service;
 
 import com.aperepair.aperepair.authorization.model.Provider;
-import com.aperepair.aperepair.authorization.model.enums.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 

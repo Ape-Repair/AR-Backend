@@ -24,7 +24,7 @@ public class Provider {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 12)
+    @Size(min = 8)
     private String password;
 
     @NotBlank

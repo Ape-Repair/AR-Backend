@@ -1,14 +1,15 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Provider;
-import com.aperepair.aperepair.authorization.model.enums.dto.ProviderDto;
-import com.aperepair.aperepair.authorization.model.enums.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.authorization.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.service.ProviderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,19 +23,20 @@ public class ProviderServiceImpl implements ProviderService {
     @Autowired
     private ProviderRepository providerRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @Override
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
-        if (validateCNPJNewProvider(provider)) {
-            providerRepository.save(provider);
-            logger.info(String.format("Provider: %s registered successfully", provider.toString()));
+        provider.setPassword(encoder.encode(provider.getPassword()));
+        logger.info("Provider password encrypted with successfully");
 
-            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+        providerRepository.save(provider);
+        logger.info(String.format("Provider: %s registered successfully", provider.toString()));
 
-            return ResponseEntity.status(201).body(providerDto);
-        }
+        ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
 
-        logger.error(String.format("There was an error registering the provider", provider.toString()));
-        return ResponseEntity.status(400).build();
+        return ResponseEntity.status(201).body(providerDto);
     }
 
     @Override

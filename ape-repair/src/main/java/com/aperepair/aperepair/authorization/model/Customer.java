@@ -4,7 +4,6 @@ import com.aperepair.aperepair.authorization.model.enums.Genre;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -24,10 +23,9 @@ public class Customer {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 12)
+    @Size(min = 6)
     private String password;
 
-    @NotBlank
     private Genre genre;
 
     @CPF

@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
+import com.aperepair.aperepair.authorization.model.enums.Role;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -42,6 +43,8 @@ public class Provider {
     @CNPJ
     private String cnpj;
 
+    private Role role = Role.PROVIDER;
+
     public Integer getId() {
         return id;
     }
@@ -58,11 +61,16 @@ public class Provider {
         this.name = name;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
+        email.toLowerCase();
         this.email = email;
     }
 

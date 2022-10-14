@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
+import com.aperepair.aperepair.authorization.model.enums.Role;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
@@ -37,6 +38,8 @@ public class Customer {
     @Column(name = "address_id")
     private Integer addressId;
 
+    private Role role = Role.CUSTOMER;
+
     public Integer getId() {
         return id;
     }
@@ -58,6 +61,7 @@ public class Customer {
     }
 
     public void setEmail(String email) {
+        email.toLowerCase();
         this.email = email;
     }
 
@@ -79,6 +83,10 @@ public class Customer {
 
     public String getCpf() {
         return cpf;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public void setCpf(String cpf) {

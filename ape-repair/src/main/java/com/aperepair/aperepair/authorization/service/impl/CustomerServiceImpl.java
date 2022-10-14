@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     private PasswordEncoder encoder;
 
     @Override
-    public ResponseEntity<CustomerDto> create(@RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> create(Customer customer) {
         customer.setPassword(encoder.encode(customer.getPassword()));
         logger.info("Customer password encrypted with successfully");
 

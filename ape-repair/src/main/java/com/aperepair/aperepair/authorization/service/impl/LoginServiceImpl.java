@@ -7,14 +7,19 @@ import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto
 import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.aperepair.aperepair.authorization.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.repository.ProviderRepository;
+import com.aperepair.aperepair.authorization.service.LoginService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-public class LoginServiceImpl {
+public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -22,34 +27,60 @@ public class LoginServiceImpl {
     @Autowired
     private ProviderRepository providerRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     private LoginResponseDto loginResponseDto;
 
-    public ResponseEntity<LoginResponseDto> logon(LoginRequestDto loginDto) {
+    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginDto) {
+        boolean valid;
         String emailAttempt = loginDto.getEmail();
         String passwordAttempt = loginDto.getPassword();
 
-        try {
-            logger.info("Starting login validation");
-            loginResponseDto.setRole(Role.CUSTOMER);
+        logger.info(String.format("Trying to login with email: %s - as a customer", emailAttempt));
 
-            Customer customer = customerRepository.findByEmail(emailAttempt);
+        loginResponseDto.setRole(Role.CUSTOMER);
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
-            if (customer.getRole().equals(loginResponseDto.getRole())) {
-                //TODO - metodo que compara senhas criptogradas (customer)
+        if (optionalCustomer.isPresent() &&
+                optionalCustomer.get().getRole().equals(loginResponseDto.getRole())) {
+            Customer customer = optionalCustomer.get();
+            valid = encoder.matches(passwordAttempt, customer.getPassword());
+
+            if (valid) {
+                loginResponseDto.setSuccess(true);
+
+                logger.info(String.format("Login successfully for customer name: %s", customer.getName()));
+
+                return ResponseEntity.status(200).body(loginResponseDto);
             }
-        } catch (Exception ex) {
-            loginResponseDto.setRole(Role.PROVIDER);
-            Provider provider = providerRepository.findByEmail(emailAttempt);
+        }
 
-            if (provider.getRole().equals(loginResponseDto.getRole())) {
-                //TODO - metodo que compara senhas criptogradas (provider)
+        logger.info(String.format("Trying to login with email: %s - as a provider", emailAttempt));
+
+        loginResponseDto.setRole(Role.PROVIDER);
+        Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
+
+        if (optionalProvider.isPresent() &&
+                optionalProvider.get().getRole().equals(loginResponseDto.getRole())) {
+            Provider provider = optionalProvider.get();
+            valid = encoder.matches(passwordAttempt, provider.getPassword());
+
+            if (valid) {
+                loginResponseDto.setSuccess(true);
+
+                logger.info(String.format("Login successfully for provider name: %s", provider.getName()));
+
+                return ResponseEntity.status(200).body(loginResponseDto);
             }
-        } /*catch (Exception ex) {
-            logger.warn("Email and/or password invalid");
-            ex.printStackTrace();
-        } */
+        }
 
-        return null;
+        logger.info("Email and/or password invalid!\n\n" +
+                "Login attempt failed!\n");
+
+        loginResponseDto.setSuccess(false);
+        loginResponseDto.setRole(Role.INVALID);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponseDto);
     }
 
     private static final Logger logger = LogManager.getLogger(LoginServiceImpl.class.getName());

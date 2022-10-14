@@ -2,6 +2,7 @@ package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
 import com.aperepair.aperepair.authorization.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ public class Customer {
     @Size(min = 6)
     private String password;
 
+    @Size(min = 0, max = 1)
     private Genre genre;
 
     @CPF
@@ -38,7 +40,11 @@ public class Customer {
     @Column(name = "address_id")
     private Integer addressId;
 
+    @JsonIgnore
     private Role role = Role.CUSTOMER;
+
+    @JsonIgnore
+    private Boolean isAuthenticated;
 
     public Integer getId() {
         return id;
@@ -107,5 +113,13 @@ public class Customer {
 
     public void setAddressId(Integer addressId) {
         this.addressId = addressId;
+    }
+
+    public Boolean getAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(Boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

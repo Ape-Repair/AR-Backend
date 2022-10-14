@@ -2,6 +2,7 @@ package com.aperepair.aperepair.authorization.model;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
 import com.aperepair.aperepair.authorization.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -43,7 +44,11 @@ public class Provider {
     @CNPJ
     private String cnpj;
 
+    @JsonIgnore
     private Role role = Role.PROVIDER;
+
+    @JsonIgnore
+    private Boolean isAuthenticated;
 
     public Integer getId() {
         return id;
@@ -120,5 +125,13 @@ public class Provider {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public Boolean getAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(Boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

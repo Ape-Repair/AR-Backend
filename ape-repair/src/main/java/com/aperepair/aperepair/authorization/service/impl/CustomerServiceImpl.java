@@ -30,15 +30,16 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info("Customer password encrypted with successfully");
 
         customerRepository.save(customer);
-        logger.info(String.format("Customer: %s registered successfully", customer.toString()));
 
         CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+        logger.info(String.format("CustomerDto: %s registered successfully", customerDto.toString()));
+
 
         return ResponseEntity.status(201).body(customerDto);
     }
 
     @Override
-    public ResponseEntity<List<Customer>> findAll() {
+    public ResponseEntity<List<CustomerDto>> findAll() {
         List<Customer> customers = new ArrayList(customerRepository.findAll());
 
         if (customers.isEmpty()) {
@@ -46,19 +47,28 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(204).build();
         }
 
+        List<CustomerDto> customersDto = new ArrayList();
+
+        for (Customer customer : customers) {
+            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+            customersDto.add(customerDto);
+        }
+
         logger.info("Success in finding registered customers");
-        return ResponseEntity.status(200).body(customers);
+        return ResponseEntity.status(200).body(customersDto);
     }
 
     @Override
-    public ResponseEntity<Customer> findById(Integer id) {
+    public ResponseEntity<CustomerDto> findById(Integer id) {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
             logger.info(String.format("Customer of id %d found", id));
 
             Customer customer = optionalCustomer.get();
 
-            return ResponseEntity.status(200).body(customer);
+            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+
+            return ResponseEntity.status(200).body(customerDto);
         }
 
         logger.error(String.format("Customer of id %d not found", id));
@@ -66,7 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<Customer> update(Integer id, Customer updatedCustomer) {
+    public ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer) {
         if (
                 customerRepository.existsById(id)
                         && customerRepository.findById(id).equals(updatedCustomer.getId())
@@ -74,10 +84,14 @@ public class CustomerServiceImpl implements CustomerService {
 
             logger.info(String.format("Customer of id %d found", id));
 
-            customerRepository.save(updatedCustomer);
-            logger.info(String.format("Updated customer: %s registration data!", updatedCustomer.toString()));
+            updatedCustomer.setPassword(encoder.encode(updatedCustomer.getPassword()));
 
-            return ResponseEntity.status(200).body(updatedCustomer);
+            customerRepository.save(updatedCustomer);
+            logger.info(String.format("Updated customer of id: %d registration data!", updatedCustomer.getId()));
+
+            CustomerDto updatedCustomerDto = CustomerDtoFactory.toDto(updatedCustomer);
+
+            return ResponseEntity.status(200).body(updatedCustomerDto);
         }
 
         logger.error(String.format("Client of id %d not found", id));
@@ -89,16 +103,16 @@ public class CustomerServiceImpl implements CustomerService {
         Boolean success = false;
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findById(id).get();
-            logger.info(String.format("Customer of id %d found", id));
+            logger.info(String.format("Customer id %d found", id));
 
             customerRepository.deleteById(id);
-            logger.info(String.format("Customer %s successfully deleted", customer.toString()));
+            logger.info(String.format("Customer id: %d successfully deleted", customer.getId()));
             success = true;
 
             return ResponseEntity.status(200).body(success);
         }
 
-        logger.error(String.format("Customer of id %d not found", id));
+        logger.error(String.format("Customer id %d not found", id));
         return ResponseEntity.status(404).body(success);
     }
 

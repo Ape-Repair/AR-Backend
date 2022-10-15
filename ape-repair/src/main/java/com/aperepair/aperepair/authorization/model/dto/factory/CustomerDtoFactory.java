@@ -12,7 +12,9 @@ public class CustomerDtoFactory {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getGenre(),
-                customer.getCpf()
+                customer.getCpf(),
+                customer.getRole(),
+                customer.getAuthenticated()
         );
 
         logger.info("Customer transformed to DTO with successfully");

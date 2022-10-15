@@ -5,7 +5,6 @@ import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
-
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -26,10 +25,9 @@ public class Provider {
     private String email;
 
     @NotBlank
-    @Size(min = 8)
+    @Size(min = 6)
     private String password;
 
-    @NotBlank
     private Genre genre;
 
     @CPF

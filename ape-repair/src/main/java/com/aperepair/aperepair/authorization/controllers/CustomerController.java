@@ -15,33 +15,33 @@ import java.util.List;
 public class CustomerController {
 
     @Autowired
-    private CustomerServiceImpl clienteServiceImpl;
+    private CustomerServiceImpl customerServiceImpl;
 
     @PostMapping
     public ResponseEntity<CustomerDto> create(@RequestBody @Valid Customer newCustomer) {
-        return clienteServiceImpl.create(newCustomer);
+        return customerServiceImpl.create(newCustomer);
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> findAll() {
-        return clienteServiceImpl.findAll();
+    public ResponseEntity<List<CustomerDto>> findAll() {
+        return customerServiceImpl.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> findById(@PathVariable Integer id) {
-        return clienteServiceImpl.findById(id);
+    public ResponseEntity<CustomerDto> findById(@PathVariable Integer id) {
+        return customerServiceImpl.findById(id);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Customer> update(
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerDto> update(
             @PathVariable Integer id,
             @RequestBody @Valid Customer updatedCustomer
     ) {
-        return clienteServiceImpl.update(id, updatedCustomer);
+        return customerServiceImpl.update(id, updatedCustomer);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return clienteServiceImpl.delete(id);
+        return customerServiceImpl.delete(id);
     }
 }

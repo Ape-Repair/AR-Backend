@@ -10,11 +10,11 @@ public interface CustomerService {
 
     public ResponseEntity<CustomerDto> create(@RequestBody Customer customer);
 
-    public ResponseEntity<List<Customer>> findAll();
+    public ResponseEntity<List<CustomerDto>> findAll();
 
-    public ResponseEntity<Customer> findById(Integer id);
+    public ResponseEntity<CustomerDto> findById(Integer id);
 
-    public ResponseEntity<Customer> update(Integer id, Customer updatedCustomer);
+    public ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer);
 
     public ResponseEntity<Boolean> delete(Integer id);
 }

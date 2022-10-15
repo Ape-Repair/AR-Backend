@@ -12,8 +12,8 @@ public class ProviderDtoFactory {
                 provider.getName(),
                 provider.getEmail(),
                 provider.getGenre(),
-                provider.getCpf(),
-                provider.getCnpj()
+                provider.getRole(),
+                provider.getAuthenticated()
         );
 
         logger.info("Provider transformed to DTO with successfully");

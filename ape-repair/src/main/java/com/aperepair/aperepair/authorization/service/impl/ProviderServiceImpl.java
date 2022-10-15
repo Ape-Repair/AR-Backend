@@ -32,15 +32,15 @@ public class ProviderServiceImpl implements ProviderService {
         logger.info("Provider password encrypted with successfully");
 
         providerRepository.save(provider);
-        logger.info(String.format("Provider: %s registered successfully", provider.toString()));
 
         ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+        logger.info(String.format("Provider: %s registered successfully", providerDto.toString()));
 
         return ResponseEntity.status(201).body(providerDto);
     }
 
     @Override
-    public ResponseEntity<List<Provider>> findAll() {
+    public ResponseEntity<List<ProviderDto>> findAll() {
         List<Provider> providers = new ArrayList(providerRepository.findAll());
 
         if (providers.isEmpty()) {
@@ -48,19 +48,28 @@ public class ProviderServiceImpl implements ProviderService {
             return ResponseEntity.status(204).build();
         }
 
+        List<ProviderDto> providerDtos = new ArrayList();
+
+        for(Provider provider: providers) {
+            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+            providerDtos.add(providerDto);
+        }
+
         logger.info("Success in finding registered providers");
-        return ResponseEntity.status(200).body(providers);
+        return ResponseEntity.status(200).body(providerDtos);
     }
 
     @Override
-    public ResponseEntity<Provider> findById(Integer id) {
+    public ResponseEntity<ProviderDto> findById(Integer id) {
         if (providerRepository.existsById(id)) {
             Optional<Provider> optionalProvider = providerRepository.findById(id);
             logger.info(String.format("Provider of id %d found", id));
 
             Provider provider = optionalProvider.get();
 
-            return ResponseEntity.status(200).body(provider);
+            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+
+            return ResponseEntity.status(200).body(providerDto);
         }
 
         logger.error(String.format("Provider of id %d not found", id));
@@ -68,14 +77,17 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ResponseEntity<Provider> update(Integer id, Provider updatedProvider) {
+    public ResponseEntity<ProviderDto> update(Integer id, Provider updatedProvider) {
         if (providerRepository.existsById(id)) {
             logger.info(String.format("Provider of id %d found", id));
 
             providerRepository.save(updatedProvider);
-            logger.info(String.format("Updated provider: %s registration data!", updatedProvider.toString()));
 
-            return ResponseEntity.status(200).body(updatedProvider);
+            ProviderDto updatedProviderDto = ProviderDtoFactory.toDto(updatedProvider);
+            logger.info(String.format("Updated provider: %s registration data!", updatedProviderDto.toString()));
+
+
+            return ResponseEntity.status(200).body(updatedProviderDto);
         }
 
         logger.error(String.format("Provider of id %d not found", id));
@@ -89,8 +101,10 @@ public class ProviderServiceImpl implements ProviderService {
             Provider provider = providerRepository.findById(id).get();
             logger.info(String.format("Provider of id %d found", id));
 
+            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+
             providerRepository.deleteById(id);
-            logger.info(String.format("Provider: %s successfully deleted", provider.toString()));
+            logger.info(String.format("Provider: %s successfully deleted", providerDto.toString()));
 
             success = true;
 

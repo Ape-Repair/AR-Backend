@@ -19,7 +19,7 @@ public class LoginController {
     private LoginServiceImpl loginServiceImpl;
 
     @PostMapping
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginAttempt) {
-        return loginServiceImpl.login(loginAttempt);
+    public ResponseEntity<LoginResponseDto> logon(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        return loginServiceImpl.logon(loginRequestDto);
     }
 }

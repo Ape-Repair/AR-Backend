@@ -23,24 +23,24 @@ public class ProviderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Provider>> findAll() {
+    public ResponseEntity<List<ProviderDto>> findAll() {
         return providerServiceImpl.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Provider> findById(@PathVariable Integer id) {
+    public ResponseEntity<ProviderDto> findById(@PathVariable Integer id) {
         return providerServiceImpl.findById(id);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Provider> update(
+    @PutMapping("{id}")
+    public ResponseEntity<ProviderDto> update(
             @PathVariable Integer id,
             @RequestBody @Valid Provider updatedProvider
     ) {
         return providerServiceImpl.update(id, updatedProvider);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         return providerServiceImpl.delete(id);
     }

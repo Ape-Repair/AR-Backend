@@ -11,11 +11,11 @@ public interface ProviderService {
 
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider);
 
-    public ResponseEntity<List<Provider>> findAll();
+    public ResponseEntity<List<ProviderDto>> findAll();
 
-    public ResponseEntity<Provider> findById(Integer id);
+    public ResponseEntity<ProviderDto> findById(Integer id);
 
-    public ResponseEntity<Provider> update(Integer id, Provider updatedProvider);
+    public ResponseEntity<ProviderDto> update(Integer id, Provider updatedProvider);
 
     public ResponseEntity<Boolean> delete(Integer id);
 }

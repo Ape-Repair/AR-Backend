@@ -28,7 +28,6 @@ public class Customer {
     @Size(min = 6)
     private String password;
 
-    @Size(min = 0, max = 1)
     private Genre genre;
 
     @CPF
@@ -43,8 +42,7 @@ public class Customer {
     @JsonIgnore
     private Role role = Role.CUSTOMER;
 
-    @JsonIgnore
-    private Boolean isAuthenticated;
+    private Boolean isAuthenticated = false;
 
     public Integer getId() {
         return id;

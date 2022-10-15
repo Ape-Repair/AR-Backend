@@ -1,22 +1,35 @@
 package com.aperepair.aperepair.authorization.model.dto;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
+import com.aperepair.aperepair.authorization.model.enums.Role;
+import org.hibernate.validator.constraints.br.CPF;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 public class CustomerDto {
 
+    @NotBlank
     private String name;
 
+    @Email
     private String email;
 
     private Genre genre;
 
+    @CPF
     private String cpf;
 
-    public CustomerDto(String name, String email, Genre genre, String cpf) {
+    private Role role;
+
+    private Boolean isAuthenticated;
+
+    public CustomerDto(String name, String email, Genre genre, String cpf, Role role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
         this.cpf = cpf;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
     }
 
     public String getName() {
@@ -51,13 +64,30 @@ public class CustomerDto {
         this.cpf = cpf;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Boolean getAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(Boolean authenticated) {
+        isAuthenticated = authenticated;
+    }
+
     @Override
     public String toString() {
         return "CustomerDto{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", genre=" + genre +
-                ", cpf='" + cpf + '\'' +
+                ", role=" + role +
+                ", isAuthenticated=" + isAuthenticated +
                 '}';
     }
 }

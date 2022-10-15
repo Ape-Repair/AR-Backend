@@ -1,25 +1,32 @@
 package com.aperepair.aperepair.authorization.model.dto;
 
 import com.aperepair.aperepair.authorization.model.enums.Genre;
+import com.aperepair.aperepair.authorization.model.enums.Role;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class ProviderDto {
 
+    @NotBlank
+    @Size(min = 2, max = 50)
     private String name;
 
+    @Email
     private String email;
 
     private Genre genre;
 
-    private String cpf;
+    private Role role;
 
-    private String cnpj;
+    private Boolean isAuthenticated;
 
-    public ProviderDto(String name, String email, Genre genre, String cpf, String cnpj) {
+    public ProviderDto(String name, String email, Genre genre, Role role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
-        this.cpf = cpf;
-        this.cnpj = cnpj;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
     }
 
     public String getName() {
@@ -46,30 +53,19 @@ public class ProviderDto {
         this.genre = genre;
     }
 
-    public String getCpf() {
-        return cpf;
+    public Role getRole() {
+        return role;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public Boolean getAuthenticated() {
+        return isAuthenticated;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    @Override
-    public String toString() {
-        return "ProviderDto{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", genre=" + genre +
-                ", cpf='" + cpf + '\'' +
-                ", cnpj='" + cnpj + '\'' +
-                '}';
+    public void setAuthenticated(Boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

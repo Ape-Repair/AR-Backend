@@ -2,6 +2,8 @@ package com.aperepair.aperepair.authorization.controllers;
 
 import com.aperepair.aperepair.authorization.model.Customer;
 import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
+import com.aperepair.aperepair.authorization.model.dto.LoginDto;
+import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.service.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +45,10 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         return customerServiceImpl.delete(id);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
+        return customerServiceImpl.login(loginDto);
     }
 }

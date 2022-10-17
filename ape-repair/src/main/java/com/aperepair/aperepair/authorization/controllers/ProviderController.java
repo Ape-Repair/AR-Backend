@@ -1,7 +1,9 @@
 package com.aperepair.aperepair.authorization.controllers;
 
 import com.aperepair.aperepair.authorization.model.Provider;
+import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.service.impl.ProviderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,4 +47,8 @@ public class ProviderController {
         return providerServiceImpl.delete(id);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
+        return providerServiceImpl.login(loginDto);
+    }
 }

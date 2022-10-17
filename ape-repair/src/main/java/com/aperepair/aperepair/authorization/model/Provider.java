@@ -68,6 +68,10 @@ public class Provider {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public String getEmail() {
         return email;
     }

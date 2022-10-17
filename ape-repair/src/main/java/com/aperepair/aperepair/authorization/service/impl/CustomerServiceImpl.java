@@ -2,7 +2,10 @@ package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Customer;
 import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
+import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.factory.CustomerDtoFactory;
+import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.aperepair.aperepair.authorization.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +30,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<CustomerDto> create(Customer customer) {
+        customer.setRole(Role.CUSTOMER);
+
         customer.setPassword(encoder.encode(customer.getPassword()));
         logger.info("Customer password encrypted with successfully");
+
+        customer.setAuthenticated(false);
 
         customerRepository.save(customer);
 
@@ -105,7 +113,9 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customer = customerRepository.findById(id).get();
             logger.info(String.format("Customer id %d found", id));
 
-            customerRepository.deleteById(id);
+            customer.setRole(Role.DELETED);
+            customerRepository.save(customer);
+
             logger.info(String.format("Customer id: %d successfully deleted", customer.getId()));
             success = true;
 
@@ -114,6 +124,58 @@ public class CustomerServiceImpl implements CustomerService {
 
         logger.error(String.format("Customer id %d not found", id));
         return ResponseEntity.status(404).body(success);
+    }
+
+    @Override
+    public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
+        LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
+
+        String emailAttempt = loginDto.getEmail();
+        String passwordAttempt = loginDto.getPassword();
+
+        logger.info(String.format("Searching for customer by email: [%s]", emailAttempt));
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
+
+        if (optionalCustomer.isEmpty()) {
+            logger.warn(String.format("Email customer: [%s] - Not Found!", emailAttempt));
+            return ResponseEntity.status(400).body(loginResponseDto);
+        }
+
+        Customer customer = optionalCustomer.get();
+        logger.info(String.format("Trying to login with email: [%s] - as a customer", emailAttempt));
+
+        boolean valid = isValidPassword(passwordAttempt, customer);
+
+        if (valid && !isAuthenticatedCustomer(customer)) {
+            loginResponseDto.setSuccess(true);
+        } else {
+            if (!valid) logger.info("Password invalid!");
+
+            if (isAuthenticatedCustomer(customer)) {
+                logger.info("Customer was already authenticated");
+                return ResponseEntity.status(401).body(loginResponseDto);
+            }
+
+            return ResponseEntity.status(401).body(loginResponseDto);
+        }
+
+        customer.setAuthenticated(true);
+        customerRepository.save(customer);
+
+        logger.info("Login successfully");
+        return ResponseEntity.status(200).body(loginResponseDto);
+    }
+
+    private Boolean isAuthenticatedCustomer(Customer customer) {
+        if (customer.getAuthenticated()) return true;
+
+        return false;
+    }
+
+    private boolean isValidPassword(String passwordAttempt, Customer customer) {
+        if (encoder.matches(passwordAttempt, customer.getPassword())) return true;
+
+        return false;
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

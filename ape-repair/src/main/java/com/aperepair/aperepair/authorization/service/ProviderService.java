@@ -1,7 +1,9 @@
 package com.aperepair.aperepair.authorization.service;
 
 import com.aperepair.aperepair.authorization.model.Provider;
+import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,4 +20,6 @@ public interface ProviderService {
     public ResponseEntity<ProviderDto> update(Integer id, Provider updatedProvider);
 
     public ResponseEntity<Boolean> delete(Integer id);
+
+    //TODO public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto);
 }

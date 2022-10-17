@@ -6,5 +6,5 @@ public enum Role {
 
     ADMIN,
 
-    INVALID
+    DELETED
 }

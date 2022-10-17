@@ -1,8 +1,11 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Provider;
+import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
 import com.aperepair.aperepair.authorization.model.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.aperepair.aperepair.authorization.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.service.ProviderService;
 import org.apache.logging.log4j.LogManager;
@@ -28,8 +31,12 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
+        provider.setRole(Role.PROVIDER);
+
         provider.setPassword(encoder.encode(provider.getPassword()));
         logger.info("Provider password encrypted with successfully");
+
+        provider.setAuthenticated(false);
 
         providerRepository.save(provider);
 
@@ -50,7 +57,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         List<ProviderDto> providerDtos = new ArrayList();
 
-        for(Provider provider: providers) {
+        for (Provider provider : providers) {
             ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
             providerDtos.add(providerDto);
         }
@@ -103,9 +110,10 @@ public class ProviderServiceImpl implements ProviderService {
 
             ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
 
-            providerRepository.deleteById(id);
-            logger.info(String.format("Provider: %s successfully deleted", providerDto.toString()));
+            provider.setRole(Role.DELETED);
+            providerRepository.save(provider);
 
+            logger.info(String.format("Provider: %s successfully deleted", providerDto.toString()));
             success = true;
 
             return ResponseEntity.status(200).body(success);
@@ -115,15 +123,15 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(404).body(success);
     }
 
-    private boolean validateCNPJNewProvider(Provider provider) {
-        boolean isValid = true; // alterar aqui apos concluir TODO
-        if (isValid) {
-            logger.info(String.format("CNPJ: %s is valid", provider.getCnpj()));
-            return true;
-        }
-        logger.info("CNPJ: %s is invalid", provider.getCnpj());
+    public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
+       //TODO (will be implemented! - copy for CustomerServiceImpl);
+        return null;
+    }
+
+    private Boolean isAuthenticatedProvider(Provider provider) {
+        if (provider.getAuthenticated() == true) return true;
+
         return false;
-        //TODO (API CNPJ) - implementar API de validar cnpj
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

@@ -93,6 +93,10 @@ public class Customer {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }

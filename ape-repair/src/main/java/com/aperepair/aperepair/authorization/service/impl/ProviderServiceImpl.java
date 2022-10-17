@@ -1,5 +1,6 @@
 package com.aperepair.aperepair.authorization.service.impl;
 
+import com.aperepair.aperepair.authorization.model.Customer;
 import com.aperepair.aperepair.authorization.model.Provider;
 import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
@@ -123,13 +124,54 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(404).body(success);
     }
 
+    @Override
     public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
-       //TODO (will be implemented! - copy for CustomerServiceImpl);
-        return null;
+        LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
+
+        String emailAttempt = loginDto.getEmail();
+        String passwordAttempt = loginDto.getPassword();
+
+        logger.info(String.format("Searching for provider by email: [%s]", emailAttempt));
+        Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
+
+        if (optionalProvider.isEmpty()) {
+            logger.warn(String.format("Email provider: [%s] - Not Found!", emailAttempt));
+            return ResponseEntity.status(400).body(loginResponseDto);
+        }
+
+        Provider provider = optionalProvider.get();
+        logger.info(String.format("Trying to login with email: [%s] - as a provider", emailAttempt));
+
+        boolean valid = isValidPassword(passwordAttempt, provider);
+
+        if (valid && !isAuthenticatedProvider(provider)) {
+            loginResponseDto.setSuccess(true);
+        } else {
+            if (!valid) logger.info("Password invalid!");
+
+            if (isAuthenticatedProvider(provider)) {
+                logger.info("Provider was already authenticated");
+                return ResponseEntity.status(401).body(loginResponseDto);
+            }
+
+            return ResponseEntity.status(401).body(loginResponseDto);
+        }
+
+        provider.setAuthenticated(true);
+        providerRepository.save(provider);
+
+        logger.info("Login successfully");
+        return ResponseEntity.status(200).body(loginResponseDto);
     }
 
     private Boolean isAuthenticatedProvider(Provider provider) {
-        if (provider.getAuthenticated() == true) return true;
+        if (provider.getAuthenticated()) return true;
+
+        return false;
+    }
+
+    private boolean isValidPassword(String passwordAttempt, Provider provider) {
+        if (encoder.matches(passwordAttempt, provider.getPassword())) return true;
 
         return false;
     }

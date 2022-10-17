@@ -21,5 +21,5 @@ public interface ProviderService {
 
     public ResponseEntity<Boolean> delete(Integer id);
 
-    //TODO public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto);
 }

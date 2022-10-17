@@ -34,7 +34,7 @@ public class ProviderController {
         return providerServiceImpl.findById(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ProviderDto> update(
             @PathVariable Integer id,
             @RequestBody @Valid Provider updatedProvider
@@ -42,7 +42,7 @@ public class ProviderController {
         return providerServiceImpl.update(id, updatedProvider);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         return providerServiceImpl.delete(id);
     }

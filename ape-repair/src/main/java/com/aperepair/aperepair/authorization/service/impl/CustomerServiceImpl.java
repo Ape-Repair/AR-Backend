@@ -5,6 +5,7 @@ import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
 import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.model.dto.response.LogoutResponseDto;
 import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.aperepair.aperepair.authorization.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.service.CustomerService;
@@ -138,7 +139,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (optionalCustomer.isEmpty()) {
             logger.warn(String.format("Email customer: [%s] - Not Found!", emailAttempt));
-            return ResponseEntity.status(400).body(loginResponseDto);
+            return ResponseEntity.status(404).body(loginResponseDto);
         }
 
         Customer customer = optionalCustomer.get();
@@ -161,9 +162,49 @@ public class CustomerServiceImpl implements CustomerService {
 
         customer.setAuthenticated(true);
         customerRepository.save(customer);
+        logger.info("Customer authenticated successfully!");
 
-        logger.info("Login successfully");
+        logger.info("Login successfully executed!");
         return ResponseEntity.status(200).body(loginResponseDto);
+    }
+
+    @Override
+    public ResponseEntity<LogoutResponseDto> logout(LoginDto loginDto) {
+        LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
+
+        String emailAttempt = loginDto.getEmail();
+        String passwordAttempt = loginDto.getPassword();
+
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
+
+        if (optionalCustomer.isEmpty()) {
+            logger.warn(String.format("Email customer: [%s] - Not Found!", emailAttempt));
+            return ResponseEntity.status(404).body(logoutResponse);
+        }
+
+        Customer customer = optionalCustomer.get();
+        logger.info(String.format("Initiating logout from email customer [%s]", emailAttempt));
+
+        boolean valid = isValidPassword(passwordAttempt, customer);
+
+        if (valid && isAuthenticatedCustomer(customer)) {
+            logoutResponse.setSuccess(true);
+            customer.setAuthenticated(false);
+
+            customerRepository.save(customer);
+
+            logger.info("Logout successfully executed!");
+            return ResponseEntity.status(200).body(logoutResponse);
+        } else {
+            if (!valid) logger.info("Password invalid!");
+
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.info("The customer is not authenticated");
+                return ResponseEntity.status(401).body(logoutResponse);
+            }
+
+            return ResponseEntity.status(401).body(logoutResponse);
+        }
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {

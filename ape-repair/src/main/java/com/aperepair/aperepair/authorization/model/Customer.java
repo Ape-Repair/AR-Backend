@@ -21,6 +21,7 @@ public class Customer {
     @Size(min = 2, max = 50)
     private String name;
 
+    @NotBlank
     @Email
     private String email;
 
@@ -30,6 +31,7 @@ public class Customer {
 
     private Genre genre;
 
+    @NotBlank
     @CPF
     private String cpf;
 
@@ -42,6 +44,7 @@ public class Customer {
     @JsonIgnore
     private Role role = Role.CUSTOMER;
 
+    @Column(name = "is_authenticated")
     private Boolean isAuthenticated = false;
 
     public Integer getId() {

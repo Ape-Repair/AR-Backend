@@ -21,6 +21,7 @@ public class Provider {
     @Size(min = 2, max = 50)
     private String name;
 
+    @NotBlank
     @Email
     private String email;
 
@@ -45,7 +46,7 @@ public class Provider {
     @JsonIgnore
     private Role role = Role.PROVIDER;
 
-    @JsonIgnore
+    @Column(name = "is_authenticated")
     private Boolean isAuthenticated;
 
     public Integer getId() {

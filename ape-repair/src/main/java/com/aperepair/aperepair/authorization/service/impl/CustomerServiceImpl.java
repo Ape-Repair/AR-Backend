@@ -40,6 +40,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.save(customer);
 
+        logger.info(String.format("ID do customer: %d", customer.getId()));
+
         CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
         logger.info(String.format("CustomerDto: %s registered successfully", customerDto.toString()));
 
@@ -86,19 +88,27 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer) {
-        if (
-                customerRepository.existsById(id)
-                        && customerRepository.findById(id).equals(updatedCustomer.getId())
-        ) {
+        if (customerRepository.existsById(id)) {
 
-            logger.info(String.format("Customer of id %d found", id));
+            Customer customer = customerRepository.findById(id).get();
 
-            updatedCustomer.setPassword(encoder.encode(updatedCustomer.getPassword()));
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.error("Customer is not authenticated!");
+                return ResponseEntity.status(403).build();
+            }
 
-            customerRepository.save(updatedCustomer);
-            logger.info(String.format("Updated customer of id: %d registration data!", updatedCustomer.getId()));
+            logger.info(String.format("Customer of id %d found", customer.getId()));
 
-            CustomerDto updatedCustomerDto = CustomerDtoFactory.toDto(updatedCustomer);
+            customer.setName(updatedCustomer.getName());
+            customer.setEmail(updatedCustomer.getEmail());
+            customer.setCpf(updatedCustomer.getCpf());
+            customer.setGenre(updatedCustomer.getGenre());
+            customer.setPassword(encoder.encode(updatedCustomer.getPassword()));
+
+            customerRepository.save(customer);
+            logger.info(String.format("Updated customer of id: %d registration data!", customer.getId()));
+
+            CustomerDto updatedCustomerDto = CustomerDtoFactory.toDto(customer);
 
             return ResponseEntity.status(200).body(updatedCustomerDto);
         }
@@ -157,6 +167,11 @@ public class CustomerServiceImpl implements CustomerService {
                 return ResponseEntity.status(401).body(loginResponseDto);
             }
 
+            if (customer.getRole() != Role.CUSTOMER) {
+                logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
+                return ResponseEntity.status(403).build();
+            }
+
             return ResponseEntity.status(401).body(loginResponseDto);
         }
 
@@ -187,7 +202,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         boolean valid = isValidPassword(passwordAttempt, customer);
 
-        if (valid && isAuthenticatedCustomer(customer)) {
+        if (valid && isAuthenticatedCustomer(customer) && customer.getRole().equals(Role.CUSTOMER)) {
             logoutResponse.setSuccess(true);
             customer.setAuthenticated(false);
 
@@ -201,6 +216,11 @@ public class CustomerServiceImpl implements CustomerService {
             if (!isAuthenticatedCustomer(customer)) {
                 logger.info("The customer is not authenticated");
                 return ResponseEntity.status(401).body(logoutResponse);
+            }
+
+            if (customer.getRole() != Role.CUSTOMER) {
+                logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
+                return ResponseEntity.status(403).build();
             }
 
             return ResponseEntity.status(401).body(logoutResponse);

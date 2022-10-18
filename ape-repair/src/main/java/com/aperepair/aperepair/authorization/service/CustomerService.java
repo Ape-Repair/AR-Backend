@@ -12,17 +12,17 @@ import java.util.List;
 
 public interface CustomerService {
 
-    public ResponseEntity<CustomerDto> create(@RequestBody Customer customer);
+    ResponseEntity<CustomerDto> create(@RequestBody Customer customer);
 
-    public ResponseEntity<List<CustomerDto>> findAll();
+    ResponseEntity<List<CustomerDto>> findAll();
 
-    public ResponseEntity<CustomerDto> findById(Integer id);
+    ResponseEntity<CustomerDto> findById(Integer id);
 
-    public ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer);
+    ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer);
 
-    public ResponseEntity<Boolean> delete(Integer id);
+    ResponseEntity<Boolean> delete(Integer id);
 
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto);
+    ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto);
 
-    public ResponseEntity<LogoutResponseDto> logout(@RequestBody LoginDto loginDto);
+    ResponseEntity<LogoutResponseDto> logout(@RequestBody LoginDto loginDto);
 }

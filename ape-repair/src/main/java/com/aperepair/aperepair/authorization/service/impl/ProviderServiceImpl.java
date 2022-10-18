@@ -6,6 +6,7 @@ import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
 import com.aperepair.aperepair.authorization.model.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.model.dto.response.LogoutResponseDto;
 import com.aperepair.aperepair.authorization.model.enums.Role;
 import com.aperepair.aperepair.authorization.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.service.ProviderService;
@@ -154,6 +155,11 @@ public class ProviderServiceImpl implements ProviderService {
                 return ResponseEntity.status(401).body(loginResponseDto);
             }
 
+            if (provider.getRole() != Role.PROVIDER) {
+                logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
+                return ResponseEntity.status(403).build();
+            }
+
             return ResponseEntity.status(401).body(loginResponseDto);
         }
 
@@ -162,6 +168,49 @@ public class ProviderServiceImpl implements ProviderService {
 
         logger.info("Login successfully");
         return ResponseEntity.status(200).body(loginResponseDto);
+    }
+
+    public ResponseEntity<LogoutResponseDto> logout(LoginDto loginDto) {
+        LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
+
+        String emailAttempt = loginDto.getEmail();
+        String passwordAttempt = loginDto.getPassword();
+
+        Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
+
+        if (optionalProvider.isEmpty()) {
+            logger.warn(String.format("Email provider: [%s] - Not Found!", emailAttempt));
+            return ResponseEntity.status(404).body(logoutResponse);
+        }
+
+        Provider provider = optionalProvider.get();
+        logger.info(String.format("Initiating logout from email provider [%s]", emailAttempt));
+
+        boolean valid = isValidPassword(passwordAttempt, provider);
+
+        if (valid && isAuthenticatedProvider(provider) && provider.getRole().equals(Role.PROVIDER)) {
+            logoutResponse.setSuccess(true);
+            provider.setAuthenticated(false);
+
+            providerRepository.save(provider);
+
+            logger.info("Logout successfully executed!");
+            return ResponseEntity.status(200).body(logoutResponse);
+        } else {
+            if (!valid) logger.info("Password invalid!");
+
+            if (!isAuthenticatedProvider(provider)) {
+                logger.info("The provider is not authenticated");
+                return ResponseEntity.status(401).body(logoutResponse);
+            }
+
+            if (provider.getRole() != Role.PROVIDER) {
+                logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
+                return ResponseEntity.status(403).build();
+            }
+
+            return ResponseEntity.status(401).body(logoutResponse);
+        }
     }
 
     private Boolean isAuthenticatedProvider(Provider provider) {

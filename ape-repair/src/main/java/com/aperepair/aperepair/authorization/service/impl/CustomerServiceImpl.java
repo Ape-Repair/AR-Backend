@@ -113,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(200).body(updatedCustomerDto);
         }
 
-        logger.error(String.format("Client of id %d not found", id));
+        logger.error(String.format("Customer of id %d not found", id));
         return ResponseEntity.status(404).build();
     }
 

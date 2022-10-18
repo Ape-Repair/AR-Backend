@@ -2,8 +2,10 @@ package com.aperepair.aperepair.authorization.service.impl;
 
 import com.aperepair.aperepair.authorization.model.Customer;
 import com.aperepair.aperepair.authorization.model.Provider;
+import com.aperepair.aperepair.authorization.model.dto.CustomerDto;
 import com.aperepair.aperepair.authorization.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.model.dto.ProviderDto;
+import com.aperepair.aperepair.authorization.model.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.model.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.authorization.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.model.dto.response.LogoutResponseDto;
@@ -88,13 +90,27 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     public ResponseEntity<ProviderDto> update(Integer id, Provider updatedProvider) {
         if (providerRepository.existsById(id)) {
-            logger.info(String.format("Provider of id %d found", id));
 
-            providerRepository.save(updatedProvider);
+            Provider provider = providerRepository.findById(id).get();
 
-            ProviderDto updatedProviderDto = ProviderDtoFactory.toDto(updatedProvider);
-            logger.info(String.format("Updated provider: %s registration data!", updatedProviderDto.toString()));
+            if (!isAuthenticatedProvider(provider)) {
+                logger.error("Provider is not authenticated!");
+                return ResponseEntity.status(403).build();
+            }
 
+            logger.info(String.format("Provider of id %d found", provider.getId()));
+
+            provider.setName(updatedProvider.getName());
+            provider.setEmail(updatedProvider.getEmail());
+            provider.setCpf(updatedProvider.getCpf());
+            provider.setGenre(updatedProvider.getGenre());
+            provider.setCnpj(updatedProvider.getCnpj());
+            provider.setPassword(encoder.encode(updatedProvider.getPassword()));
+
+            providerRepository.save(provider);
+            logger.info(String.format("Updated provider of id: %d registration data!", provider.getId()));
+
+            ProviderDto updatedProviderDto = ProviderDtoFactory.toDto(provider);
 
             return ResponseEntity.status(200).body(updatedProviderDto);
         }

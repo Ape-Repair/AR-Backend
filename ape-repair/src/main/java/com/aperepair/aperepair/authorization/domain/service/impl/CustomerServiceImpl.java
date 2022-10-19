@@ -40,8 +40,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.save(customer);
 
-        logger.info(String.format("ID do customer: %d", customer.getId()));
-
         CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
         logger.info(String.format("CustomerDto: %s registered successfully", customerDto.toString()));
 

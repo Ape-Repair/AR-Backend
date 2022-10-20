@@ -1,6 +1,8 @@
 package com.aperepair.aperepair.reports.domain.service;
 
 import com.aperepair.aperepair.reports.domain.entity.Admin;
+import com.aperepair.aperepair.reports.domain.entity.dto.request.AdminLoginRequestDto;
+import com.aperepair.aperepair.reports.domain.entity.dto.response.AdminLoginResponseDto;
 import com.aperepair.aperepair.reports.domain.entity.dto.response.AdminResponseDto;
 import org.springframework.http.ResponseEntity;
 

@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.reports.domain.entity;
+package com.aperepair.aperepair.reports.domain.model;
 
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 

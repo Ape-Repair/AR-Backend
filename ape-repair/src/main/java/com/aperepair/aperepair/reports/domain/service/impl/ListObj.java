@@ -117,5 +117,27 @@ public class ListObj<T> {
     public T[] getVetor() {
         return vetor;
     }
+
+    public ListObj<String> selectionSort(ListObj<String> namesArray) {
+        String aux = "";
+
+        for (int i = 0; i < namesArray.getTamanho(); i++) {
+            for (int j = 0; j < namesArray.getTamanho(); j++) {
+                String nome1 = namesArray.getElemento(i);
+                String nome2 = namesArray.getElemento(j);
+
+                String firstLetter = String.valueOf(nome1.charAt(0));
+                String secondLetter = String.valueOf(nome2.charAt(0));
+
+                if (firstLetter.compareTo(secondLetter) < 0) {
+                    aux = namesArray.getVetor()[i];
+                    namesArray.getVetor()[i] = namesArray.getVetor()[j];
+                    namesArray.getVetor()[j] = aux;
+                }
+            }
+        }
+
+        return namesArray;
+    }
 }
 

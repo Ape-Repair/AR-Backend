@@ -1,17 +1,13 @@
 package com.aperepair.aperepair.reports.domain.service.impl;
 
-import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.factory.CustomerDtoFactory;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.reports.domain.CsvFile;
-import com.aperepair.aperepair.reports.domain.entity.Admin;
-import com.aperepair.aperepair.reports.domain.entity.dto.request.AdminLoginRequestDto;
-import com.aperepair.aperepair.reports.domain.entity.dto.response.AdminLoginResponseDto;
-import com.aperepair.aperepair.reports.domain.entity.dto.response.AdminResponseDto;
+import com.aperepair.aperepair.reports.domain.model.Admin;
+import com.aperepair.aperepair.reports.domain.model.dto.request.AdminLoginRequestDto;
+import com.aperepair.aperepair.reports.domain.model.dto.response.AdminLoginResponseDto;
+import com.aperepair.aperepair.reports.domain.model.dto.response.AdminResponseDto;
 import com.aperepair.aperepair.reports.domain.repository.AdminRepository;
 import com.aperepair.aperepair.reports.domain.service.AdminService;
 import org.apache.logging.log4j.LogManager;
@@ -159,6 +155,24 @@ public class AdminServiceImpl implements AdminService {
 
         CsvFile.writeCsvFile(providersListObj);
         return ResponseEntity.status(201).build();
+    }
+
+    public ResponseEntity<ListObj<String>> selectionSort() {
+        List<Provider> providers = providerRepository.findAll();
+        ListObj<String> names = new ListObj(providers.size());
+
+        for (int i = 0; i < providers.size(); i++) {
+            names.adiciona(providers.get(i).getName());
+        }
+        if (providers.isEmpty()) return ResponseEntity.status(204).build();
+
+        return ResponseEntity.status(200).body(sortList(names));
+    }
+
+    private ListObj<String> sortList(ListObj<String> disorderedList) {
+        ListObj<String> listObj = new ListObj(disorderedList.getTamanho());
+
+        return (ListObj<String>) listObj.selectionSort(disorderedList);
     }
 
     private boolean isValidPassword(String passwordAttempt, Admin admin) {

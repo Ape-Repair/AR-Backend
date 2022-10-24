@@ -1,7 +1,6 @@
-package com.aperepair.aperepair.reports.domain;
+package com.aperepair.aperepair.reports.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.reports.domain.service.impl.ListObj;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;

@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
+import java.util.List;
 
 @Service
 public class CsvFile {
 
     private static String FILE_NAME = "registered-providers";
 
-    public static void writeCsvFile(ListObj<Provider> providers) {
+    public static void writeCsvFile(List<Provider> providers) {
         FileWriter fileWriter = null; //objeto que representa o arquivo de gravação
         Formatter formatter = null; //objeto usado para escrever no arquivo
         FILE_NAME += ".csv"; //acrescenta a extensão .csv ao arquivo
@@ -39,8 +40,8 @@ public class CsvFile {
                 );
 
         try {
-            for (int i = 0; i < providers.getTamanho(); i++) {
-                Provider p = providers.getElemento(i);
+            for (int i = 0; i < providers.size(); i++) {
+                Provider p = providers.get(i);
                 formatter.format(
                         "%s;%s;%s;%s;%s\n",
                         p.getName(),

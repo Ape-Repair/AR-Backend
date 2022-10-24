@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.reports.domain.service.impl;
 
+import com.aperepair.aperepair.authorization.domain.model.Provider;
+
 public class ListObj<T> {
 
     // 01) Declarar vetor de int:
@@ -16,7 +18,7 @@ public class ListObj<T> {
     // Cria vetor com tamanho máximo informado
     // Inicializa nroElem
     public ListObj(int tamanho) {
-        vetor = (T[]) new Object[tamanho];
+        vetor = (T[]) new String[tamanho];
         nroElem = 0;
     }
 

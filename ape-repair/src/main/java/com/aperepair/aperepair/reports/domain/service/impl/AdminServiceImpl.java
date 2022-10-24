@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
 
             Admin admin = adminRepository.findById(adminUpdated.getId()).get();
 
-            logger.info(String.format("Customer of id %d found", admin.getId()));
+            logger.info(String.format("Admin of id %d found", admin.getId()));
 
             admin.setUsername(adminUpdated.getUsername());
             admin.setPassword(encoder.encode(adminUpdated.getPassword()));
@@ -147,24 +146,26 @@ public class AdminServiceImpl implements AdminService {
 
         int capacity = providers.size();
 
-        ListObj<Provider> providersListObj = new ListObj(capacity);
+       // ListObj<Provider> providersListObj = new ListObj(capacity);
 
-        for (Provider provider : providers) {
+        /*for (Provider provider : providers) {
             providersListObj.adiciona(provider);
-        }
+        }*/
 
-        CsvFile.writeCsvFile(providersListObj);
+        CsvFile.writeCsvFile(providers);
         return ResponseEntity.status(201).build();
     }
 
     public ResponseEntity<ListObj<String>> selectionSort() {
         List<Provider> providers = providerRepository.findAll();
+
+        if (providers.isEmpty()) return ResponseEntity.status(204).build();
+
         ListObj<String> names = new ListObj(providers.size());
 
         for (int i = 0; i < providers.size(); i++) {
             names.adiciona(providers.get(i).getName());
         }
-        if (providers.isEmpty()) return ResponseEntity.status(204).build();
 
         return ResponseEntity.status(200).body(sortList(names));
     }
@@ -172,7 +173,7 @@ public class AdminServiceImpl implements AdminService {
     private ListObj<String> sortList(ListObj<String> disorderedList) {
         ListObj<String> listObj = new ListObj(disorderedList.getTamanho());
 
-        return (ListObj<String>) listObj.selectionSort(disorderedList);
+        return listObj.selectionSort(disorderedList);
     }
 
     private boolean isValidPassword(String passwordAttempt, Admin admin) {

@@ -1,6 +1,5 @@
 package com.aperepair.aperepair.reports.application.controller;
 
-import com.aperepair.aperepair.authorization.domain.model.Provider;
 import com.aperepair.aperepair.reports.domain.model.Admin;
 import com.aperepair.aperepair.reports.domain.model.dto.request.AdminLoginRequestDto;
 import com.aperepair.aperepair.reports.domain.model.dto.response.AdminLoginResponseDto;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/admins")
@@ -53,7 +51,7 @@ public class AdminController {
         return adminServiceImpl.generateCsvFile();
     }
 
-    @GetMapping("/file/order")
+    @GetMapping("/file-order")
     public ResponseEntity<ListObj<String>> selectionSort() {
         return adminServiceImpl.selectionSort();
     }

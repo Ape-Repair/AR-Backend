@@ -21,6 +21,7 @@ public class Customer {
     @Size(min = 2, max = 50)
     private String name;
 
+    @Column(name = "email", unique = true)
     @NotBlank
     @Email
     private String email;
@@ -31,6 +32,7 @@ public class Customer {
 
     private Genre genre;
 
+    @Column(name = "cpf", unique = true)
     @NotBlank
     @CPF
     private String cpf;

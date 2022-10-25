@@ -1,11 +1,9 @@
 package com.aperepair.aperepair.reports.domain.model;
 
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -16,6 +14,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "username", unique = true)
     @NotBlank
     @Size(min = 3, max = 15)
     private String username;
@@ -24,6 +23,7 @@ public class Admin {
     @Size(min = 6)
     private String password;
 
+    @JsonIgnore
     private Role role = Role.ADMIN;
 
     public Integer getId() {

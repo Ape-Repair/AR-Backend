@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
     private PasswordEncoder encoder;
 
     public ResponseEntity<AdminResponseDto> create(Admin admin) {
-        admin.setRole(Role.ADMIN);
+        if (adminRepository.existsByUsername(admin.getUsername())) return ResponseEntity.status(400).build();
 
         admin.setPassword(encoder.encode(admin.getPassword()));
         logger.info("Admin password encrypted with successfully");
@@ -40,7 +40,6 @@ public class AdminServiceImpl implements AdminService {
 
         AdminResponseDto adminResponseDto = AdminResponseDto.toDto(admin);
         logger.info(String.format("AdminResponseDto: %s registered successfully", adminResponseDto.toString()));
-
 
         return ResponseEntity.status(201).body(adminResponseDto);
     }
@@ -142,14 +141,6 @@ public class AdminServiceImpl implements AdminService {
     public ResponseEntity<Void> generateCsvFile() {
         List<Provider> providers = providerRepository.findAll();
         if (providers.isEmpty()) return ResponseEntity.noContent().build();
-
-        int capacity = providers.size();
-
-       // ListObj<Provider> providersListObj = new ListObj(capacity);
-
-        /*for (Provider provider : providers) {
-            providersListObj.adiciona(provider);
-        }*/
 
         CsvFile.writeCsvFile(providers);
         return ResponseEntity.status(201).build();

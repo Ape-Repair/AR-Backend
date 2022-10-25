@@ -32,10 +32,12 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
-        if (providerRepository.existsByCpf(provider.getCpf())
-                || providerRepository.existsByCnpj(provider.getCnpj())) {
-            return ResponseEntity.status(400).build();
-        }
+        String cpf = provider.getCpf();
+        String cnpj = provider.getCnpj();
+
+        if (thisCpfAndCnpjAreNull(cpf, cnpj)) return ResponseEntity.status(400).build();
+
+        if (thisCpfOrCnpjIsAlreadyRegistered(cpf, cnpj)) return ResponseEntity.status(400).build();
 
         provider.setPassword(encoder.encode(provider.getPassword()));
         logger.info("Provider password encrypted with successfully");
@@ -237,6 +239,21 @@ public class ProviderServiceImpl implements ProviderService {
 
     private boolean isValidPassword(String passwordAttempt, Provider provider) {
         if (encoder.matches(passwordAttempt, provider.getPassword())) return true;
+
+        return false;
+    }
+
+    private boolean thisCpfOrCnpjIsAlreadyRegistered(String cpf, String cnpj) {
+        if (providerRepository.existsByCpf(cpf)
+                || providerRepository.existsByCnpj(cnpj)) return true;
+
+        return false;
+    }
+
+    private boolean thisCpfAndCnpjAreNull(String cpf, String cnpj) {
+        if (cpf == null && cnpj == null) {
+            return true;
+        }
 
         return false;
     }

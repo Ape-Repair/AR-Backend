@@ -31,6 +31,7 @@ public class Provider {
 
     private Genre genre;
 
+    @Column(name = "cpf", unique = true)
     @CPF
     private String cpf;
 
@@ -40,6 +41,7 @@ public class Provider {
     @Column(name = "address_id")
     private Integer AddressId;
 
+    @Column(name = "cnpj", unique = true)
     @CNPJ
     private String cnpj;
 

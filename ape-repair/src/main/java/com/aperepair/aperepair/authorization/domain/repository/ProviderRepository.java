@@ -13,4 +13,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Integer> {
     Optional<Provider> findByEmail(String emailAttempt);
 
     Optional<Provider> findByCpf(String cpf);
+
+    Boolean existsByCpf(String cpf);
+
+    Boolean existsByCnpj(String cnpj);
 }

@@ -31,7 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<CustomerDto> create(Customer customer) {
-        customer.setRole(Role.CUSTOMER);
+        if (customerRepository.existsByCpf(customer.getCpf())) {
+            return ResponseEntity.status(400).build();
+        }
 
         customer.setPassword(encoder.encode(customer.getPassword()));
         logger.info("Customer password encrypted with successfully");
@@ -99,7 +101,6 @@ public class CustomerServiceImpl implements CustomerService {
 
             customer.setName(updatedCustomer.getName());
             customer.setEmail(updatedCustomer.getEmail());
-            customer.setCpf(updatedCustomer.getCpf());
             customer.setGenre(updatedCustomer.getGenre());
             customer.setPassword(encoder.encode(updatedCustomer.getPassword()));
 

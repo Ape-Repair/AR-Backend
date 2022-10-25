@@ -32,7 +32,10 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
-        provider.setRole(Role.PROVIDER);
+        if (providerRepository.existsByCpf(provider.getCpf())
+                || providerRepository.existsByCnpj(provider.getCnpj())) {
+            return ResponseEntity.status(400).build();
+        }
 
         provider.setPassword(encoder.encode(provider.getPassword()));
         logger.info("Provider password encrypted with successfully");

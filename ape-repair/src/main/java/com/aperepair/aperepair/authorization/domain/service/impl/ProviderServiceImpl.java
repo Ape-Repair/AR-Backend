@@ -159,24 +159,20 @@ public class ProviderServiceImpl implements ProviderService {
         }
 
         Provider provider = optionalProvider.get();
+
+        if (provider.getRole() != Role.PROVIDER) {
+            logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
+            return ResponseEntity.status(403).build();
+        }
+
         logger.info(String.format("Trying to login with email: [%s] - as a provider", emailAttempt));
 
         boolean valid = isValidPassword(passwordAttempt, provider);
 
-        if (valid && !isAuthenticatedProvider(provider)) {
+        if (valid) {
             loginResponseDto.setSuccess(true);
         } else {
-            if (!valid) logger.info("Password invalid!");
-
-            if (isAuthenticatedProvider(provider)) {
-                logger.info("Provider was already authenticated");
-                return ResponseEntity.status(401).body(loginResponseDto);
-            }
-
-            if (provider.getRole() != Role.PROVIDER) {
-                logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
-                return ResponseEntity.status(403).build();
-            }
+            logger.info("Password invalid!");
 
             return ResponseEntity.status(401).body(loginResponseDto);
         }
@@ -202,11 +198,17 @@ public class ProviderServiceImpl implements ProviderService {
         }
 
         Provider provider = optionalProvider.get();
+
+        if (provider.getRole() != Role.PROVIDER) {
+            logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
+            return ResponseEntity.status(403).build();
+        }
+
         logger.info(String.format("Initiating logout from email provider [%s]", emailAttempt));
 
         boolean valid = isValidPassword(passwordAttempt, provider);
 
-        if (valid && isAuthenticatedProvider(provider) && provider.getRole().equals(Role.PROVIDER)) {
+        if (valid && isAuthenticatedProvider(provider)) {
             logoutResponse.setSuccess(true);
             provider.setAuthenticated(false);
 
@@ -220,11 +222,6 @@ public class ProviderServiceImpl implements ProviderService {
             if (!isAuthenticatedProvider(provider)) {
                 logger.info("The provider is not authenticated");
                 return ResponseEntity.status(401).body(logoutResponse);
-            }
-
-            if (provider.getRole() != Role.PROVIDER) {
-                logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
-                return ResponseEntity.status(403).build();
             }
 
             return ResponseEntity.status(401).body(logoutResponse);

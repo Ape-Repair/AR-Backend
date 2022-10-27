@@ -117,6 +117,12 @@ public class AdminServiceImpl implements AdminService {
         }
 
         Admin admin = optionalAdmin.get();
+
+        if (admin.getRole() != Role.ADMIN) {
+            logger.fatal(String.format("[%S] - Incorrect role for this flow", admin.getRole()));
+            return ResponseEntity.status(403).build();
+        }
+
         logger.info(String.format("Trying to login with username: [%s] - as a admin", usernameAttempt));
 
         boolean valid = isValidPassword(passwordAttempt, admin);
@@ -124,12 +130,7 @@ public class AdminServiceImpl implements AdminService {
         if (valid) {
             adminLoginResponseDto.setSuccess(true);
         } else {
-            if (!valid) logger.info("Password invalid!");
-
-            if (admin.getRole() != Role.ADMIN) {
-                logger.fatal(String.format("[%S] - Incorrect role for this flow", admin.getRole()));
-                return ResponseEntity.status(403).build();
-            }
+            logger.info("Password invalid!");
 
             return ResponseEntity.status(401).body(adminLoginResponseDto);
         }

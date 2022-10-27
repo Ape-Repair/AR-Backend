@@ -152,24 +152,20 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         Customer customer = optionalCustomer.get();
+
+        if (customer.getRole() != Role.CUSTOMER) {
+            logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
+            return ResponseEntity.status(403).build();
+        }
+
         logger.info(String.format("Trying to login with email: [%s] - as a customer", emailAttempt));
 
         boolean valid = isValidPassword(passwordAttempt, customer);
 
-        if (valid && !isAuthenticatedCustomer(customer)) {
+        if (valid) {
             loginResponseDto.setSuccess(true);
         } else {
-            if (!valid) logger.info("Password invalid!");
-
-            if (isAuthenticatedCustomer(customer)) {
-                logger.info("Customer was already authenticated");
-                return ResponseEntity.status(401).body(loginResponseDto);
-            }
-
-            if (customer.getRole() != Role.CUSTOMER) {
-                logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
-                return ResponseEntity.status(403).build();
-            }
+            logger.info("Password invalid!");
 
             return ResponseEntity.status(401).body(loginResponseDto);
         }
@@ -197,11 +193,17 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         Customer customer = optionalCustomer.get();
+
+        if (customer.getRole() != Role.CUSTOMER) {
+            logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
+            return ResponseEntity.status(403).build();
+        }
+
         logger.info(String.format("Initiating logout from email customer [%s]", emailAttempt));
 
         boolean valid = isValidPassword(passwordAttempt, customer);
 
-        if (valid && isAuthenticatedCustomer(customer) && customer.getRole().equals(Role.CUSTOMER)) {
+        if (valid && isAuthenticatedCustomer(customer)) {
             logoutResponse.setSuccess(true);
             customer.setAuthenticated(false);
 
@@ -215,11 +217,6 @@ public class CustomerServiceImpl implements CustomerService {
             if (!isAuthenticatedCustomer(customer)) {
                 logger.info("The customer is not authenticated");
                 return ResponseEntity.status(401).body(logoutResponse);
-            }
-
-            if (customer.getRole() != Role.CUSTOMER) {
-                logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
-                return ResponseEntity.status(403).build();
             }
 
             return ResponseEntity.status(401).body(logoutResponse);

@@ -37,11 +37,11 @@ public class Customer {
     @CPF
     private String cpf;
 
-    @Column(name = "telephone_id")
-    private Integer telephoneId;
+    @OneToOne
+    private Telephone telephone;
 
-    @Column(name = "address_id")
-    private Integer addressId;
+    @OneToOne
+    private Address address;
 
     @JsonIgnore
     private Role role = Role.CUSTOMER;
@@ -105,20 +105,20 @@ public class Customer {
         this.cpf = cpf;
     }
 
-    public Integer getTelephoneId() {
-        return telephoneId;
+    public Telephone getTelephone() {
+        return telephone;
     }
 
-    public void setTelephoneId(Integer telephoneId) {
-        this.telephoneId = telephoneId;
+    public void setTelephone(Telephone telephone) {
+        this.telephone = telephone;
     }
 
-    public Integer getAddressId() {
-        return addressId;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Boolean getAuthenticated() {

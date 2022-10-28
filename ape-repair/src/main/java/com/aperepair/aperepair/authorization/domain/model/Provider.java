@@ -35,11 +35,11 @@ public class Provider {
     @CPF
     private String cpf;
 
-    @Column(name = "telephone_id")
-    private Integer telephoneId;
+    @OneToOne
+    private Telephone telephone;
 
-    @Column(name = "address_id")
-    private Integer AddressId;
+    @OneToOne
+    private Address address;
 
     @Column(name = "cnpj", unique = true)
     @CNPJ
@@ -105,22 +105,6 @@ public class Provider {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public Integer getTelephoneId() {
-        return telephoneId;
-    }
-
-    public void setTelephoneId(Integer telephoneId) {
-        this.telephoneId = telephoneId;
-    }
-
-    public Integer getAddressId() {
-        return AddressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        AddressId = addressId;
     }
 
     public String getCnpj() {

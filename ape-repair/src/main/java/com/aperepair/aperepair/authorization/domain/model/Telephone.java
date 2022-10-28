@@ -1,8 +1,6 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity

@@ -17,4 +17,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Integer> {
     Boolean existsByCpf(String cpf);
 
     Boolean existsByCnpj(String cnpj);
+
+    Optional<List<Provider>> findByGenreIsFAndIsAuthenticatedTrue();
+
+    List<Provider> findByIsAuthenticatedTrue();
 }

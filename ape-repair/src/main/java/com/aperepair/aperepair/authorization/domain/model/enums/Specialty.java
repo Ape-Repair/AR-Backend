@@ -5,13 +5,5 @@ public enum Specialty {
 
     PLUMBER,
 
-    PAINTER,
-
-    BRICKLAYER,
-
-    LOCKSMITH,
-
-    TEC_AIR_CONDITIONING,
-
     GENERAL_SERVICES
 }

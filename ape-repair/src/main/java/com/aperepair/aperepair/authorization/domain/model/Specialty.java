@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
+import com.aperepair.aperepair.authorization.domain.model.enums.SpecialtyTypes;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,10 +11,10 @@ public class Specialty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Specialty specialty;
+    private SpecialtyTypes specialtyType;
 
     @ManyToOne
-    private Integer providerId;
+    private Provider provider;
 
     public Integer getId() {
         return id;
@@ -22,19 +24,19 @@ public class Specialty {
         this.id = id;
     }
 
-    public Specialty getSpecialty() {
-        return specialty;
+    public SpecialtyTypes getSpecialtyType() {
+        return specialtyType;
     }
 
-    public void setSpecialty(Specialty specialty) {
-        this.specialty = specialty;
+    public void setSpecialtyType(SpecialtyTypes specialtyType) {
+        this.specialtyType = specialtyType;
     }
 
-    public Integer getProviderId() {
-        return providerId;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setProviderId(Integer providerId) {
-        this.providerId = providerId;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 }

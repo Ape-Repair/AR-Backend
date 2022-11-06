@@ -1,14 +1,20 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.LoginDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.factory.CustomerDtoFactory;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.response.ProfilePictureCreationResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +32,23 @@ import java.util.Optional;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    //TODO(1): refatorar service para retornar dto e não ResponseEntity
+    //TODO(2): criar exceptionHandler para personalizar retornos e exceções
+
     @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private AmazonS3 amazonS3;
+
     @Override
     public ResponseEntity<CustomerDto> create(Customer customer) {
-        if (customerRepository.existsByCpf(customer.getCpf())) {
+        if (customerRepository.existsByCpf(customer.getCpf()) &&
+                customerRepository.existsByEmail(customer.getEmail())
+        ) {
             return ResponseEntity.status(400).build();
         }
 
@@ -221,6 +238,47 @@ public class CustomerServiceImpl implements CustomerService {
 
             return ResponseEntity.status(401).body(logoutResponse);
         }
+    }
+
+    @Override
+    public ProfilePictureCreationResponseDto profilePictureCreation(
+            ProfilePictureCreationRequestDto request
+    ) throws IOException {
+        logger.info(String.format("Starting creation profile picture for user email - [%s]",
+                request.getEmail()));
+
+        ProfilePictureCreationResponseDto response = new ProfilePictureCreationResponseDto(false);
+
+        InputStream imageInputStream = null;
+
+        try {
+            byte[] imageByteArray = Base64.decodeBase64(request.getImage().getBytes());
+
+            imageInputStream = new ByteArrayInputStream(imageByteArray);
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("image/png");
+
+            amazonS3.putObject(new PutObjectRequest("ar-profile-pictures",
+                            (request.getEmail() + "/image.png"),
+                            imageInputStream, metadata
+                    )
+            );
+
+            response.setSuccess(true);
+            logger.info(String.format("Profile picture created successfully for user email - [%s]",
+                    request.getEmail()));
+
+        } catch (Exception e) {
+            logger.error(String.format("Failed to update image of email: [%s] - in external bucket",
+                    request.getEmail()));
+            e.printStackTrace();
+            throw e;
+        } finally {
+            imageInputStream.close();
+        }
+
+        return response;
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {

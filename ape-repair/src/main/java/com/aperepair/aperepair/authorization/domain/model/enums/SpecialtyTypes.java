@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.authorization.domain.model.enums;
 
-public enum Specialty {
+public enum SpecialtyTypes {
     ELECTRICIAN,
 
     PLUMBER,

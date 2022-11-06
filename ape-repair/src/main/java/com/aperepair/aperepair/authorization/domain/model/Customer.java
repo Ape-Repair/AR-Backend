@@ -4,7 +4,6 @@ import com.aperepair.aperepair.authorization.domain.model.enums.Genre;
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CPF;
-
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

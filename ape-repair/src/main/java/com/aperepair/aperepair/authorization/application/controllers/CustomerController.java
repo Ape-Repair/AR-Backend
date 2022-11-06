@@ -2,15 +2,18 @@ package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.LoginDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.service.impl.CustomerServiceImpl;
+import com.aperepair.aperepair.authorization.domain.model.dto.response.ProfilePictureCreationResponseDto;
+import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,21 +21,21 @@ import java.util.List;
 public class CustomerController {
 
     @Autowired
-    private CustomerServiceImpl customerServiceImpl;
+    private CustomerService customerService;
 
     @PostMapping
     public ResponseEntity<CustomerDto> create(@RequestBody @Valid Customer newCustomer) {
-        return customerServiceImpl.create(newCustomer);
+        return customerService.create(newCustomer);
     }
 
     @GetMapping
     public ResponseEntity<List<CustomerDto>> findAll() {
-        return customerServiceImpl.findAll();
+        return customerService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> findById(@PathVariable Integer id) {
-        return customerServiceImpl.findById(id);
+        return customerService.findById(id);
     }
 
     @PutMapping("/{id}")
@@ -40,21 +43,29 @@ public class CustomerController {
             @PathVariable Integer id,
             @RequestBody @Valid Customer updatedCustomer
     ) {
-        return customerServiceImpl.update(id, updatedCustomer);
+        return customerService.update(id, updatedCustomer);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return customerServiceImpl.delete(id);
+        return customerService.delete(id);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
-        return customerServiceImpl.login(loginDto);
+        return customerService.login(loginDto);
     }
 
     @DeleteMapping("/in/logout")
     public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginDto loginDto) {
-        return customerServiceImpl.logout(loginDto);
+        return customerService.logout(loginDto);
+    }
+
+    @PutMapping("/profile-picture")
+    public ResponseEntity<ProfilePictureCreationResponseDto> profilePictureCreation(
+            @RequestBody @Valid ProfilePictureCreationRequestDto request
+    ) throws IOException {
+        ProfilePictureCreationResponseDto response = customerService.profilePictureCreation(request);
+        return ResponseEntity.status(201).body(response);
     }
 }

@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.model.dto.LoginDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.ProviderDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;

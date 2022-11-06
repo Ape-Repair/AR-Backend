@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.model.dto.LoginDto;
+import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.ProviderDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/providers")
 public class ProviderController {
-
+//TODO: Refatorar controllers para chamar a interface invés do service impl;
     @Autowired
     private ProviderServiceImpl providerServiceImpl;
 

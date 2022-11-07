@@ -46,9 +46,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<CustomerDto> create(Customer customer) {
-        if (customerRepository.existsByCpf(customer.getCpf()) &&
-                customerRepository.existsByEmail(customer.getEmail())
-        ) {
+        String cpf = customer.getCpf();
+        String email = customer.getEmail();
+        String phone = customer.getPhone();
+
+        if (thisCpfOrEmailOrPhoneIsAlreadyRegistered(cpf, email, phone)) {
+            logger.error(String.format("Customer: %s already registered", customer.toString()));
             return ResponseEntity.status(400).build();
         }
 
@@ -119,6 +122,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setName(updatedCustomer.getName());
             customer.setEmail(updatedCustomer.getEmail());
             customer.setGenre(updatedCustomer.getGenre());
+            customer.setPhone(updatedCustomer.getPhone());
             customer.setPassword(encoder.encode(updatedCustomer.getPassword()));
 
             customerRepository.save(customer);
@@ -289,6 +293,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     private boolean isValidPassword(String passwordAttempt, Customer customer) {
         if (encoder.matches(passwordAttempt, customer.getPassword())) return true;
+
+        return false;
+    }
+
+    private boolean thisCpfOrEmailOrPhoneIsAlreadyRegistered(String cpf, String email, String phone) {
+        if (customerRepository.existsByCpf(cpf) ||
+                customerRepository.existsByEmail(email) ||
+                customerRepository.existsByPhone(phone)) return true;
 
         return false;
     }

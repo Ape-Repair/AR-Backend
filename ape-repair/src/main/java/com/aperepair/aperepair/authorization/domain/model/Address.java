@@ -5,6 +5,7 @@ import com.aperepair.aperepair.authorization.domain.model.enums.Uf;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -15,11 +16,11 @@ public class Address {
     private Integer id;
 
     @NotBlank
-    @Size(min = 2, max = 30)
+    @Size(min = 2, max = 50)
     private String street;
 
     @Column(name = "street_number")
-    @NotBlank
+    @NotNull
     @Min(value = 1)
     private Integer streetNumber;
 
@@ -38,7 +39,7 @@ public class Address {
     @Size(min = 3, max = 30)
     private String city;
 
-    @NotBlank
+    @NotNull
     private Uf uf;
 
     public Integer getId() {

@@ -18,5 +18,7 @@ public interface ProviderRepository extends JpaRepository<Provider, Integer> {
 
     Boolean existsByCnpj(String cnpj);
 
+    Boolean existsByPhone(String phone);
+
     List<Provider> findByIsAuthenticatedTrue();
 }

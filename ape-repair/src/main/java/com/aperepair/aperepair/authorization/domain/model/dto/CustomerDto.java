@@ -19,15 +19,18 @@ public class CustomerDto {
     @CPF
     private String cpf;
 
+    private String phone;
+
     private Role role;
 
-    private Boolean isAuthenticated;
+    private boolean isAuthenticated;
 
-    public CustomerDto(String name, String email, Genre genre, String cpf, Role role, Boolean isAuthenticated) {
+    public CustomerDto(String name, String email, Genre genre, String cpf, String phone, Role role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
         this.cpf = cpf;
+        this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
     }
@@ -62,6 +65,14 @@ public class CustomerDto {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Role getRole() {

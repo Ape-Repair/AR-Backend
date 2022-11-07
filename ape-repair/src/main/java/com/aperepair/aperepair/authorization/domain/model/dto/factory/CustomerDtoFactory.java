@@ -13,6 +13,7 @@ public class CustomerDtoFactory {
                 customer.getEmail(),
                 customer.getGenre(),
                 customer.getCpf(),
+                customer.getPhone(),
                 customer.getRole(),
                 customer.getAuthenticated()
         );

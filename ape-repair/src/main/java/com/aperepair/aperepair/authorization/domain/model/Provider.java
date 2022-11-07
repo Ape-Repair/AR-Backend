@@ -35,8 +35,10 @@ public class Provider {
     @CPF
     private String cpf;
 
-    @OneToOne
-    private Telephone telephone;
+    @NotBlank
+    @Column(name = "phone", unique = true)
+    @Size(min = 10, max = 25)
+    private String phone;
 
     @OneToOne
     private Address address;
@@ -113,6 +115,14 @@ public class Provider {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Boolean getAuthenticated() {

@@ -4,9 +4,11 @@ import com.aperepair.aperepair.authorization.domain.model.enums.Genre;
 import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CPF;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -36,17 +38,21 @@ public class Customer {
     @CPF
     private String cpf;
 
-    @OneToOne
-    private Telephone telephone;
+    @NotBlank
+    @Column(name = "phone", unique = true)
+    @Size(min = 10, max = 25)
+    private String phone;
 
-    @OneToOne
-    private Address address;
+    //TODO (PRIORITARIO) - Ajustar o código para criar uma relação entre Customer e Address (2)
+    //TODO (Ajustar collection do postman) e testar(3)... Conectar com Azure (1)
+//    @OneToOne
+//    private Address address;
 
     @JsonIgnore
     private Role role = Role.CUSTOMER;
 
     @Column(name = "is_authenticated")
-    private Boolean isAuthenticated = false;
+    private boolean isAuthenticated;
 
     public Integer getId() {
         return id;
@@ -104,21 +110,21 @@ public class Customer {
         this.cpf = cpf;
     }
 
-    public Telephone getTelephone() {
-        return telephone;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTelephone(Telephone telephone) {
-        this.telephone = telephone;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
+//    public Address getAddress() {
+//        return address;
+//    }
+//
+//    public void setAddress(Address address) {
+//        this.address = address;
+//    }
 
     public Boolean getAuthenticated() {
         return isAuthenticated;
@@ -126,5 +132,14 @@ public class Customer {
 
     public void setAuthenticated(Boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                ", email='" + email + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", phone'" + phone + '\'' +
+                '}';
     }
 }

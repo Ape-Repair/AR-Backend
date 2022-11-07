@@ -34,10 +34,11 @@ public class ProviderServiceImpl implements ProviderService {
     public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
         String cpf = provider.getCpf();
         String cnpj = provider.getCnpj();
+        String phone = provider.getPhone();
 
         if (thisCpfAndCnpjAreNull(cpf, cnpj)) return ResponseEntity.status(400).build();
 
-        if (thisCpfOrCnpjIsAlreadyRegistered(cpf, cnpj)) return ResponseEntity.status(400).build();
+        if (thisCpfOrCnpjOrPhoneIsAlreadyRegistered(cpf, cnpj, phone)) return ResponseEntity.status(400).build();
 
         provider.setPassword(encoder.encode(provider.getPassword()));
         logger.info("Provider password encrypted with successfully");
@@ -106,6 +107,7 @@ public class ProviderServiceImpl implements ProviderService {
             provider.setEmail(updatedProvider.getEmail());
             provider.setCpf(updatedProvider.getCpf());
             provider.setGenre(updatedProvider.getGenre());
+            provider.setPhone(updatedProvider.getPhone());
             provider.setCnpj(updatedProvider.getCnpj());
             provider.setPassword(encoder.encode(updatedProvider.getPassword()));
 
@@ -240,9 +242,10 @@ public class ProviderServiceImpl implements ProviderService {
         return false;
     }
 
-    private boolean thisCpfOrCnpjIsAlreadyRegistered(String cpf, String cnpj) {
-        if (providerRepository.existsByCpf(cpf)
-                || providerRepository.existsByCnpj(cnpj)) return true;
+    private boolean thisCpfOrCnpjOrPhoneIsAlreadyRegistered(String cpf, String cnpj, String phone) {
+        if (providerRepository.existsByCpf(cpf) ||
+                providerRepository.existsByCnpj(cnpj) ||
+                providerRepository.existsByPhone(phone)) return true;
 
         return false;
     }

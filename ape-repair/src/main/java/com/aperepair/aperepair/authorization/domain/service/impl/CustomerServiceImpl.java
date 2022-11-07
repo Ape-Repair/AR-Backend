@@ -32,8 +32,8 @@ import java.util.Optional;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    //TODO(1): refatorar service para retornar dto e não ResponseEntity
-    //TODO(2): criar exceptionHandler para personalizar retornos e exceções
+    //TODO(1 (Desejavel)): refatorar service para retornar dto e não ResponseEntity
+    //TODO(2 (depende do 1) ): criar exceptionHandler para personalizar retornos e exceções
 
     @Autowired
     private CustomerRepository customerRepository;

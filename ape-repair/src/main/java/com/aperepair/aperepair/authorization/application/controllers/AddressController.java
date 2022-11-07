@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Address;
-import com.aperepair.aperepair.authorization.domain.service.impl.AddressServiceImpl;
+import com.aperepair.aperepair.authorization.domain.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +13,20 @@ import java.util.List;
 public class AddressController {
 
     @Autowired
-    private AddressServiceImpl addressServiceImpl;
+    private AddressService addressService;
 
     @PostMapping
     public ResponseEntity<Address> create(@RequestBody @Valid Address newAddress) {
-        return addressServiceImpl.create(newAddress);
+        return addressService.create(newAddress);
     }
     @GetMapping
     public ResponseEntity<List<Address>> findAll() {
-        return addressServiceImpl.findAll();
+        return addressService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Address> findById(@PathVariable Integer id) {
-        return addressServiceImpl.findById(id);
+        return addressService.findById(id);
     }
 
     @PutMapping("/update/{id}")
@@ -34,11 +34,11 @@ public class AddressController {
             @PathVariable Integer id,
             @RequestBody @Valid Address updatedAddress
     ) {
-        return addressServiceImpl.update(id, updatedAddress);
+        return addressService.update(id, updatedAddress);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return addressServiceImpl.delete(id);
+        return addressService.delete(id);
     }
 }

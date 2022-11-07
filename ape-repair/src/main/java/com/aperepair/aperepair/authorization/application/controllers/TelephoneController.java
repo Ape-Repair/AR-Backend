@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Telephone;
-import com.aperepair.aperepair.authorization.domain.service.impl.TelephoneServiceImpl;
+import com.aperepair.aperepair.authorization.domain.service.TelephoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,21 +13,21 @@ import java.util.List;
 public class TelephoneController {
 
     @Autowired
-    private TelephoneServiceImpl telephoneServiceImpl;
+    private TelephoneService telephoneService;
 
     @PostMapping
     public ResponseEntity<Telephone> create(@RequestBody @Valid Telephone newTelephone) {
-        return telephoneServiceImpl.create(newTelephone);
+        return telephoneService.create(newTelephone);
     }
 
     @GetMapping
     public ResponseEntity<List<Telephone>> findAll() {
-        return telephoneServiceImpl.findAll();
+        return telephoneService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Telephone> findById(@PathVariable Integer id) {
-        return telephoneServiceImpl.findById(id);
+        return telephoneService.findById(id);
     }
 
     @PutMapping("/update/{id}")
@@ -35,11 +35,11 @@ public class TelephoneController {
             @PathVariable Integer id,
             @RequestBody @Valid Telephone updatedTelephone
     ) {
-        return telephoneServiceImpl.update(id, updatedTelephone);
+        return telephoneService.update(id, updatedTelephone);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return telephoneServiceImpl.delete(id);
+        return telephoneService.delete(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Specialty;
-import com.aperepair.aperepair.authorization.domain.service.impl.SpecialtyServiceImpl;
+import com.aperepair.aperepair.authorization.domain.service.SpecialtyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +14,22 @@ import java.util.List;
 public class SpecialtyController {
 
     @Autowired
-    private SpecialtyServiceImpl specialtyServiceImpl;
+    private SpecialtyService specialtyService;
 
 
     @PostMapping
     public ResponseEntity<Specialty> create(@RequestBody @Valid Specialty newSpecialty) {
-        return specialtyServiceImpl.create(newSpecialty);
+        return specialtyService.create(newSpecialty);
     }
 
     @GetMapping
     public ResponseEntity<List<Specialty>> findAll() {
-        return specialtyServiceImpl.findAll();
+        return specialtyService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Specialty> findById(@PathVariable Integer id) {
-        return specialtyServiceImpl.findById(id);
+        return specialtyService.findById(id);
     }
 
     @PutMapping("/update/{id}")
@@ -37,11 +37,11 @@ public class SpecialtyController {
             @PathVariable Integer id,
             @RequestBody @Valid Specialty updatedSpecialty
     ) {
-        return specialtyServiceImpl.update(id, updatedSpecialty);
+        return specialtyService.update(id, updatedSpecialty);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return specialtyServiceImpl.delete(id);
+        return specialtyService.delete(id);
     }
 }

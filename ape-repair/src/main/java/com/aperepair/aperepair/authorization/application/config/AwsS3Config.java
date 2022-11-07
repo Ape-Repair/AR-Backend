@@ -25,7 +25,7 @@ public class AwsS3Config {
     @Bean
     public AmazonS3 AutheticationS3() {
 
-        logger.info("Trying to authenticating Aws S3...");
+        logger.info("Authenticating on Amazon S3...");
 
         try {
             return AmazonS3ClientBuilder
@@ -34,7 +34,7 @@ public class AwsS3Config {
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(key, secret)))
                     .build();
         } catch (Exception e) {
-            logger.error("Erro ao autenticar no S3");
+            logger.error("Error authenticating on S3");
             throw e;
         }
     }

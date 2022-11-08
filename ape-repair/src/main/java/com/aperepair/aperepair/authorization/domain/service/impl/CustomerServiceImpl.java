@@ -4,14 +4,14 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.factory.CustomerDtoFactory;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.ProfilePictureCreationResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.dto.response.CustomerResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
+import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.ProfilePictureCreationResponseDto;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
     private AmazonS3 amazonS3;
 
     @Override
-    public ResponseEntity<CustomerDto> create(Customer customer) {
+    public ResponseEntity<CustomerResponseDto> create(Customer customer) {
 
         //TODO: ajustar para atualizar id do address
 
@@ -66,15 +66,15 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.save(customer);
 
-        CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
-        logger.info(String.format("CustomerDto: %s registered successfully", customerDto.toString()));
+        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
+        logger.info(String.format("CustomerDto: %s registered successfully", customerResponseDto.toString()));
 
 
-        return ResponseEntity.status(201).body(customerDto);
+        return ResponseEntity.status(201).body(customerResponseDto);
     }
 
     @Override
-    public ResponseEntity<List<CustomerDto>> findAll() {
+    public ResponseEntity<List<CustomerResponseDto>> findAll() {
         List<Customer> customers = new ArrayList(customerRepository.findAll());
 
         if (customers.isEmpty()) {
@@ -82,11 +82,11 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(204).build();
         }
 
-        List<CustomerDto> customersDto = new ArrayList();
+        List<CustomerResponseDto> customersDto = new ArrayList();
 
         for (Customer customer : customers) {
-            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
-            customersDto.add(customerDto);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
+            customersDto.add(customerResponseDto);
         }
 
         logger.info("Success in finding registered customers");
@@ -94,16 +94,16 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<CustomerDto> findById(Integer id) {
+    public ResponseEntity<CustomerResponseDto> findById(Integer id) {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
             logger.info(String.format("Customer of id %d found", id));
 
             Customer customer = optionalCustomer.get();
 
-            CustomerDto customerDto = CustomerDtoFactory.toDto(customer);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
 
-            return ResponseEntity.status(200).body(customerDto);
+            return ResponseEntity.status(200).body(customerResponseDto);
         }
 
         logger.error(String.format("Customer of id %d not found", id));
@@ -111,7 +111,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer) {
+    public ResponseEntity<CustomerResponseDto> update(Integer id, Customer updatedCustomer) {
         if (customerRepository.existsById(id)) {
 
             Customer customer = customerRepository.findById(id).get();
@@ -132,9 +132,9 @@ public class CustomerServiceImpl implements CustomerService {
             customerRepository.save(customer);
             logger.info(String.format("Updated customer of id: %d registration data!", customer.getId()));
 
-            CustomerDto updatedCustomerDto = CustomerDtoFactory.toDto(customer);
+            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toDto(customer);
 
-            return ResponseEntity.status(200).body(updatedCustomerDto);
+            return ResponseEntity.status(200).body(updatedCustomerResponseDto);
         }
 
         logger.error(String.format("Customer of id %d not found", id));
@@ -143,7 +143,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<Boolean> delete(Integer id) {
-        Boolean success = false;
+        boolean success = false;
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findById(id).get();
             logger.info(String.format("Customer id %d found", id));
@@ -162,11 +162,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
+    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
 
-        String emailAttempt = loginDto.getEmail();
-        String passwordAttempt = loginDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         logger.info(String.format("Searching for customer by email: [%s]", emailAttempt));
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
@@ -204,11 +204,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<LogoutResponseDto> logout(LoginDto loginDto) {
+    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = loginDto.getEmail();
-        String passwordAttempt = loginDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
@@ -248,6 +248,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    //TODO: Colocar esse método em uma classe separada
     @Override
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request

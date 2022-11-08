@@ -1,13 +1,13 @@
-package com.aperepair.aperepair.authorization.domain.model.dto.request;
+package com.aperepair.aperepair.authorization.domain.dto.request;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class LoginDto {
+public class LoginRequestDto {
 
     @Email
     private String email;
@@ -19,7 +19,7 @@ public class LoginDto {
     @NotNull
     private Role role;
 
-    public LoginDto(String email, String password, Role role) {
+    public LoginRequestDto(String email, String password, Role role) {
         this.email = email;
         this.password = password;
         this.role = role;

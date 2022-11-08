@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.reports.domain.model.dto.response;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.reports.domain.model.Admin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,5 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
-import com.aperepair.aperepair.authorization.domain.model.enums.Genre;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;

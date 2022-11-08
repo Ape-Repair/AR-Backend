@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.domain.model.dto.request;
+package com.aperepair.aperepair.authorization.domain.dto.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

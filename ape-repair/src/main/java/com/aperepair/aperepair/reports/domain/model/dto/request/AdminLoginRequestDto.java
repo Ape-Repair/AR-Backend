@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.reports.domain.model.dto.request;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 
 public class AdminLoginRequestDto {
 

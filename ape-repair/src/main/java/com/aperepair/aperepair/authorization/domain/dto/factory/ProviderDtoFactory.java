@@ -1,14 +1,14 @@
-package com.aperepair.aperepair.authorization.domain.model.dto.factory;
+package com.aperepair.aperepair.authorization.domain.dto.factory;
 
+import com.aperepair.aperepair.authorization.domain.dto.response.ProviderResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.model.dto.ProviderDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ProviderDtoFactory {
 
-    public static ProviderDto toDto(Provider provider) {
-        ProviderDto providerDto = new ProviderDto(
+    public static ProviderResponseDto toDto(Provider provider) {
+        ProviderResponseDto providerResponseDto = new ProviderResponseDto(
                 provider.getName(),
                 provider.getEmail(),
                 provider.getGenre(),
@@ -17,7 +17,7 @@ public class ProviderDtoFactory {
         );
 
         logger.info("Provider transformed to DTO with successfully");
-        return providerDto;
+        return providerResponseDto;
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderDtoFactory.class.getName());

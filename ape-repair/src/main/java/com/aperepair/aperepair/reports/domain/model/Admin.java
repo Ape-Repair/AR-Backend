@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.reports.domain.model;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;

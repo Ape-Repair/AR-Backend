@@ -1,33 +1,32 @@
 package com.aperepair.aperepair.authorization.domain.service;
 
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.ProfilePictureCreationResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.CustomerResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.ProfilePictureCreationResponseDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface CustomerService {
 
-    ResponseEntity<CustomerDto> create(Customer customer);
+    ResponseEntity<CustomerResponseDto> create(Customer customer);
 
-    ResponseEntity<List<CustomerDto>> findAll();
+    ResponseEntity<List<CustomerResponseDto>> findAll();
 
-    ResponseEntity<CustomerDto> findById(Integer id);
+    ResponseEntity<CustomerResponseDto> findById(Integer id);
 
-    ResponseEntity<CustomerDto> update(Integer id, Customer updatedCustomer);
+    ResponseEntity<CustomerResponseDto> update(Integer id, Customer updatedCustomer);
 
     ResponseEntity<Boolean> delete(Integer id);
 
-    ResponseEntity<LoginResponseDto> login(LoginDto loginDto);
+    ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto);
 
-    ResponseEntity<LogoutResponseDto> logout(LoginDto loginDto);
+    ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto);
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request)
             throws IOException;

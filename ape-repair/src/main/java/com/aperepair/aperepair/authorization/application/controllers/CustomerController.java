@@ -1,12 +1,12 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.domain.model.dto.CustomerDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.ProfilePictureCreationResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.CustomerResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.ProfilePictureCreationResponseDto;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,22 +26,22 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<CustomerDto> create(@RequestBody @Valid Customer newCustomer) {
+    public ResponseEntity<CustomerResponseDto> create(@RequestBody @Valid Customer newCustomer) {
         return customerService.create(newCustomer);
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerDto>> findAll() {
+    public ResponseEntity<List<CustomerResponseDto>> findAll() {
         return customerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDto> findById(@PathVariable Integer id) {
+    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Integer id) {
         return customerService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerDto> update(
+    public ResponseEntity<CustomerResponseDto> update(
             @PathVariable Integer id,
             @RequestBody @Valid Customer updatedCustomer
     ) {
@@ -54,13 +54,13 @@ public class CustomerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
-        return customerService.login(loginDto);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        return customerService.login(loginRequestDto);
     }
 
     @DeleteMapping("/in/logout")
-    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginDto loginDto) {
-        return customerService.logout(loginDto);
+    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        return customerService.logout(loginRequestDto);
     }
 
     @PutMapping("/profile-picture")

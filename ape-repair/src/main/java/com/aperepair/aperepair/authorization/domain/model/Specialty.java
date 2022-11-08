@@ -1,7 +1,5 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.SpecialtyTypes;
-
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +9,7 @@ public class Specialty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    //TODO: Avaliar a necessidade desta entidade e a regra de um prestador tem uma ou mais especialidades
     private String specialtyType;
 
     @ManyToOne

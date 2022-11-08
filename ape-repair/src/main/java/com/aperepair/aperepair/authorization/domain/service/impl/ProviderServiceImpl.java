@@ -1,12 +1,12 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.model.dto.request.LoginDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.ProviderDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.factory.ProviderDtoFactory;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.domain.service.ProviderService;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +31,7 @@ public class ProviderServiceImpl implements ProviderService {
     private PasswordEncoder encoder;
 
     @Override
-    public ResponseEntity<ProviderDto> create(@RequestBody Provider provider) {
+    public ResponseEntity<ProviderResponseDto> create(@RequestBody Provider provider) {
         String cpf = provider.getCpf();
         String cnpj = provider.getCnpj();
         String phone = provider.getPhone();
@@ -47,14 +47,14 @@ public class ProviderServiceImpl implements ProviderService {
 
         providerRepository.save(provider);
 
-        ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
-        logger.info(String.format("Provider: %s registered successfully", providerDto.toString()));
+        ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+        logger.info(String.format("Provider: %s registered successfully", providerResponseDto.toString()));
 
-        return ResponseEntity.status(201).body(providerDto);
+        return ResponseEntity.status(201).body(providerResponseDto);
     }
 
     @Override
-    public ResponseEntity<List<ProviderDto>> findAll() {
+    public ResponseEntity<List<ProviderResponseDto>> findAll() {
         List<Provider> providers = new ArrayList(providerRepository.findAll());
 
         if (providers.isEmpty()) {
@@ -62,28 +62,28 @@ public class ProviderServiceImpl implements ProviderService {
             return ResponseEntity.status(204).build();
         }
 
-        List<ProviderDto> providerDtos = new ArrayList();
+        List<ProviderResponseDto> providerResponseDtos = new ArrayList();
 
         for (Provider provider : providers) {
-            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
-            providerDtos.add(providerDto);
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+            providerResponseDtos.add(providerResponseDto);
         }
 
         logger.info("Success in finding registered providers");
-        return ResponseEntity.status(200).body(providerDtos);
+        return ResponseEntity.status(200).body(providerResponseDtos);
     }
 
     @Override
-    public ResponseEntity<ProviderDto> findById(Integer id) {
+    public ResponseEntity<ProviderResponseDto> findById(Integer id) {
         if (providerRepository.existsById(id)) {
             Optional<Provider> optionalProvider = providerRepository.findById(id);
             logger.info(String.format("Provider of id %d found", id));
 
             Provider provider = optionalProvider.get();
 
-            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
 
-            return ResponseEntity.status(200).body(providerDto);
+            return ResponseEntity.status(200).body(providerResponseDto);
         }
 
         logger.error(String.format("Provider of id %d not found", id));
@@ -91,7 +91,7 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ResponseEntity<ProviderDto> update(Integer id, Provider updatedProvider) {
+    public ResponseEntity<ProviderResponseDto> update(Integer id, Provider updatedProvider) {
         if (providerRepository.existsById(id)) {
 
             Provider provider = providerRepository.findById(id).get();
@@ -114,9 +114,9 @@ public class ProviderServiceImpl implements ProviderService {
             providerRepository.save(provider);
             logger.info(String.format("Updated provider of id: %d registration data!", provider.getId()));
 
-            ProviderDto updatedProviderDto = ProviderDtoFactory.toDto(provider);
+            ProviderResponseDto updatedProviderResponseDto = ProviderDtoFactory.toDto(provider);
 
-            return ResponseEntity.status(200).body(updatedProviderDto);
+            return ResponseEntity.status(200).body(updatedProviderResponseDto);
         }
 
         logger.error(String.format("Provider of id %d not found", id));
@@ -130,12 +130,12 @@ public class ProviderServiceImpl implements ProviderService {
             Provider provider = providerRepository.findById(id).get();
             logger.info(String.format("Provider of id %d found", id));
 
-            ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
 
             provider.setRole(Role.DELETED.name());
             providerRepository.save(provider);
 
-            logger.info(String.format("Provider: %s successfully deleted", providerDto.toString()));
+            logger.info(String.format("Provider: %s successfully deleted", providerResponseDto.toString()));
             success = true;
 
             return ResponseEntity.status(200).body(success);
@@ -146,11 +146,11 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
+    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
 
-        String emailAttempt = loginDto.getEmail();
-        String passwordAttempt = loginDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         logger.info(String.format("Searching for provider by email: [%s]", emailAttempt));
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
@@ -186,11 +186,11 @@ public class ProviderServiceImpl implements ProviderService {
         return ResponseEntity.status(200).body(loginResponseDto);
     }
 
-    public ResponseEntity<LogoutResponseDto> logout(LoginDto loginDto) {
+    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = loginDto.getEmail();
-        String passwordAttempt = loginDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
 

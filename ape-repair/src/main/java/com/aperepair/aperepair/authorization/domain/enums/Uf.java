@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.domain.model.enums;
+package com.aperepair.aperepair.authorization.domain.enums;
 
 public enum Uf {
     AC,

@@ -1,6 +1,6 @@
-package com.aperepair.aperepair.authorization.domain.model.dto.response;
+package com.aperepair.aperepair.authorization.domain.dto.response;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
+import com.aperepair.aperepair.authorization.domain.enums.Role;
 
 public class LoginResponseDto {
 

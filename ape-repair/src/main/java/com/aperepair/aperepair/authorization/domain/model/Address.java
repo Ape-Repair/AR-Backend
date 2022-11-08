@@ -1,7 +1,5 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Uf;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

@@ -14,18 +14,18 @@ public class CustomerDto {
     @Email
     private String email;
 
-    private Genre genre;
+    private String genre;
 
     @CPF
     private String cpf;
 
     private String phone;
 
-    private Role role;
+    private String role;
 
     private boolean isAuthenticated;
 
-    public CustomerDto(String name, String email, Genre genre, String cpf, String phone, Role role, Boolean isAuthenticated) {
+    public CustomerDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
@@ -51,11 +51,11 @@ public class CustomerDto {
         this.email = email;
     }
 
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
@@ -75,11 +75,11 @@ public class CustomerDto {
         this.phone = phone;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

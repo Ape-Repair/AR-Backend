@@ -12,6 +12,8 @@ import java.util.List;
 @RequestMapping("/address")
 public class AddressController {
 
+    //TODO: Criar dto de request para criação de address
+
     @Autowired
     private AddressService addressService;
 

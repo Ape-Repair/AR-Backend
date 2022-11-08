@@ -11,7 +11,7 @@ public class Specialty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private SpecialtyTypes specialtyType;
+    private String specialtyType;
 
     @ManyToOne
     private Provider provider;
@@ -24,11 +24,11 @@ public class Specialty {
         this.id = id;
     }
 
-    public SpecialtyTypes getSpecialtyType() {
+    public String getSpecialtyType() {
         return specialtyType;
     }
 
-    public void setSpecialtyType(SpecialtyTypes specialtyType) {
+    public void setSpecialtyType(String specialtyType) {
         this.specialtyType = specialtyType;
     }
 

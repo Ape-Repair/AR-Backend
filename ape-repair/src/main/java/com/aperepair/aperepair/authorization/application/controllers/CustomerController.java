@@ -20,6 +20,8 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
 
+    //TODO: Criar dto de request para criação de customer
+
     @Autowired
     private CustomerService customerService;
 

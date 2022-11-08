@@ -15,13 +15,13 @@ public class ProviderDto {
     @Email
     private String email;
 
-    private Genre genre;
+    private String genre;
 
-    private Role role;
+    private String role;
 
     private Boolean isAuthenticated;
 
-    public ProviderDto(String name, String email, Genre genre, Role role, Boolean isAuthenticated) {
+    public ProviderDto(String name, String email, String genre, String role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
@@ -45,19 +45,19 @@ public class ProviderDto {
         this.email = email;
     }
 
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

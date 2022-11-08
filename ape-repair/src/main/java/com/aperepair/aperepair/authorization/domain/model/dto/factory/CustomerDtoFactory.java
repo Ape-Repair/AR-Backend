@@ -15,7 +15,7 @@ public class CustomerDtoFactory {
                 customer.getCpf(),
                 customer.getPhone(),
                 customer.getRole(),
-                customer.getAuthenticated()
+                customer.isAuthenticated()
         );
 
         logger.info("Customer transformed to DTO with successfully");

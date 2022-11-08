@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
+@Table(name = "address")
 public class Address {
 
     @Id
@@ -40,7 +41,7 @@ public class Address {
     private String city;
 
     @NotNull
-    private Uf uf;
+    private String uf;
 
     public Integer getId() {
         return id;
@@ -98,11 +99,11 @@ public class Address {
         this.city = city;
     }
 
-    public Uf getUf() {
+    public String getUf() {
         return uf;
     }
 
-    public void setUf(Uf uf) {
+    public void setUf(String uf) {
         this.uf = uf;
     }
 

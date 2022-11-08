@@ -29,7 +29,7 @@ public class Provider {
     @Size(min = 6)
     private String password;
 
-    private Genre genre;
+    private String genre;
 
     @Column(name = "cpf", unique = true)
     @CPF
@@ -41,14 +41,15 @@ public class Provider {
     private String phone;
 
     @OneToOne
-    private Address address;
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address addressId;
 
     @Column(name = "cnpj", unique = true)
     @CNPJ
     private String cnpj;
 
     @JsonIgnore
-    private Role role = Role.PROVIDER;
+    private String role;
 
     @Column(name = "is_authenticated")
     private Boolean isAuthenticated;
@@ -69,11 +70,11 @@ public class Provider {
         this.name = name;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -93,11 +94,11 @@ public class Provider {
         this.password = password;
     }
 
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
@@ -123,6 +124,14 @@ public class Provider {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Address getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Address addressId) {
+        this.addressId = addressId;
     }
 
     public Boolean getAuthenticated() {

@@ -1,14 +1,11 @@
 package com.aperepair.aperepair.authorization.domain.model;
 
-import com.aperepair.aperepair.authorization.domain.model.enums.Genre;
-import com.aperepair.aperepair.authorization.domain.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.br.CPF;
-
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -31,7 +28,7 @@ public class Customer {
     @Size(min = 6)
     private String password;
 
-    private Genre genre;
+    private String genre;
 
     @Column(name = "cpf", unique = true)
     @NotBlank
@@ -43,13 +40,12 @@ public class Customer {
     @Size(min = 10, max = 25)
     private String phone;
 
-    //TODO (PRIORITARIO) - Ajustar o código para criar uma relação entre Customer e Address (2)
-    //TODO (Ajustar collection do postman) e testar(3)... Conectar com Azure (1)
-//    @OneToOne
-//    private Address address;
+    @OneToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address addressId;
 
     @JsonIgnore
-    private Role role = Role.CUSTOMER;
+    private String role;
 
     @Column(name = "is_authenticated")
     private boolean isAuthenticated;
@@ -86,11 +82,11 @@ public class Customer {
         this.password = password;
     }
 
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
@@ -98,11 +94,11 @@ public class Customer {
         return cpf;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -118,19 +114,19 @@ public class Customer {
         this.phone = phone;
     }
 
-//    public Address getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(Address address) {
-//        this.address = address;
-//    }
+    public Address getAddressId() {
+        return addressId;
+    }
 
-    public Boolean getAuthenticated() {
+    public void setAddressId(Address addressId) {
+        this.addressId = addressId;
+    }
+
+    public boolean isAuthenticated() {
         return isAuthenticated;
     }
 
-    public void setAuthenticated(Boolean authenticated) {
+    public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
     }
 

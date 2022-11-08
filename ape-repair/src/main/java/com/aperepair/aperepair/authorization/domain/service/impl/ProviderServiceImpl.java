@@ -132,7 +132,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             ProviderDto providerDto = ProviderDtoFactory.toDto(provider);
 
-            provider.setRole(Role.DELETED);
+            provider.setRole(Role.DELETED.name());
             providerRepository.save(provider);
 
             logger.info(String.format("Provider: %s successfully deleted", providerDto.toString()));
@@ -162,7 +162,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider provider = optionalProvider.get();
 
-        if (provider.getRole() != Role.PROVIDER) {
+        if (provider.getRole() != Role.PROVIDER.name()) {
             logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
             return ResponseEntity.status(403).build();
         }
@@ -201,7 +201,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider provider = optionalProvider.get();
 
-        if (provider.getRole() != Role.PROVIDER) {
+        if (provider.getRole() != Role.PROVIDER.name()) {
             logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
             return ResponseEntity.status(403).build();
         }

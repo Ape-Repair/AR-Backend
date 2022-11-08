@@ -46,6 +46,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<CustomerDto> create(Customer customer) {
+
+        //TODO: ajustar para atualizar id do address
+
         String cpf = customer.getCpf();
         String email = customer.getEmail();
         String phone = customer.getPhone();
@@ -59,6 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info("Customer password encrypted with successfully");
 
         customer.setAuthenticated(false);
+        customer.setRole(Role.CUSTOMER.name());
 
         customerRepository.save(customer);
 
@@ -144,7 +148,7 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customer = customerRepository.findById(id).get();
             logger.info(String.format("Customer id %d found", id));
 
-            customer.setRole(Role.DELETED);
+            customer.setRole(Role.DELETED.name());
             customerRepository.save(customer);
 
             logger.info(String.format("Customer id: %d successfully deleted", customer.getId()));
@@ -174,7 +178,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = optionalCustomer.get();
 
-        if (customer.getRole() != Role.CUSTOMER) {
+        if (customer.getRole() != Role.CUSTOMER.name()) {
             logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
             return ResponseEntity.status(403).build();
         }
@@ -215,7 +219,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = optionalCustomer.get();
 
-        if (customer.getRole() != Role.CUSTOMER) {
+        if (customer.getRole() != Role.CUSTOMER.name()) {
             logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
             return ResponseEntity.status(403).build();
         }
@@ -286,7 +290,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {
-        if (customer.getAuthenticated()) return true;
+        if (customer.isAuthenticated()) return true;
 
         return false;
     }

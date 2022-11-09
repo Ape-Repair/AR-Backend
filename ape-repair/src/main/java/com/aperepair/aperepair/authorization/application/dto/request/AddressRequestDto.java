@@ -1,24 +1,18 @@
-package com.aperepair.aperepair.authorization.domain.model;
+package com.aperepair.aperepair.authorization.application.dto.request;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Entity
-@Table(name = "address")
-public class Address {
+public class AddressRequestDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
     @NotBlank
     @Size(min = 2, max = 50)
     private String street;
 
-    @Column(name = "street_number")
     @NotNull
     @Min(value = 1)
     private Integer streetNumber;
@@ -40,28 +34,6 @@ public class Address {
 
     @NotNull
     private String uf;
-
-    public Address(String street, Integer streetNumber, String complement, String cep, String district, String city, String uf) {
-        this.street = street;
-        this.streetNumber = streetNumber;
-        this.complement = complement;
-        this.cep = cep;
-        this.district = district;
-        this.city = city;
-        this.uf = uf;
-    }
-
-    public Address() {
-        super();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getStreet() {
         return street;
@@ -117,19 +89,5 @@ public class Address {
 
     public void setUf(String uf) {
         this.uf = uf;
-    }
-
-    @Override
-    public String toString() {
-        return "Address{" +
-                "id=" + id +
-                ", street='" + street + '\'' +
-                ", number=" + streetNumber +
-                ", complement='" + complement + '\'' +
-                ", cep='" + cep + '\'' +
-                ", district='" + district + '\'' +
-                ", city='" + city + '\'' +
-                ", uf=" + uf +
-                '}';
     }
 }

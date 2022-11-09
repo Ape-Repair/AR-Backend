@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.authorization.domain.dto.factory;
 
-import com.aperepair.aperepair.authorization.domain.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

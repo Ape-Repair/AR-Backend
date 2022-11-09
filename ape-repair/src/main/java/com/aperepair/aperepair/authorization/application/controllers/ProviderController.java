@@ -1,10 +1,10 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.ProviderResponseDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
 import com.aperepair.aperepair.authorization.domain.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

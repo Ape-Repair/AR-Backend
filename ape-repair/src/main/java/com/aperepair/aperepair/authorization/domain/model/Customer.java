@@ -49,6 +49,23 @@ public class Customer {
     @Column(name = "is_authenticated")
     private boolean isAuthenticated;
 
+    public Customer() {
+        super();
+    }
+
+    public Customer(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String role, boolean isAuthenticated) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.genre = genre;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.addressId = addressId;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
+    }
+
     public Integer getId() {
         return id;
     }

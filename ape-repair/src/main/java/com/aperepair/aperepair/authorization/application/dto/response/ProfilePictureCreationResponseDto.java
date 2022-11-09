@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.domain.dto.response;
+package com.aperepair.aperepair.authorization.application.dto.response;
 
 public class ProfilePictureCreationResponseDto {
 

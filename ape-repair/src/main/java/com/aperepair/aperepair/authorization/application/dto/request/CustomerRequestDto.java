@@ -1,37 +1,45 @@
-package com.aperepair.aperepair.authorization.domain.dto.response;
+package com.aperepair.aperepair.authorization.application.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CPF;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-public class CustomerResponseDto {
+public class CustomerRequestDto {
 
     @NotBlank
+    @Size(min = 2, max = 50)
     private String name;
 
+    @NotBlank
     @Email
     private String email;
 
+    @NotBlank
+    @Size(min = 6)
+    private String password;
+
     private String genre;
 
+    @NotBlank
     @CPF
     private String cpf;
 
+    @NotBlank
+    @Size(min = 10, max = 25)
     private String phone;
 
+    @NotNull
+    private AddressRequestDto address;
+
+    @JsonIgnore
     private String role;
 
+    @JsonIgnore
     private boolean isAuthenticated;
-
-    public CustomerResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
-        this.name = name;
-        this.email = email;
-        this.genre = genre;
-        this.cpf = cpf;
-        this.phone = phone;
-        this.role = role;
-        this.isAuthenticated = isAuthenticated;
-    }
 
     public String getName() {
         return name;
@@ -47,6 +55,14 @@ public class CustomerResponseDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getGenre() {
@@ -73,6 +89,14 @@ public class CustomerResponseDto {
         this.phone = phone;
     }
 
+    public AddressRequestDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressRequestDto address) {
+        this.address = address;
+    }
+
     public String getRole() {
         return role;
     }
@@ -81,22 +105,11 @@ public class CustomerResponseDto {
         this.role = role;
     }
 
-    public Boolean getAuthenticated() {
+    public boolean isAuthenticated() {
         return isAuthenticated;
     }
 
-    public void setAuthenticated(Boolean authenticated) {
+    public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
-    }
-
-    @Override
-    public String toString() {
-        return "CustomerDto{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", genre=" + genre +
-                ", role=" + role +
-                ", isAuthenticated=" + isAuthenticated +
-                '}';
     }
 }

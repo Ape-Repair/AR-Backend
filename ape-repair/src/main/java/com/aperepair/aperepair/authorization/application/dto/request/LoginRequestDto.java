@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.domain.dto.request;
+package com.aperepair.aperepair.authorization.application.dto.request;
 
 import com.aperepair.aperepair.authorization.domain.enums.Role;
 

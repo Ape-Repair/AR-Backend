@@ -1,11 +1,11 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
 import com.aperepair.aperepair.authorization.domain.dto.factory.ProviderDtoFactory;
-import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.domain.service.ProviderService;

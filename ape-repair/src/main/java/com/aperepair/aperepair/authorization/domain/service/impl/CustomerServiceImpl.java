@@ -3,15 +3,19 @@ package com.aperepair.aperepair.authorization.domain.service.impl;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
+import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.domain.dto.response.CustomerResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
-import com.aperepair.aperepair.authorization.domain.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.domain.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.domain.dto.response.ProfilePictureCreationResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.ProfilePictureCreationResponseDto;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
+import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import org.apache.commons.codec.binary.Base64;
@@ -32,11 +36,15 @@ import java.util.Optional;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    //TODO(1 (Desejavel)): refatorar service para retornar dto e não ResponseEntity
-    //TODO(2 (depende do 1) ): criar exceptionHandler para personalizar retornos e exceções
+    //TODO(1 ferias): refatorar service para retornar dto e não ResponseEntity
+    //TODO( ferias): criar exceptionHandler para personalizar retornos e exceções
 
+    //TODO: corrigir os dtos de response para create e update
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -45,30 +53,39 @@ public class CustomerServiceImpl implements CustomerService {
     private AmazonS3 amazonS3;
 
     @Override
-    public ResponseEntity<CustomerResponseDto> create(Customer customer) {
-
-        //TODO: ajustar para atualizar id do address
-
-        String cpf = customer.getCpf();
-        String email = customer.getEmail();
-        String phone = customer.getPhone();
+    public ResponseEntity<CustomerResponseDto> create(CustomerRequestDto customerRequestDto) {
+        String cpf = customerRequestDto.getCpf();
+        String email = customerRequestDto.getEmail();
+        String phone = customerRequestDto.getPhone();
 
         if (thisCpfOrEmailOrPhoneIsAlreadyRegistered(cpf, email, phone)) {
-            logger.error(String.format("Customer: %s already registered", customer.toString()));
+            logger.error(String.format("Customer: %s already registered", customerRequestDto.toString()));
             return ResponseEntity.status(400).build();
         }
 
-        customer.setPassword(encoder.encode(customer.getPassword()));
+        customerRequestDto.setPassword(encoder.encode(customerRequestDto.getPassword()));
         logger.info("Customer password encrypted with successfully");
 
-        customer.setAuthenticated(false);
-        customer.setRole(Role.CUSTOMER.name());
+        customerRequestDto.setAuthenticated(false);
+        customerRequestDto.setRole(Role.CUSTOMER.name());
+
+        Customer customer = CustomerDtoFactory.toEntity(customerRequestDto);
 
         customerRepository.save(customer);
+        logger.info("Customer saved with successfully");
 
-        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
+        Address address = AddressDtoFactory.toEntity(customerRequestDto.getAddress());
+
+        addressRepository.save(address);
+        logger.info("Address registered successfully for customer");
+
+        Integer customerId = customer.getId();
+
+        customerRepository.updateAddressIdById(address, customerId);
+        logger.info("Foreign key [addressId] updated successfully");
+
+        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
         logger.info(String.format("CustomerDto: %s registered successfully", customerResponseDto.toString()));
-
 
         return ResponseEntity.status(201).body(customerResponseDto);
     }
@@ -85,7 +102,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerResponseDto> customersDto = new ArrayList();
 
         for (Customer customer : customers) {
-            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
             customersDto.add(customerResponseDto);
         }
 
@@ -101,7 +118,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             Customer customer = optionalCustomer.get();
 
-            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toDto(customer);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
 
             return ResponseEntity.status(200).body(customerResponseDto);
         }
@@ -111,7 +128,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<CustomerResponseDto> update(Integer id, Customer updatedCustomer) {
+    public ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer) {
         if (customerRepository.existsById(id)) {
 
             Customer customer = customerRepository.findById(id).get();
@@ -123,16 +140,23 @@ public class CustomerServiceImpl implements CustomerService {
 
             logger.info(String.format("Customer of id %d found", customer.getId()));
 
-            customer.setName(updatedCustomer.getName());
-            customer.setEmail(updatedCustomer.getEmail());
-            customer.setGenre(updatedCustomer.getGenre());
-            customer.setPhone(updatedCustomer.getPhone());
-            customer.setPassword(encoder.encode(updatedCustomer.getPassword()));
+            updatedCustomer.setRole(customer.getRole());
+            updatedCustomer.setAuthenticated(true);
 
-            customerRepository.save(customer);
-            logger.info(String.format("Updated customer of id: %d registration data!", customer.getId()));
+            Customer newCustomer = CustomerDtoFactory.toEntity(updatedCustomer);
 
-            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toDto(customer);
+            Address address = AddressDtoFactory.toEntity(updatedCustomer.getAddress());
+
+            newCustomer.setId(id);
+            newCustomer.setAddressId(customer.getAddressId());
+
+            address.setId(customer.getAddressId().getId());
+
+            customerRepository.save(newCustomer);
+            addressRepository.save(address);
+            logger.info(String.format("Updated customer of id: %d registration data!", newCustomer.getId()));
+
+            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponseDto(customer);
 
             return ResponseEntity.status(200).body(updatedCustomerResponseDto);
         }

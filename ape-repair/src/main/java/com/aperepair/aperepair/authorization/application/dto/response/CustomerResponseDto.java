@@ -1,13 +1,12 @@
-package com.aperepair.aperepair.authorization.domain.dto.response;
+package com.aperepair.aperepair.authorization.application.dto.response;
 
+import org.hibernate.validator.constraints.br.CPF;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
-public class ProviderResponseDto {
+public class CustomerResponseDto {
 
     @NotBlank
-    @Size(min = 2, max = 50)
     private String name;
 
     @Email
@@ -15,14 +14,21 @@ public class ProviderResponseDto {
 
     private String genre;
 
+    @CPF
+    private String cpf;
+
+    private String phone;
+
     private String role;
 
-    private Boolean isAuthenticated;
+    private boolean isAuthenticated;
 
-    public ProviderResponseDto(String name, String email, String genre, String role, Boolean isAuthenticated) {
+    public CustomerResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
+        this.cpf = cpf;
+        this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
     }
@@ -51,6 +57,22 @@ public class ProviderResponseDto {
         this.genre = genre;
     }
 
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getRole() {
         return role;
     }
@@ -65,5 +87,16 @@ public class ProviderResponseDto {
 
     public void setAuthenticated(Boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerDto{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", genre=" + genre +
+                ", role=" + role +
+                ", isAuthenticated=" + isAuthenticated +
+                '}';
     }
 }

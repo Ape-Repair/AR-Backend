@@ -10,13 +10,7 @@ import java.util.List;
 
 public interface AddressService {
 
-    public ResponseEntity<AddressResponseDto> create(@RequestBody AddressRequestDto addressRequestDto);
-
     public ResponseEntity<List<Address>> findAll();
 
     public ResponseEntity<Address> findById(Integer id);
-
-    public ResponseEntity<AddressResponseDto> update(Integer id, AddressRequestDto addressRequestDto);
-
-    public ResponseEntity<Boolean> delete(Integer id);
 }

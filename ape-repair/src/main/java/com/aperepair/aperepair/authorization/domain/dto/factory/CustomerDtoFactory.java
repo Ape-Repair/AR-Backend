@@ -38,7 +38,7 @@ public class CustomerDtoFactory {
                 addressResponseDto
         );
 
-        logger.info("Customer transformed to CustomerResponseDto successfully");
+        logger.info("Customer transformed to CustomerResponseFullDto successfully");
         return customerResponseDto;
     }
 
@@ -53,7 +53,7 @@ public class CustomerDtoFactory {
                 customer.isAuthenticated()
         );
 
-        logger.info("Customer transformed to CustomerResponseDto successfully");
+        logger.info("Customer transformed to CustomerResponsePartialDto successfully");
         return customerResponseDto;
     }
 

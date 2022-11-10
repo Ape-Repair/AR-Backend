@@ -17,11 +17,6 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    //TODO: avaliar necessidade deste método create;
-    @PostMapping
-    public ResponseEntity<AddressResponseDto> create(@RequestBody @Valid AddressRequestDto addressRequestDto) {
-        return addressService.create(addressRequestDto);
-    }
     @GetMapping
     public ResponseEntity<List<Address>> findAll() {
         return addressService.findAll();
@@ -30,18 +25,5 @@ public class AddressController {
     @GetMapping("/{id}")
     public ResponseEntity<Address> findById(@PathVariable Integer id) {
         return addressService.findById(id);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<AddressResponseDto> update(
-            @PathVariable Integer id,
-            @RequestBody @Valid AddressRequestDto addressRequestDto
-    ) {
-        return addressService.update(id, addressRequestDto);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
-        return addressService.delete(id);
     }
 }

@@ -1,13 +1,11 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.ProfilePictureCreationResponseDto;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -70,5 +68,12 @@ public class CustomerController {
     ) throws IOException {
         ProfilePictureCreationResponseDto response = customerService.profilePictureCreation(request);
         return ResponseEntity.status(201).body(response);
+    }
+
+    @PostMapping("/profile-picture")
+    public ResponseEntity<GetProfilePictureResponseDto> getProfilePictureRequestDto(
+            @RequestBody @Valid GetProfilePictureRequestDto request) throws IOException {
+        GetProfilePictureResponseDto response = customerService.getProfilePicture(request);
+        return ResponseEntity.status(200).body(response);
     }
 }

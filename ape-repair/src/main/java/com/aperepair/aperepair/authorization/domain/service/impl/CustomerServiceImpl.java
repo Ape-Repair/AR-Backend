@@ -1,21 +1,19 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.*;
-import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
-import com.aperepair.aperepair.authorization.domain.model.Address;
-import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
+import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.*;
+import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
+import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
+import com.aperepair.aperepair.authorization.domain.model.Address;
+import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
-import org.apache.commons.codec.binary.Base64;
+import com.aperepair.aperepair.authorization.domain.service.ProfilePictureService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
     private PasswordEncoder encoder;
 
     @Autowired
-    private AmazonS3 amazonS3;
+    private ProfilePictureService profilePictureService;
 
     @Override
     public ResponseEntity<CustomerResponseDto> create(CustomerRequestDto customerRequestDto) {
@@ -270,7 +266,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    //TODO: Colocar esse método em uma classe separada (profilePictureCreation)
     @Override
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request
@@ -280,34 +275,21 @@ public class CustomerServiceImpl implements CustomerService {
 
         ProfilePictureCreationResponseDto response = new ProfilePictureCreationResponseDto(false);
 
-        InputStream imageInputStream = null;
+        boolean profilePictureCreatedWithSuccess = profilePictureService.profilePictureCreation(request);
 
-        try {
-            byte[] imageByteArray = Base64.decodeBase64(request.getImage().getBytes());
+        response.setSuccess(profilePictureCreatedWithSuccess);
 
-            imageInputStream = new ByteArrayInputStream(imageByteArray);
+        return response;
+    }
 
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/png");
+    @Override
+    public GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws IOException {
+        logger.info(String.format("Searching profile picture for customer: [%s]", request.getEmail()));
 
-            amazonS3.putObject(new PutObjectRequest("ar-profile-pictures",
-                            (request.getEmail() + "/image.png"),
-                            imageInputStream, metadata
-                    )
-            );
+        GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
+        String image = profilePictureService.getProfilePicture(request);
 
-            response.setSuccess(true);
-            logger.info(String.format("Profile picture created successfully for user email - [%s]",
-                    request.getEmail()));
-
-        } catch (Exception e) {
-            logger.error(String.format("Failed to update image of email: [%s] - in external bucket",
-                    request.getEmail()));
-            e.printStackTrace();
-            throw e;
-        } finally {
-            imageInputStream.close();
-        }
+        response.setImage(image);
 
         return response;
     }

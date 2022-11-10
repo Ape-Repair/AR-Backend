@@ -1,13 +1,11 @@
 package com.aperepair.aperepair.authorization.domain.service;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.ProfilePictureCreationResponseDto;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -31,4 +29,6 @@ public interface CustomerService {
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request)
             throws IOException;
+
+    GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws IOException;
 }

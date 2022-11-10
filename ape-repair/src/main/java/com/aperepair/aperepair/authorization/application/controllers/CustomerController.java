@@ -21,6 +21,8 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
 
+    //TODO: criar endpoint GET para retornar a foto de perfil do customer
+
     @Autowired
     private CustomerService customerService;
 

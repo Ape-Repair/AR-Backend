@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/providers")
 public class ProviderController {
 
-    //TODO: Criar dto de request para criação de provider
+    //TODO: após finalizar parte de customers, refatorar toda parte de providers;
 
     @Autowired
     private ProviderService providerService;

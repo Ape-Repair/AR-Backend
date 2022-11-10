@@ -270,7 +270,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    //TODO: Colocar esse método em uma classe separada
+    //TODO: Colocar esse método em uma classe separada (profilePictureCreation)
     @Override
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request

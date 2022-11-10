@@ -17,6 +17,7 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
+    //TODO: avaliar necessidade deste método create;
     @PostMapping
     public ResponseEntity<AddressResponseDto> create(@RequestBody @Valid AddressRequestDto addressRequestDto) {
         return addressService.create(addressRequestDto);

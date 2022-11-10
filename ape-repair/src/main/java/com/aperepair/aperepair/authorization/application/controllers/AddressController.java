@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
+import com.aperepair.aperepair.authorization.application.dto.request.AddressRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,12 @@ import java.util.List;
 @RequestMapping("/address")
 public class AddressController {
 
-    //TODO: Criar dto de request para criação de address
-
     @Autowired
     private AddressService addressService;
 
     @PostMapping
-    public ResponseEntity<Address> create(@RequestBody @Valid Address newAddress) {
-        return addressService.create(newAddress);
+    public ResponseEntity<AddressResponseDto> create(@RequestBody @Valid AddressRequestDto addressRequestDto) {
+        return addressService.create(addressRequestDto);
     }
     @GetMapping
     public ResponseEntity<List<Address>> findAll() {
@@ -32,11 +32,11 @@ public class AddressController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Address> update(
+    public ResponseEntity<AddressResponseDto> update(
             @PathVariable Integer id,
-            @RequestBody @Valid Address updatedAddress
+            @RequestBody @Valid AddressRequestDto addressRequestDto
     ) {
-        return addressService.update(id, updatedAddress);
+        return addressService.update(id, addressRequestDto);
     }
 
     @DeleteMapping("/delete/{id}")

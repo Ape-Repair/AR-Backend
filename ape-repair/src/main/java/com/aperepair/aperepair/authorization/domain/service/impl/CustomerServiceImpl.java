@@ -4,16 +4,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
-import com.aperepair.aperepair.authorization.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.ProfilePictureCreationResponseDto;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
@@ -39,7 +36,6 @@ public class CustomerServiceImpl implements CustomerService {
     //TODO(1 ferias): refatorar service para retornar dto e não ResponseEntity
     //TODO( ferias): criar exceptionHandler para personalizar retornos e exceções
 
-    //TODO: corrigir os dtos de response para create e update
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -79,12 +75,13 @@ public class CustomerServiceImpl implements CustomerService {
         addressRepository.save(address);
         logger.info("Address registered successfully for customer");
 
-        Integer customerId = customer.getId();
+        AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
 
+        Integer customerId = customer.getId();
         customerRepository.updateAddressIdById(address, customerId);
         logger.info("Foreign key [addressId] updated successfully");
 
-        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
+        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
         logger.info(String.format("CustomerDto: %s registered successfully", customerResponseDto.toString()));
 
         return ResponseEntity.status(201).body(customerResponseDto);
@@ -102,7 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerResponseDto> customersDto = new ArrayList();
 
         for (Customer customer : customers) {
-            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
             customersDto.add(customerResponseDto);
         }
 
@@ -118,7 +115,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             Customer customer = optionalCustomer.get();
 
-            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseDto(customer);
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
 
             return ResponseEntity.status(200).body(customerResponseDto);
         }
@@ -154,9 +151,10 @@ public class CustomerServiceImpl implements CustomerService {
 
             customerRepository.save(newCustomer);
             addressRepository.save(address);
+
             logger.info(String.format("Updated customer of id: %d registration data!", newCustomer.getId()));
 
-            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponseDto(customer);
+            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
 
             return ResponseEntity.status(200).body(updatedCustomerResponseDto);
         }

@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.dto.factory;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,23 @@ public class CustomerDtoFactory {
         return customer;
     }
 
-    public static CustomerResponseDto toResponseDto(Customer customer) {
+    public static CustomerResponseDto toResponseFullDto(Customer customer, AddressResponseDto addressResponseDto) {
+        CustomerResponseDto customerResponseDto = new CustomerResponseDto(
+                customer.getName(),
+                customer.getEmail(),
+                customer.getGenre(),
+                customer.getCpf(),
+                customer.getPhone(),
+                customer.getRole(),
+                customer.isAuthenticated(),
+                addressResponseDto
+        );
+
+        logger.info("Customer transformed to CustomerResponseDto successfully");
+        return customerResponseDto;
+    }
+
+    public static CustomerResponseDto toResponsePartialDto(Customer customer) {
         CustomerResponseDto customerResponseDto = new CustomerResponseDto(
                 customer.getName(),
                 customer.getEmail(),
@@ -36,7 +53,7 @@ public class CustomerDtoFactory {
                 customer.isAuthenticated()
         );
 
-        logger.info("Customer transformed to CustomerResponseDto with successfully");
+        logger.info("Customer transformed to CustomerResponseDto successfully");
         return customerResponseDto;
     }
 

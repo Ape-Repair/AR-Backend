@@ -12,18 +12,33 @@ public class CustomerResponseDto {
     @Email
     private String email;
 
+    @NotBlank
     private String genre;
 
     @CPF
     private String cpf;
 
+    @NotBlank
     private String phone;
 
     private String role;
 
     private boolean isAuthenticated;
 
-    public CustomerResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
+    private AddressResponseDto address;
+
+    public CustomerResponseDto(String name, String email, String genre, String cpf, String phone, String role, boolean isAuthenticated, AddressResponseDto address) {
+        this.name = name;
+        this.email = email;
+        this.genre = genre;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
+        this.address = address;
+    }
+
+    public CustomerResponseDto(String name, String email, String genre, String cpf, String phone, String role, boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
@@ -81,22 +96,33 @@ public class CustomerResponseDto {
         this.role = role;
     }
 
-    public Boolean getAuthenticated() {
+    public boolean isAuthenticated() {
         return isAuthenticated;
     }
 
-    public void setAuthenticated(Boolean authenticated) {
+    public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public AddressResponseDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressResponseDto address) {
+        this.address = address;
     }
 
     @Override
     public String toString() {
-        return "CustomerDto{" +
+        return "CustomerResponseDto{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", genre=" + genre +
-                ", role=" + role +
+                ", genre='" + genre + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
                 ", isAuthenticated=" + isAuthenticated +
+                ", address=" + address +
                 '}';
     }
 }

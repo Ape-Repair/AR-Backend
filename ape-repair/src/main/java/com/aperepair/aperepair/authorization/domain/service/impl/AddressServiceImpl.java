@@ -1,5 +1,8 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
+import com.aperepair.aperepair.authorization.application.dto.request.AddressRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.AddressResponseDto;
+import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.service.AddressService;
@@ -20,12 +23,15 @@ public class AddressServiceImpl implements AddressService {
     private AddressRepository addressRepository;
 
     @Override
-    public ResponseEntity<Address> create(Address address) {
+    public ResponseEntity<AddressResponseDto> create(AddressRequestDto addressRequestDto) {
+        Address address = AddressDtoFactory.toEntity(addressRequestDto);
         addressRepository.save(address);
 
-        logger.info(String.format("Address: %s registered successfully", address.toString()));
+        AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
 
-        return ResponseEntity.status(201).body(address);
+        logger.info(String.format("Address: %s registered successfully", addressResponseDto.toString()));
+
+        return ResponseEntity.status(201).body(addressResponseDto);
     }
 
     @Override
@@ -57,18 +63,22 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ResponseEntity<Address> update(Integer id, Address updatedAddress) {
-        if (
-                addressRepository.existsById(id)
-                        && addressRepository.findById(id).equals(updatedAddress.getId())
-        ) {
+    public ResponseEntity<AddressResponseDto> update(Integer id, AddressRequestDto addressRequestDto) {
+        if (addressRepository.existsById(id)) {
+
+            Address address = addressRepository.findById(id).get();
 
             logger.info(String.format("Address of id %d found", id));
 
-            addressRepository.save(updatedAddress);
-            logger.info(String.format("Updated address: %s registration data!", updatedAddress.toString()));
+            Address newAddress = AddressDtoFactory.toEntity(addressRequestDto);
+            newAddress.setId(address.getId());
 
-            return ResponseEntity.status(200).body(updatedAddress);
+            addressRepository.save(newAddress);
+            AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(newAddress);
+
+            logger.info(String.format("Updated address: %s registration data!", addressResponseDto.toString()));
+
+            return ResponseEntity.status(200).body(addressResponseDto);
         }
 
         logger.error(String.format("Address of id %d not found", id));
@@ -77,7 +87,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public ResponseEntity<Boolean> delete(Integer id) {
-        Boolean success = false;
+        boolean success = false;
         if (addressRepository.existsById(id)) {
             Address address = addressRepository.findById(id).get();
             logger.info(String.format("Address of id %d found", id));
@@ -92,5 +102,6 @@ public class AddressServiceImpl implements AddressService {
         logger.error(String.format("Address of id %d not found", id));
         return ResponseEntity.status(404).body(success);
     }
+
     private static final Logger logger = LogManager.getLogger(AddressServiceImpl.class.getName());
 }

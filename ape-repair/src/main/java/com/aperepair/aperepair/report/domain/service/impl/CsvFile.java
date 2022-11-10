@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.reports.domain.service.impl;
+package com.aperepair.aperepair.report.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
 import org.apache.logging.log4j.LogManager;

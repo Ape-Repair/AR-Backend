@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.reports.domain.model.dto.response;
+package com.aperepair.aperepair.report.domain.model.dto.response;
 
 public class AdminLoginResponseDto {
 

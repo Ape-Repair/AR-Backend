@@ -7,6 +7,4 @@ public enum Role {
     ADMIN,
 
     DELETED,
-
-    BLOCKED
 }

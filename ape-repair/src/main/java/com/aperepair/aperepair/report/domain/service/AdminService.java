@@ -1,9 +1,9 @@
-package com.aperepair.aperepair.reports.domain.service;
+package com.aperepair.aperepair.report.domain.service;
 
-import com.aperepair.aperepair.reports.domain.model.Admin;
-import com.aperepair.aperepair.reports.domain.model.dto.request.AdminLoginRequestDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminLoginResponseDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminResponseDto;
+import com.aperepair.aperepair.report.domain.model.Admin;
+import com.aperepair.aperepair.report.domain.model.dto.request.AdminLoginRequestDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminLoginResponseDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminResponseDto;
 import org.springframework.http.ResponseEntity;
 
 public interface AdminService {

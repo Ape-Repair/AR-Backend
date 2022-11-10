@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.reports.domain.model;
+package com.aperepair.aperepair.report.domain.model;
 
 import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;

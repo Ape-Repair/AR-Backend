@@ -1,6 +1,6 @@
-package com.aperepair.aperepair.reports.domain.repository;
+package com.aperepair.aperepair.report.domain.repository;
 
-import com.aperepair.aperepair.reports.domain.model.Admin;
+import com.aperepair.aperepair.report.domain.model.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

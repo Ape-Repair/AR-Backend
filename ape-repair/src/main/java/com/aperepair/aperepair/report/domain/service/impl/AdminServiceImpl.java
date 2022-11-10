@@ -1,14 +1,14 @@
-package com.aperepair.aperepair.reports.domain.service.impl;
+package com.aperepair.aperepair.report.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
 import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
-import com.aperepair.aperepair.reports.domain.model.Admin;
-import com.aperepair.aperepair.reports.domain.model.dto.request.AdminLoginRequestDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminLoginResponseDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminResponseDto;
-import com.aperepair.aperepair.reports.domain.repository.AdminRepository;
-import com.aperepair.aperepair.reports.domain.service.AdminService;
+import com.aperepair.aperepair.report.domain.model.Admin;
+import com.aperepair.aperepair.report.domain.model.dto.request.AdminLoginRequestDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminLoginResponseDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminResponseDto;
+import com.aperepair.aperepair.report.domain.repository.AdminRepository;
+import com.aperepair.aperepair.report.domain.service.AdminService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

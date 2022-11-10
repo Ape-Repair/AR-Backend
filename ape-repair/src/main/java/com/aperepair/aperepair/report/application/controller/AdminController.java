@@ -1,11 +1,11 @@
-package com.aperepair.aperepair.reports.application.controller;
+package com.aperepair.aperepair.report.application.controller;
 
-import com.aperepair.aperepair.reports.domain.model.Admin;
-import com.aperepair.aperepair.reports.domain.model.dto.request.AdminLoginRequestDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminLoginResponseDto;
-import com.aperepair.aperepair.reports.domain.model.dto.response.AdminResponseDto;
-import com.aperepair.aperepair.reports.domain.service.impl.AdminServiceImpl;
-import com.aperepair.aperepair.reports.domain.service.impl.ListObj;
+import com.aperepair.aperepair.report.domain.model.Admin;
+import com.aperepair.aperepair.report.domain.model.dto.request.AdminLoginRequestDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminLoginResponseDto;
+import com.aperepair.aperepair.report.domain.model.dto.response.AdminResponseDto;
+import com.aperepair.aperepair.report.domain.service.impl.AdminServiceImpl;
+import com.aperepair.aperepair.report.domain.service.impl.ListObj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

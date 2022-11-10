@@ -1,9 +1,9 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
@@ -13,7 +13,9 @@ import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
-import com.aperepair.aperepair.authorization.domain.service.ProfilePictureService;
+import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     private PasswordEncoder encoder;
 
     @Autowired
-    private ProfilePictureService profilePictureService;
+    private ProfilePictureGateway profilePictureGateway;
 
     @Override
     public ResponseEntity<CustomerResponseDto> create(CustomerRequestDto customerRequestDto) {
@@ -270,15 +272,22 @@ public class CustomerServiceImpl implements CustomerService {
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request
     ) throws IOException {
+        String email = request.getEmail();
+
         logger.info(String.format("Starting creation profile picture for user email - [%s]",
-                request.getEmail()));
+                email));
 
         ProfilePictureCreationResponseDto response = new ProfilePictureCreationResponseDto(false);
 
-        boolean profilePictureCreatedWithSuccess = profilePictureService.profilePictureCreation(request);
+        if (customerRepository.existsByEmail(email)) {
+            boolean profilePictureCreatedWithSuccess = profilePictureGateway.profilePictureCreation(request);
 
-        response.setSuccess(profilePictureCreatedWithSuccess);
+            response.setSuccess(profilePictureCreatedWithSuccess);
 
+            return response;
+        }
+
+        logger.error(String.format("Email [%s] - not found", email));
         return response;
     }
 
@@ -287,9 +296,9 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info(String.format("Searching profile picture for customer: [%s]", request.getEmail()));
 
         GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
-        String image = profilePictureService.getProfilePicture(request);
+        String imageBase64 = profilePictureGateway.getProfilePicture(request);
 
-        response.setImage(image);
+        response.setImageBase64(imageBase64);
 
         return response;
     }

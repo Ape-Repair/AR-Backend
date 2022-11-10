@@ -1,12 +1,13 @@
 package com.aperepair.aperepair.authorization.application.controllers;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
-import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-
-    //TODO: criar endpoint GET para retornar a foto de perfil do customer
 
     @Autowired
     private CustomerService customerService;
@@ -67,11 +66,14 @@ public class CustomerController {
             @RequestBody @Valid ProfilePictureCreationRequestDto request
     ) throws IOException {
         ProfilePictureCreationResponseDto response = customerService.profilePictureCreation(request);
-        return ResponseEntity.status(201).body(response);
+
+        if (response.isSuccess()) return ResponseEntity.status(201).body(response);
+
+        return ResponseEntity.status(404).body(response);
     }
 
     @PostMapping("/profile-picture")
-    public ResponseEntity<GetProfilePictureResponseDto> getProfilePictureRequestDto(
+    public ResponseEntity<GetProfilePictureResponseDto> getProfilePicture(
             @RequestBody @Valid GetProfilePictureRequestDto request) throws IOException {
         GetProfilePictureResponseDto response = customerService.getProfilePicture(request);
         return ResponseEntity.status(200).body(response);

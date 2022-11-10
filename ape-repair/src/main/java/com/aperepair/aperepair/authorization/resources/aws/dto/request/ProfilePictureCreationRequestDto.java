@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.application.dto.request;
+package com.aperepair.aperepair.authorization.resources.aws.dto.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.domain.service.impl;
+package com.aperepair.aperepair.authorization.resources.aws.gateway.implementation;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -7,19 +7,20 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
-import com.aperepair.aperepair.authorization.application.dto.request.GetProfilePictureRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.service.ProfilePictureService;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 
 @Service
-public class ProfilePictureServiceImpl implements ProfilePictureService {
+public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
 
     @Autowired
     private AmazonS3 amazonS3;
@@ -58,11 +59,10 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
         }
     }
 
-    //TODO: Adicionar logs e refatorar alguns pontos (está funcionando)
+    //TODO: Criar exception handler para retornar os erros mapeados, invés de 500;
     @Override
     public String getProfilePicture(GetProfilePictureRequestDto request) throws IOException {
         S3ObjectInputStream s3ImageInputStream = null;
-        FileOutputStream fileOutputStream = null;
 
         try {
             S3Object imageFile = amazonS3.getObject("ar-profile-pictures",
@@ -70,30 +70,29 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
 
             s3ImageInputStream = imageFile.getObjectContent();
 
-            byte[] teste = IOUtils.toByteArray(s3ImageInputStream);
-            String base64 = java.util.Base64.getEncoder().encodeToString(teste);
+            byte[] imageByteArray = IOUtils.toByteArray(s3ImageInputStream);
+            String base64 = java.util.Base64.getEncoder().encodeToString(imageByteArray);
 
-            System.out.println(base64);
+            logger.info(String.format("Base64 image successfully obtained of: [%s]", request.getEmail()));
 
+            return base64;
         }
-        catch (FileNotFoundException e) {
-            logger.error(String.format("[Failed: FileNotFoundException] - of email: [%s] - in external bucket",
-                    request.getEmail()));
-            throw new RuntimeException(e);
+        catch (FileNotFoundException ex) {
+            logger.error(String.format("[Failed: FileNotFoundException] - of email: [%s]", request.getEmail()));
+            throw ex;
         }
-        catch (AmazonServiceException e) {
-            throw e;
+        catch (AmazonServiceException ex) {
+            logger.error("[Failed: AmazonServiceException] - error in some amazon service");
+            throw ex;
         }
-        catch (IOException e) {
-            System.err.println(e.getMessage());
-
+        catch (IOException ex) {
+            logger.error("[Failed: IOException] - error at bucket flow");
+            throw ex;
         } finally {
             assert s3ImageInputStream != null;
             s3ImageInputStream.close();
         }
-
-        return "TESTANDO";
     }
 
-    private static final Logger logger = LogManager.getLogger(ProfilePictureServiceImpl.class.getName());
+    private static final Logger logger = LogManager.getLogger(ProfilePictureGatewayImpl.class.getName());
 }

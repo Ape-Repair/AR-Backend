@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.application.controllers;
+package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.domain.model.Provider;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;

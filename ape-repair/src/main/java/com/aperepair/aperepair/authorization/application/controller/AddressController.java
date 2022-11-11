@@ -1,13 +1,11 @@
-package com.aperepair.aperepair.authorization.application.controllers;
+package com.aperepair.aperepair.authorization.application.controller;
 
-import com.aperepair.aperepair.authorization.application.dto.request.AddressRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController

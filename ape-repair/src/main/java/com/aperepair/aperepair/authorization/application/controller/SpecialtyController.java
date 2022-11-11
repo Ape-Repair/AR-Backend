@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.application.controllers;
+package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.domain.model.Specialty;
 import com.aperepair.aperepair.authorization.domain.service.SpecialtyService;

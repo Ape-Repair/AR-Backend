@@ -1,4 +1,4 @@
-package com.aperepair.aperepair.authorization.application.controllers;
+package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;

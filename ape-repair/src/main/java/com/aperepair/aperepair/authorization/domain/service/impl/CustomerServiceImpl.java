@@ -1,6 +1,8 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
+import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -30,9 +32,7 @@ import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-
-    //TODO(1 ferias): refatorar service para retornar dto e não ResponseEntity
-    //TODO( ferias): criar exceptionHandler para personalizar retornos e exceções
+    //TODO (ferias): refatorar service para retornar dto e não ResponseEntity
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -45,6 +45,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ProfilePictureGateway profilePictureGateway;
+
+    //TODO: Substituir retornos de caminhos tristes, por exceptions personalizadas
 
     @Override
     public ResponseEntity<CustomerResponseDto> create(CustomerRequestDto customerRequestDto) {
@@ -106,7 +108,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<CustomerResponseDto> findById(Integer id) {
+    public ResponseEntity<CustomerResponseDto> findById(Integer id) throws CustomerNotFoundException {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
             logger.info(String.format("Customer of id %d found", id));
@@ -118,12 +120,12 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(200).body(customerResponseDto);
         }
 
-        logger.error(String.format("Customer of id %d not found", id));
-        return ResponseEntity.status(404).build();
+        logger.error(String.format("Customer with id: [%d] not found", id));
+        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer) {
+    public ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer) throws CustomerNotFoundException {
         if (customerRepository.existsById(id)) {
 
             Customer customer = customerRepository.findById(id).get();
@@ -157,12 +159,12 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(200).body(updatedCustomerResponseDto);
         }
 
-        logger.error(String.format("Customer of id %d not found", id));
-        return ResponseEntity.status(404).build();
+        logger.error(String.format("Customer with id: [%d] not found", id));
+        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<Boolean> delete(Integer id) {
+    public ResponseEntity<Boolean> delete(Integer id) throws CustomerNotFoundException {
         boolean success = false;
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findById(id).get();
@@ -177,12 +179,12 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(200).body(success);
         }
 
-        logger.error(String.format("Customer id %d not found", id));
-        return ResponseEntity.status(404).body(success);
+        logger.error(String.format("Customer with id: [%d] not found", id));
+        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
 
         String emailAttempt = loginRequestDto.getEmail();
@@ -192,8 +194,8 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
         if (optionalCustomer.isEmpty()) {
-            logger.warn(String.format("Email customer: [%s] - Not Found!", emailAttempt));
-            return ResponseEntity.status(404).body(loginResponseDto);
+            logger.error(String.format("Customer with email [%s] not found!", emailAttempt));
+            throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
         }
 
         Customer customer = optionalCustomer.get();
@@ -224,7 +226,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
         String emailAttempt = loginRequestDto.getEmail();
@@ -233,8 +235,8 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
         if (optionalCustomer.isEmpty()) {
-            logger.warn(String.format("Email customer: [%s] - Not Found!", emailAttempt));
-            return ResponseEntity.status(404).body(logoutResponse);
+            logger.error(String.format("Customer with email: [%s] - Not Found!", emailAttempt));
+            throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
         }
 
         Customer customer = optionalCustomer.get();
@@ -271,7 +273,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request
-    ) throws IOException {
+    ) throws IOException, AwsUploadException, CustomerNotFoundException {
         String email = request.getEmail();
 
         logger.info(String.format("Starting creation profile picture for user email - [%s]",
@@ -287,20 +289,26 @@ public class CustomerServiceImpl implements CustomerService {
             return response;
         }
 
-        logger.error(String.format("Email [%s] - not found", email));
-        return response;
+        logger.error(String.format("Customer with email [%s] not found!", email));
+        throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", email));
     }
 
     @Override
-    public GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws IOException {
-        logger.info(String.format("Searching profile picture for customer: [%s]", request.getEmail()));
+    public GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception {
+        String email = request.getEmail();
+        if (customerRepository.existsByEmail(email)) {
+            logger.info(String.format("Searching profile picture for customer: [%s]", email));
 
-        GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
-        String imageBase64 = profilePictureGateway.getProfilePicture(request);
+            GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
+            String imageBase64 = profilePictureGateway.getProfilePicture(request);
 
-        response.setImageBase64(imageBase64);
+            response.setImageBase64(imageBase64);
 
-        return response;
+            return response;
+        }
+
+        logger.error(String.format("Customer with email [%s] not found!", email));
+        throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", email));
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {

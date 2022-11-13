@@ -2,22 +2,23 @@ package com.aperepair.aperepair.authorization.resources.aws.gateway.implementati
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import com.aperepair.aperepair.authorization.domain.exception.AwsS3ImageException;
+import com.aperepair.aperepair.authorization.domain.exception.AwsServiceInternalException;
+import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
+import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
-import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
@@ -28,7 +29,7 @@ public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
     @Override
     public boolean profilePictureCreation(
             ProfilePictureCreationRequestDto request
-    ) throws IOException {
+    ) throws AwsUploadException, IOException {
         InputStream imageInputStream = null;
 
         try {
@@ -48,20 +49,19 @@ public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
             logger.info(String.format("Profile picture created successfully for user email - [%s]",
                     request.getEmail()));
             return true;
-        } catch (Exception e) {
-            logger.error(String.format("Failed to update image of email: [%s] - in external bucket",
+        } catch (Exception ex) {
+            logger.error(String.format("Failed to upload image of email: [%s] - in AWS Bucket S3",
                     request.getEmail()));
-            e.printStackTrace();
-            throw e;
-        } finally {
+            throw new AwsUploadException(ex.getMessage());
+        }
+        finally {
             assert imageInputStream != null;
             imageInputStream.close();
         }
     }
 
-    //TODO: Criar exception handler para retornar os erros mapeados, invés de 500;
     @Override
-    public String getProfilePicture(GetProfilePictureRequestDto request) throws IOException {
+    public String getProfilePicture(GetProfilePictureRequestDto request) throws IOException, AwsS3ImageException, AwsServiceInternalException {
         S3ObjectInputStream s3ImageInputStream = null;
 
         try {
@@ -76,21 +76,21 @@ public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
             logger.info(String.format("Base64 image successfully obtained of: [%s]", request.getEmail()));
 
             return base64;
-        }
-        catch (FileNotFoundException ex) {
-            logger.error(String.format("[Failed: FileNotFoundException] - of email: [%s]", request.getEmail()));
-            throw ex;
-        }
-        catch (AmazonServiceException ex) {
-            logger.error("[Failed: AmazonServiceException] - error in some amazon service");
-            throw ex;
-        }
-        catch (IOException ex) {
+        } catch (AmazonS3Exception ex) {
+            logger.error("[Failed: AwsS3ImageException] - error in some Amazon S3 service");
+            throw new AwsS3ImageException(ex.getMessage());
+        } catch (AmazonServiceException ex) {
+            logger.error("[Failed: AwsServiceInternalException] - error in some amazon service");
+            throw new AwsServiceInternalException(ex.getMessage());
+        } catch (IOException ex) {
             logger.error("[Failed: IOException] - error at bucket flow");
             throw ex;
         } finally {
-            assert s3ImageInputStream != null;
-            s3ImageInputStream.close();
+            if (s3ImageInputStream == null) {
+                logger.info("Don't have image to close");
+            } else {
+                s3ImageInputStream.close();
+            }
         }
     }
 

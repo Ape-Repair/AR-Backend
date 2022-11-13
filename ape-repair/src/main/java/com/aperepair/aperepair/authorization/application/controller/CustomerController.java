@@ -1,6 +1,9 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
+import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
+import com.aperepair.aperepair.authorization.domain.service.impl.CustomerServiceImpl;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
@@ -8,7 +11,10 @@ import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePi
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +40,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Integer id) {
+    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Integer id) throws CustomerNotFoundException {
         return customerService.findById(id);
     }
 
@@ -42,40 +48,41 @@ public class CustomerController {
     public ResponseEntity<CustomerResponseDto> update(
             @PathVariable Integer id,
             @RequestBody @Valid CustomerRequestDto updatedCustomer
-    ) {
+    ) throws CustomerNotFoundException {
         return customerService.update(id, updatedCustomer);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) throws CustomerNotFoundException {
         return customerService.delete(id);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
         return customerService.login(loginRequestDto);
     }
 
     @DeleteMapping("/in/logout")
-    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
         return customerService.logout(loginRequestDto);
     }
 
     @PutMapping("/profile-picture")
-    public ResponseEntity<ProfilePictureCreationResponseDto> profilePictureCreation(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProfilePictureCreationResponseDto profilePictureCreation(
             @RequestBody @Valid ProfilePictureCreationRequestDto request
-    ) throws IOException {
-        ProfilePictureCreationResponseDto response = customerService.profilePictureCreation(request);
+    ) throws IOException, AwsUploadException, CustomerNotFoundException {
+        logger.info("Calling CustomerService to upload customer profile image!");
 
-        if (response.isSuccess()) return ResponseEntity.status(201).body(response);
-
-        return ResponseEntity.status(404).body(response);
+        return customerService.profilePictureCreation(request);
     }
 
     @PostMapping("/profile-picture")
     public ResponseEntity<GetProfilePictureResponseDto> getProfilePicture(
-            @RequestBody @Valid GetProfilePictureRequestDto request) throws IOException {
+            @RequestBody @Valid GetProfilePictureRequestDto request) throws Exception {
         GetProfilePictureResponseDto response = customerService.getProfilePicture(request);
         return ResponseEntity.status(200).body(response);
     }
+
+    private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

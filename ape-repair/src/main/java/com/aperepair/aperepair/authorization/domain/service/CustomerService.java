@@ -1,6 +1,8 @@
 package com.aperepair.aperepair.authorization.domain.service;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
+import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
@@ -18,18 +20,18 @@ public interface CustomerService {
 
     ResponseEntity<List<CustomerResponseDto>> findAll();
 
-    ResponseEntity<CustomerResponseDto> findById(Integer id);
+    ResponseEntity<CustomerResponseDto> findById(Integer id) throws CustomerNotFoundException;
 
-    ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer);
+    ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer) throws CustomerNotFoundException;
 
-    ResponseEntity<Boolean> delete(Integer id);
+    ResponseEntity<Boolean> delete(Integer id) throws CustomerNotFoundException;
 
-    ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto);
+    ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) throws CustomerNotFoundException;
 
-    ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto);
+    ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) throws CustomerNotFoundException;
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request)
-            throws IOException;
+            throws IOException, AwsUploadException, CustomerNotFoundException;
 
-    GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws IOException;
+    GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception;
 }

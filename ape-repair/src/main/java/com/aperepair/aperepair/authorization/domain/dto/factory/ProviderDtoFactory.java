@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.dto.factory;
 
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
 import com.aperepair.aperepair.authorization.domain.model.Provider;
 import org.apache.logging.log4j.LogManager;
@@ -7,16 +9,55 @@ import org.apache.logging.log4j.Logger;
 
 public class ProviderDtoFactory {
 
-    public static ProviderResponseDto toDto(Provider provider) {
+    public static Provider toEntity(ProviderRequestDto providerRequestDto) {
+        Provider provider = new Provider(
+                null,
+                providerRequestDto.getName(),
+                providerRequestDto.getEmail(),
+                providerRequestDto.getPassword(),
+                providerRequestDto.getGenre(),
+                providerRequestDto.getCpf(),
+                providerRequestDto.getPhone(),
+                null,
+                providerRequestDto.getCnpj(),
+                providerRequestDto.getRole(),
+                providerRequestDto.isAuthenticated()
+        );
+
+        logger.info("ProviderRequestDto transformed to Provider entity with success!");
+        return provider;
+    }
+
+    public static ProviderResponseDto toResponseFullDto(Provider provider, AddressResponseDto addressResponseDto) {
         ProviderResponseDto providerResponseDto = new ProviderResponseDto(
                 provider.getName(),
                 provider.getEmail(),
                 provider.getGenre(),
+                provider.getCpf(),
+                provider.getCnpj(),
+                provider.getPhone(),
                 provider.getRole(),
-                provider.getAuthenticated()
+                provider.isAuthenticated(),
+                addressResponseDto
         );
 
-        logger.info("Provider transformed to DTO with successfully");
+        logger.info("Provider transformed to ProviderResponseFullDto successfully");
+        return providerResponseDto;
+    }
+
+    public static ProviderResponseDto toResponsePartialDto(Provider provider) {
+        ProviderResponseDto providerResponseDto = new ProviderResponseDto(
+                provider.getName(),
+                provider.getEmail(),
+                provider.getGenre(),
+                provider.getCpf(),
+                provider.getCnpj(),
+                provider.getPhone(),
+                provider.getRole(),
+                provider.isAuthenticated()
+        );
+
+        logger.info("Provider transformed to ProviderResponsePartialDto with success!");
         return providerResponseDto;
     }
 

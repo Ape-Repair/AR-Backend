@@ -1,28 +1,39 @@
 package com.aperepair.aperepair.authorization.domain.service;
 
-import com.aperepair.aperepair.authorization.domain.model.Provider;
+import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.DeleteResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.domain.exception.*;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProviderService {
 
-    ResponseEntity<ProviderResponseDto> create(@RequestBody Provider provider);
+    ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException;
 
     ResponseEntity<List<ProviderResponseDto>> findAll();
 
     ResponseEntity<ProviderResponseDto> findById(Integer id);
 
-    ResponseEntity<ProviderResponseDto> update(Integer id, Provider updatedProvider);
+    ProviderResponseDto update(Integer id, ProviderRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException;
 
-    ResponseEntity<Boolean> delete(Integer id);
+    DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException;
 
-    ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto);
+    ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto);
 
-    ResponseEntity<LogoutResponseDto> logout(@RequestBody LoginRequestDto loginRequestDto);
+    ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto);
+
+    ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request) throws AwsUploadException, IOException, NotFoundException;
+
+    GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException;
 }

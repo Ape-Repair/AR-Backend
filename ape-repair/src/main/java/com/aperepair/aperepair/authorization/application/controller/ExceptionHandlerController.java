@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -41,13 +42,13 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AlreadyRegisteredException.class)
+    @ExceptionHandler({AlreadyRegisteredException.class, HttpClientErrorException.BadRequest.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiExceptionResponseDto handleBadRequestException(Exception ex) {
         return new ApiExceptionResponseDto(
-            HttpStatus.BAD_REQUEST,
-            ex.getMessage(),
-            ex.getClass().getName()
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                ex.getClass().getName()
         );
     }
 

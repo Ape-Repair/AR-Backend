@@ -15,14 +15,37 @@ public class ProviderResponseDto {
 
     private String genre;
 
+    private String cpf;
+
+    private String cnpj;
+
+    private String phone;
+
     private String role;
 
     private Boolean isAuthenticated;
 
-    public ProviderResponseDto(String name, String email, String genre, String role, Boolean isAuthenticated) {
+    private AddressResponseDto address;
+
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String cnpj, String phone, String role, Boolean isAuthenticated, AddressResponseDto address) {
         this.name = name;
         this.email = email;
         this.genre = genre;
+        this.cpf = cpf;
+        this.cnpj = cnpj;
+        this.phone = phone;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
+        this.address = address;
+    }
+
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String cnpj, String phone, String role, Boolean isAuthenticated) {
+        this.name = name;
+        this.email = email;
+        this.genre = genre;
+        this.cpf = cpf;
+        this.cnpj = cnpj;
+        this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
     }
@@ -59,7 +82,7 @@ public class ProviderResponseDto {
         this.role = role;
     }
 
-    public Boolean getAuthenticated() {
+    public Boolean isAuthenticated() {
         return isAuthenticated;
     }
 

@@ -22,7 +22,7 @@ public class CustomerDtoFactory {
                 customerRequestDto.getRole(),
                 customerRequestDto.isAuthenticated()
         );
-        logger.info("CustomerRequestDto transformed to Customer entity with successfully");
+        logger.info("CustomerRequestDto transformed to Customer entity with success!");
         return customer;
     }
 

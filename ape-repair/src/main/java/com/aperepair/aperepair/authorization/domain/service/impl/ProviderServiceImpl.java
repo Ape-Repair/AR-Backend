@@ -1,22 +1,31 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
-import com.aperepair.aperepair.authorization.domain.model.Provider;
+import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.response.*;
+import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.ProviderDtoFactory;
-import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
+import com.aperepair.aperepair.authorization.domain.exception.*;
+import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
+import com.aperepair.aperepair.authorization.domain.model.Address;
+import com.aperepair.aperepair.authorization.domain.model.Provider;
+import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.authorization.domain.service.ProviderService;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,29 +37,59 @@ public class ProviderServiceImpl implements ProviderService {
     private ProviderRepository providerRepository;
 
     @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private ProfilePictureGateway profilePictureGateway;
+
     @Override
-    public ResponseEntity<ProviderResponseDto> create(@RequestBody Provider provider) {
-        String cpf = provider.getCpf();
-        String cnpj = provider.getCnpj();
-        String phone = provider.getPhone();
+    public ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException {
+        String cpf = request.getCpf();
+        String cnpj = request.getCnpj();
+        String phone = request.getPhone();
 
-        if (thisCpfAndCnpjAreNull(cpf, cnpj)) return ResponseEntity.status(400).build();
+        if (thisCpfAndCnpjAreNull(cpf, cnpj)) {
+            logger.error("CPF and CNPJ cannot be null");
 
-        if (thisCpfOrCnpjOrPhoneIsAlreadyRegistered(cpf, cnpj, phone)) return ResponseEntity.status(400).build();
+            throw new BadRequestException("CPF and CNPJ cannot be null");
+        }
 
-        provider.setPassword(encoder.encode(provider.getPassword()));
+        if (thisCpfOrCnpjOrPhoneIsAlreadyRegistered(cpf, cnpj, phone)) {
+            logger.error("CPF or CNPJ or Phone is already registered");
+
+            throw new AlreadyRegisteredException("CPF or CNPJ or Phone is already registered");
+        }
+
+        request.setPassword(encoder.encode(request.getPassword()));
         logger.info("Provider password encrypted with successfully");
 
-        provider.setAuthenticated(false);
+        request.setAuthenticated(false);
+        request.setRole(Role.PROVIDER.name());
+
+        Provider provider = ProviderDtoFactory.toEntity(request);
 
         providerRepository.save(provider);
+        logger.info("Provider saved with successfully");
 
-        ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+        Address address = AddressDtoFactory.toEntity(request.getAddress());
+
+        addressRepository.save(address);
+        logger.info("Address registered successfully for customer");
+
+        AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
+
+
+        Integer providerId = provider.getId();
+        providerRepository.updateAddressIdById(address, providerId);
+        logger.info("Foreign key [addressId] updated successfully");
+
+        ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponseFullDto(provider, addressResponseDto);
         logger.info(String.format("Provider: %s registered successfully", providerResponseDto.toString()));
 
-        return ResponseEntity.status(201).body(providerResponseDto);
+        return providerResponseDto;
     }
 
     @Override
@@ -65,7 +104,7 @@ public class ProviderServiceImpl implements ProviderService {
         List<ProviderResponseDto> providerResponseDtos = new ArrayList();
 
         for (Provider provider : providers) {
-            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
             providerResponseDtos.add(providerResponseDto);
         }
 
@@ -77,74 +116,80 @@ public class ProviderServiceImpl implements ProviderService {
     public ResponseEntity<ProviderResponseDto> findById(Integer id) {
         if (providerRepository.existsById(id)) {
             Optional<Provider> optionalProvider = providerRepository.findById(id);
-            logger.info(String.format("Provider of id %d found", id));
+            logger.info(String.format("Provider with id [%d] found", id));
 
             Provider provider = optionalProvider.get();
 
-            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
 
             return ResponseEntity.status(200).body(providerResponseDto);
         }
 
-        logger.error(String.format("Provider of id %d not found", id));
+        logger.error(String.format("Provider with id: [%d] not found", id));
         return ResponseEntity.status(404).build();
     }
 
     @Override
-    public ResponseEntity<ProviderResponseDto> update(Integer id, Provider updatedProvider) {
+    public ProviderResponseDto update(Integer id, ProviderRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException {
         if (providerRepository.existsById(id)) {
 
             Provider provider = providerRepository.findById(id).get();
 
             if (!isAuthenticatedProvider(provider)) {
-                logger.error("Provider is not authenticated!");
-                return ResponseEntity.status(403).build();
+                ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+                logger.error(String.format("Provider: [%s] is not authenticated", providerResponseDto));
+                throw new NotAuthenticatedException(String.format("Provider: [%s] is not authenticated", providerResponseDto));
             }
 
             logger.info(String.format("Provider of id %d found", provider.getId()));
 
-            provider.setName(updatedProvider.getName());
-            provider.setEmail(updatedProvider.getEmail());
-            provider.setCpf(updatedProvider.getCpf());
-            provider.setGenre(updatedProvider.getGenre());
-            provider.setPhone(updatedProvider.getPhone());
-            provider.setCnpj(updatedProvider.getCnpj());
-            provider.setPassword(encoder.encode(updatedProvider.getPassword()));
+            updatedProvider.setRole(provider.getRole());
+            updatedProvider.setAuthenticated(true);
 
-            providerRepository.save(provider);
-            logger.info(String.format("Updated provider of id: %d registration data!", provider.getId()));
+            Provider newProvider = ProviderDtoFactory.toEntity(updatedProvider);
 
-            ProviderResponseDto updatedProviderResponseDto = ProviderDtoFactory.toDto(provider);
+            Address address = AddressDtoFactory.toEntity(updatedProvider.getAddress());
 
-            return ResponseEntity.status(200).body(updatedProviderResponseDto);
+            newProvider.setId(id);
+            newProvider.setAddressId(provider.getAddressId());
+
+            address.setId(provider.getAddressId().getId());
+
+            providerRepository.save(newProvider);
+            addressRepository.save(address);
+
+            logger.info(String.format("Updated provider of id: %d registration data!", newProvider.getId()));
+
+            ProviderResponseDto updatedProviderResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+
+            return updatedProviderResponseDto;
         }
 
-        logger.error(String.format("Provider of id %d not found", id));
-        return ResponseEntity.status(404).build();
+        logger.error(String.format("Provider with id [%d] not found!", id));
+        throw new NotFoundException(String.format("Provider with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<Boolean> delete(Integer id) {
-        Boolean success = false;
-        if (providerRepository.existsById(id)) {
-            Provider provider = providerRepository.findById(id).get();
-            logger.info(String.format("Provider of id %d found", id));
-
-            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toDto(provider);
+    public DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException {
+        if (providerRepository.existsById(request.getId())) {
+            Provider provider = providerRepository.findById(request.getId()).get();
+            logger.info(String.format("Provider id %d found", request.getId()));
 
             provider.setRole(Role.DELETED.name());
             providerRepository.save(provider);
 
-            logger.info(String.format("Provider: %s successfully deleted", providerResponseDto.toString()));
-            success = true;
+            logger.info(String.format("Provider id: %d successfully deleted", provider.getId()));
 
-            return ResponseEntity.status(200).body(success);
+            DeleteResponseDto response = new DeleteResponseDto(true);
+
+            return response;
         }
 
-        logger.error(String.format("Provider of id %d not found", id));
-        return ResponseEntity.status(404).body(success);
+        logger.error(String.format("Provider with id: [%d] not found", request.getId()));
+        throw new NotFoundException(String.format("Provider with id [%d] not found!", request.getId()));
     }
 
+    //TODO: Refatorar login e logout, para deixar igual ao customer;
     @Override
     public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
@@ -230,8 +275,49 @@ public class ProviderServiceImpl implements ProviderService {
         }
     }
 
+    @Override
+    public ProfilePictureCreationResponseDto profilePictureCreation(
+            ProfilePictureCreationRequestDto request
+    ) throws AwsUploadException, IOException, NotFoundException {
+        String email = request.getEmail();
+
+        logger.info(String.format("Starting creation profile picture for user email - [%s]",
+                email));
+
+        ProfilePictureCreationResponseDto response = new ProfilePictureCreationResponseDto(false);
+
+        if (providerRepository.existsByEmail(email)) {
+            boolean profilePictureCreatedWithSuccess = profilePictureGateway.profilePictureCreation(request);
+
+            response.setSuccess(profilePictureCreatedWithSuccess);
+
+            return response;
+        }
+
+        logger.error(String.format("Provider with email [%s] not found!", email));
+        throw new NotFoundException(String.format("Provider with email [%s] not found!", email));
+    }
+
+    @Override
+    public GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException {
+        String email = request.getEmail();
+        if (providerRepository.existsByEmail(email)) {
+            logger.info(String.format("Searching profile picture for customer: [%s]", email));
+
+            GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
+            String imageBase64 = profilePictureGateway.getProfilePicture(request);
+
+            response.setImageBase64(imageBase64);
+
+            return response;
+        }
+
+        logger.error(String.format("Provider with email [%s] not found!", email));
+        throw new NotFoundException(String.format("Provider with email [%s] not found!", email));
+    }
+
     private Boolean isAuthenticatedProvider(Provider provider) {
-        if (provider.getAuthenticated()) return true;
+        if (provider.isAuthenticated()) return true;
 
         return false;
     }

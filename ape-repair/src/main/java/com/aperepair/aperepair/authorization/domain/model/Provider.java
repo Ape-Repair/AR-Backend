@@ -52,6 +52,24 @@ public class Provider {
     @Column(name = "is_authenticated")
     private Boolean isAuthenticated;
 
+    public Provider() {
+        super();
+    }
+
+    public Provider(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String cnpj, String role, Boolean isAuthenticated) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.genre = genre;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.addressId = addressId;
+        this.cnpj = cnpj;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -132,7 +150,7 @@ public class Provider {
         this.addressId = addressId;
     }
 
-    public Boolean getAuthenticated() {
+    public Boolean isAuthenticated() {
         return isAuthenticated;
     }
 

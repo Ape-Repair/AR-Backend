@@ -2,20 +2,20 @@ package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
-import com.aperepair.aperepair.authorization.domain.exception.*;
-import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.authorization.domain.enums.Role;
+import com.aperepair.aperepair.authorization.domain.exception.*;
+import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
 import com.aperepair.aperepair.authorization.domain.model.Address;
 import com.aperepair.aperepair.authorization.domain.model.Customer;
 import com.aperepair.aperepair.authorization.domain.repository.AddressRepository;
 import com.aperepair.aperepair.authorization.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
-import com.aperepair.aperepair.authorization.domain.gateway.ProfilePictureGateway;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
+import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.apache.logging.log4j.LogManager;
@@ -79,7 +79,7 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info("Foreign key [addressId] updated successfully");
 
         CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
-        logger.info(String.format("CustomerDto: %s registered successfully", customerResponseDto.toString()));
+        logger.info(String.format("Customer: %s registered successfully", customerResponseDto.toString()));
 
         return customerResponseDto;
     }

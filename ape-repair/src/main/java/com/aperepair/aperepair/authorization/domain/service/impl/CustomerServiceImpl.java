@@ -1,8 +1,8 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
-import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
+import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
+import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -32,7 +32,6 @@ import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-    //TODO (ferias): refatorar service para retornar dto e não ResponseEntity
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -46,17 +45,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private ProfilePictureGateway profilePictureGateway;
 
-    //TODO: Substituir retornos de caminhos tristes, por exceptions personalizadas
-
     @Override
-    public ResponseEntity<CustomerResponseDto> create(CustomerRequestDto customerRequestDto) {
+    public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException {
         String cpf = customerRequestDto.getCpf();
         String email = customerRequestDto.getEmail();
         String phone = customerRequestDto.getPhone();
 
         if (thisCpfOrEmailOrPhoneIsAlreadyRegistered(cpf, email, phone)) {
             logger.error(String.format("Customer: %s already registered", customerRequestDto.toString()));
-            return ResponseEntity.status(400).build();
+            throw new AlreadyRegisteredException(String.format("Customer: %s already registered", customerRequestDto.toString()));
         }
 
         customerRequestDto.setPassword(encoder.encode(customerRequestDto.getPassword()));
@@ -84,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
         logger.info(String.format("CustomerDto: %s registered successfully", customerResponseDto.toString()));
 
-        return ResponseEntity.status(201).body(customerResponseDto);
+        return customerResponseDto;
     }
 
     @Override
@@ -108,7 +105,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<CustomerResponseDto> findById(Integer id) throws CustomerNotFoundException {
+    public ResponseEntity<CustomerResponseDto> findById(Integer id) throws NotFoundException {
         if (customerRepository.existsById(id)) {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
             logger.info(String.format("Customer of id %d found", id));
@@ -121,18 +118,19 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         logger.error(String.format("Customer with id: [%d] not found", id));
-        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
+        throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<CustomerResponseDto> update(Integer id, CustomerRequestDto updatedCustomer) throws CustomerNotFoundException {
+    public CustomerResponseDto update(Integer id, CustomerRequestDto updatedCustomer) throws NotFoundException, NotAuthenticatedException {
         if (customerRepository.existsById(id)) {
 
             Customer customer = customerRepository.findById(id).get();
 
             if (!isAuthenticatedCustomer(customer)) {
-                logger.error("Customer is not authenticated!");
-                return ResponseEntity.status(403).build();
+                CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+                logger.error(String.format("Customer: [%s] is not authenticated", customerResponseDto));
+                throw new NotAuthenticatedException(String.format("Customer: [%s] is not authenticated", customerResponseDto));
             }
 
             logger.info(String.format("Customer of id %d found", customer.getId()));
@@ -156,35 +154,35 @@ public class CustomerServiceImpl implements CustomerService {
 
             CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
 
-            return ResponseEntity.status(200).body(updatedCustomerResponseDto);
+            return updatedCustomerResponseDto;
         }
 
         logger.error(String.format("Customer with id: [%d] not found", id));
-        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
+        throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public ResponseEntity<Boolean> delete(Integer id) throws CustomerNotFoundException {
-        boolean success = false;
-        if (customerRepository.existsById(id)) {
-            Customer customer = customerRepository.findById(id).get();
-            logger.info(String.format("Customer id %d found", id));
+    public DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException {
+        if (customerRepository.existsById(request.getId())) {
+            Customer customer = customerRepository.findById(request.getId()).get();
+            logger.info(String.format("Customer id %d found", request.getId()));
 
             customer.setRole(Role.DELETED.name());
             customerRepository.save(customer);
 
             logger.info(String.format("Customer id: %d successfully deleted", customer.getId()));
-            success = true;
 
-            return ResponseEntity.status(200).body(success);
+            DeleteResponseDto response = new DeleteResponseDto(true);
+
+            return response;
         }
 
-        logger.error(String.format("Customer with id: [%d] not found", id));
-        throw new CustomerNotFoundException(String.format("Customer with id [%d] not found!", id));
+        logger.error(String.format("Customer with id: [%d] not found", request.getId()));
+        throw new NotFoundException(String.format("Customer with id [%d] not found!", request.getId()));
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
 
         String emailAttempt = loginRequestDto.getEmail();
@@ -195,14 +193,14 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (optionalCustomer.isEmpty()) {
             logger.error(String.format("Customer with email [%s] not found!", emailAttempt));
-            throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
+            throw new NotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
         }
 
         Customer customer = optionalCustomer.get();
 
         if (customer.getRole() != Role.CUSTOMER.name()) {
-            logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
-            return ResponseEntity.status(403).build();
+            logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
         }
 
         logger.info(String.format("Trying to login with email: [%s] - as a customer", emailAttempt));
@@ -214,19 +212,19 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             logger.info("Password invalid!");
 
-            return ResponseEntity.status(401).body(loginResponseDto);
+            throw new BadCredentialsException("Bad Credentials");
         }
 
         customer.setAuthenticated(true);
         customerRepository.save(customer);
-        logger.info("Customer authenticated successfully!");
+        logger.info("Customer authenticated with success!");
 
-        logger.info("Login successfully executed!");
-        return ResponseEntity.status(200).body(loginResponseDto);
+        logger.info("Login executed with success!");
+        return loginResponseDto;
     }
 
     @Override
-    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
+    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
         String emailAttempt = loginRequestDto.getEmail();
@@ -236,14 +234,14 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (optionalCustomer.isEmpty()) {
             logger.error(String.format("Customer with email: [%s] - Not Found!", emailAttempt));
-            throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
+            throw new NotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
         }
 
         Customer customer = optionalCustomer.get();
 
         if (customer.getRole() != Role.CUSTOMER.name()) {
-            logger.fatal(String.format("[%S] - Incorrect role for this flow", customer.getRole()));
-            return ResponseEntity.status(403).build();
+            logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
         }
 
         logger.info(String.format("Initiating logout from email customer [%s]", emailAttempt));
@@ -255,25 +253,26 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setAuthenticated(false);
 
             customerRepository.save(customer);
-
-            logger.info("Logout successfully executed!");
-            return ResponseEntity.status(200).body(logoutResponse);
         } else {
-            if (!valid) logger.info("Password invalid!");
+            if (!valid) {
+                logger.info("Password invalid!");
+                throw new BadCredentialsException("Password invalid!");
+            }
 
             if (!isAuthenticatedCustomer(customer)) {
                 logger.info("The customer is not authenticated");
-                return ResponseEntity.status(401).body(logoutResponse);
+                throw new NotAuthenticatedException("The customer is not authenticated");
             }
-
-            return ResponseEntity.status(401).body(logoutResponse);
         }
+
+        logger.info("Logout successfully executed!");
+        return logoutResponse;
     }
 
     @Override
     public ProfilePictureCreationResponseDto profilePictureCreation(
             ProfilePictureCreationRequestDto request
-    ) throws IOException, AwsUploadException, CustomerNotFoundException {
+    ) throws IOException, AwsUploadException, NotFoundException {
         String email = request.getEmail();
 
         logger.info(String.format("Starting creation profile picture for user email - [%s]",
@@ -290,7 +289,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         logger.error(String.format("Customer with email [%s] not found!", email));
-        throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", email));
+        throw new NotFoundException(String.format("Customer with email [%s] not found!", email));
     }
 
     @Override
@@ -308,7 +307,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         logger.error(String.format("Customer with email [%s] not found!", email));
-        throw new CustomerNotFoundException(String.format("Customer with email [%s] not found!", email));
+        throw new NotFoundException(String.format("Customer with email [%s] not found!", email));
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {
@@ -324,8 +323,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private boolean thisCpfOrEmailOrPhoneIsAlreadyRegistered(String cpf, String email, String phone) {
-        if (customerRepository.existsByCpf(cpf) ||
-                customerRepository.existsByEmail(email) ||
+        if (customerRepository.existsByCpf(cpf) || customerRepository.existsByEmail(email) ||
                 customerRepository.existsByPhone(phone)) return true;
 
         return false;

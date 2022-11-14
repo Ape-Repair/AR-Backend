@@ -1,9 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.response.ApiExceptionResponseDto;
-import com.aperepair.aperepair.authorization.domain.exception.AwsS3ImageException;
-import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
-import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
+import com.aperepair.aperepair.authorization.domain.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +33,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AwsUploadException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    public ApiExceptionResponseDto handleBadGatewayException(
-            Exception ex
-    ) {
+    public ApiExceptionResponseDto handleBadGatewayException(Exception ex) {
         return new ApiExceptionResponseDto(
                 HttpStatus.BAD_GATEWAY,
                 ex.getMessage(),
@@ -45,13 +41,45 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler({AwsS3ImageException.class, CustomerNotFoundException.class})
+    @ExceptionHandler(AlreadyRegisteredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiExceptionResponseDto handleBadRequestException(Exception ex) {
+        return new ApiExceptionResponseDto(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage(),
+            ex.getClass().getName()
+        );
+    }
+
+    @ExceptionHandler({AwsS3ImageException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiExceptionResponseDto handleNotFoundException(
             Exception ex
     ) {
         return new ApiExceptionResponseDto(
                 HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                ex.getClass().getName()
+        );
+    }
+
+    @ExceptionHandler(NotAuthenticatedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiExceptionResponseDto handleNotAuthenticated(
+            Exception ex
+    ) {
+        return new ApiExceptionResponseDto(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                ex.getClass().getName()
+        );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiExceptionResponseDto handleBadCredentials(Exception ex) {
+        return new ApiExceptionResponseDto(
+                HttpStatus.UNAUTHORIZED,
                 ex.getMessage(),
                 ex.getClass().getName()
         );

@@ -1,9 +1,8 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.domain.exception.AwsUploadException;
-import com.aperepair.aperepair.authorization.domain.exception.CustomerNotFoundException;
-import com.aperepair.aperepair.authorization.domain.service.impl.CustomerServiceImpl;
+import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
+import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
@@ -30,7 +29,10 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<CustomerResponseDto> create(@Valid @RequestBody CustomerRequestDto newCustomer) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CustomerResponseDto create(@Valid @RequestBody CustomerRequestDto newCustomer) throws AlreadyRegisteredException {
+        logger.info("Calling CustomerService to create a customer!");
+
         return customerService.create(newCustomer);
     }
 
@@ -40,30 +42,42 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Integer id) throws CustomerNotFoundException {
+    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Integer id) throws NotFoundException {
         return customerService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponseDto> update(
+    @ResponseStatus(HttpStatus.OK)
+    public CustomerResponseDto update(
             @PathVariable Integer id,
             @RequestBody @Valid CustomerRequestDto updatedCustomer
-    ) throws CustomerNotFoundException {
+    ) throws NotFoundException, NotAuthenticatedException {
+        logger.info("Calling CustomerService to update customer!");
+
         return customerService.update(id, updatedCustomer);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Integer id) throws CustomerNotFoundException {
-        return customerService.delete(id);
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public DeleteResponseDto delete(@RequestBody @Valid DeleteRequestDto request) throws NotFoundException {
+        logger.info("Calling CustomerService to delete a customer");
+
+        return customerService.delete(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+        logger.info("Calling CustomerService to authenticate a customer");
+
         return customerService.login(loginRequestDto);
     }
 
     @DeleteMapping("/in/logout")
-    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws CustomerNotFoundException {
+    @ResponseStatus(HttpStatus.OK)
+    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
+        logger.info("Calling CustomerService to logout a customer");
+
         return customerService.logout(loginRequestDto);
     }
 
@@ -71,17 +85,19 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProfilePictureCreationResponseDto profilePictureCreation(
             @RequestBody @Valid ProfilePictureCreationRequestDto request
-    ) throws IOException, AwsUploadException, CustomerNotFoundException {
+    ) throws IOException, AwsUploadException, NotFoundException {
         logger.info("Calling CustomerService to upload customer profile image!");
 
         return customerService.profilePictureCreation(request);
     }
 
     @PostMapping("/profile-picture")
-    public ResponseEntity<GetProfilePictureResponseDto> getProfilePicture(
-            @RequestBody @Valid GetProfilePictureRequestDto request) throws Exception {
-        GetProfilePictureResponseDto response = customerService.getProfilePicture(request);
-        return ResponseEntity.status(200).body(response);
+    public GetProfilePictureResponseDto getProfilePicture(
+            @RequestBody @Valid GetProfilePictureRequestDto request
+    ) throws Exception {
+        logger.info("Calling CustomerService to get customer profile image!");
+
+        return customerService.getProfilePicture(request);
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());

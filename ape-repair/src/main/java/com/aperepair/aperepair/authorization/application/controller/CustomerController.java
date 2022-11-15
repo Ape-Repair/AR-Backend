@@ -73,7 +73,7 @@ public class CustomerController {
         return customerService.login(loginRequestDto);
     }
 
-    @DeleteMapping("/in/logout")
+    @PutMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling CustomerService to logout a customer");

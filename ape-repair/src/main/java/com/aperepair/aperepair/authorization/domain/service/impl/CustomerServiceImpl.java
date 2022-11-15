@@ -188,7 +188,7 @@ public class CustomerServiceImpl implements CustomerService {
         String emailAttempt = loginRequestDto.getEmail();
         String passwordAttempt = loginRequestDto.getPassword();
 
-        logger.info(String.format("Searching for customer by email: [%s]", emailAttempt));
+        logger.info(String.format("Searching for customer with email: [%s]", emailAttempt));
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
         if (optionalCustomer.isEmpty()) {

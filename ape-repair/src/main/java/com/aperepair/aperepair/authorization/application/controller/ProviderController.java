@@ -72,12 +72,17 @@ public class ProviderController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+        logger.info("Calling ProviderService to authenticate a customer");
+
         return providerService.login(loginRequestDto);
     }
 
-    @DeleteMapping("/in/logout")
-    public ResponseEntity<LogoutResponseDto> logout(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    @PutMapping("/logout")
+    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
+        logger.info("Calling ProviderService to logout a customer");
+
         return providerService.logout(loginRequestDto);
     }
 

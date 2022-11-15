@@ -29,9 +29,9 @@ public interface ProviderService {
 
     DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException;
 
-    ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto);
+    LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException;
 
-    ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto);
+    LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException;
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request) throws AwsUploadException, IOException, NotFoundException;
 

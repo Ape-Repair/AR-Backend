@@ -191,25 +191,25 @@ public class ProviderServiceImpl implements ProviderService {
 
     //TODO: Refatorar login e logout, para deixar igual ao customer;
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequestDto) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
 
         String emailAttempt = loginRequestDto.getEmail();
         String passwordAttempt = loginRequestDto.getPassword();
 
-        logger.info(String.format("Searching for provider by email: [%s]", emailAttempt));
+        logger.info(String.format("Searching for provider with email: [%s]", emailAttempt));
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
 
         if (optionalProvider.isEmpty()) {
-            logger.warn(String.format("Email provider: [%s] - Not Found!", emailAttempt));
-            return ResponseEntity.status(400).body(loginResponseDto);
+            logger.error(String.format("Provider with email [%s] not found!", emailAttempt));
+            throw new NotFoundException(String.format("Provider with email [%s] not found!", emailAttempt));
         }
 
         Provider provider = optionalProvider.get();
 
         if (provider.getRole() != Role.PROVIDER.name()) {
-            logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
-            return ResponseEntity.status(403).build();
+            logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
+            throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
         }
 
         logger.info(String.format("Trying to login with email: [%s] - as a provider", emailAttempt));
@@ -221,17 +221,18 @@ public class ProviderServiceImpl implements ProviderService {
         } else {
             logger.info("Password invalid!");
 
-            return ResponseEntity.status(401).body(loginResponseDto);
+            throw new BadCredentialsException("Bad Credentials");
         }
 
         provider.setAuthenticated(true);
         providerRepository.save(provider);
+        logger.info("Provider authenticated with success!");
 
-        logger.info("Login successfully");
-        return ResponseEntity.status(200).body(loginResponseDto);
+        logger.info("Login executed with success!");
+        return loginResponseDto;
     }
 
-    public ResponseEntity<LogoutResponseDto> logout(LoginRequestDto loginRequestDto) {
+    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
         String emailAttempt = loginRequestDto.getEmail();
@@ -240,15 +241,15 @@ public class ProviderServiceImpl implements ProviderService {
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
 
         if (optionalProvider.isEmpty()) {
-            logger.warn(String.format("Email provider: [%s] - Not Found!", emailAttempt));
-            return ResponseEntity.status(404).body(logoutResponse);
+            logger.error(String.format("Provider with email: [%s] - Not Found!", emailAttempt));
+            throw new NotFoundException(String.format("Provider with email [%s] not found!", emailAttempt));
         }
 
         Provider provider = optionalProvider.get();
 
         if (provider.getRole() != Role.PROVIDER.name()) {
-            logger.fatal(String.format("[%S] - Incorrect role for this flow", provider.getRole()));
-            return ResponseEntity.status(403).build();
+            logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
+            throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
         }
 
         logger.info(String.format("Initiating logout from email provider [%s]", emailAttempt));
@@ -260,19 +261,20 @@ public class ProviderServiceImpl implements ProviderService {
             provider.setAuthenticated(false);
 
             providerRepository.save(provider);
-
-            logger.info("Logout successfully executed!");
-            return ResponseEntity.status(200).body(logoutResponse);
         } else {
-            if (!valid) logger.info("Password invalid!");
+            if (!valid) {
+                logger.info("Password invalid!");
+                throw new BadCredentialsException("Password invalid!");
+            }
 
             if (!isAuthenticatedProvider(provider)) {
                 logger.info("The provider is not authenticated");
-                return ResponseEntity.status(401).body(logoutResponse);
+                throw new NotAuthenticatedException("The provider is not authenticated");
             }
-
-            return ResponseEntity.status(401).body(logoutResponse);
         }
+
+        logger.info("Logout successfully executed!");
+        return logoutResponse;
     }
 
     @Override

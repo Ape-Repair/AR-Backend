@@ -35,9 +35,6 @@ public class ProviderRequestDto {
     @NotNull
     private AddressRequestDto address;
 
-    @CNPJ
-    private String cnpj;
-
     @JsonIgnore
     private String role;
 
@@ -98,14 +95,6 @@ public class ProviderRequestDto {
 
     public void setAddress(AddressRequestDto address) {
         this.address = address;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
     }
 
     public String getRole() {

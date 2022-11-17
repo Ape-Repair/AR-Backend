@@ -46,7 +46,6 @@ public class CsvFile {
                         p.getName(),
                         p.getEmail(),
                         p.getCpf(),
-                        p.getCnpj(),
                         p.getGenre()
                 );
             }
@@ -56,6 +55,7 @@ public class CsvFile {
         } finally {
             formatter.close();
             try {
+                assert fileWriter != null;
                 fileWriter.close();
             } catch (IOException ex) {
                 logger.error("Error closing CSV file");
@@ -63,49 +63,6 @@ public class CsvFile {
             }
         }
     }
-/*
-    public static void leArquivoCsv(String nomeArquivo) {
-        FileReader arquivo = null;
-        Scanner entrada = null;
-        Boolean deuRuim = false;
-        nomeArquivo += ".csv";
-
-        try {
-            arquivo = new FileReader(nomeArquivo);
-            entrada = new Scanner(arquivo).useDelimiter(";|\\n");
-        } catch (FileNotFoundException ex) {
-            System.out.println("Arquivo não encontrado");
-            System.exit(1);
-        }
-
-        try {
-            System.out.printf("%-6S %-12S %11S %-11S\n", "código", "nome", "duracao", "qtdArtistas");
-            while (entrada.hasNext()) {
-                int id = entrada.nextInt();
-                String nome = entrada.next();
-                Double valor = entrada.nextDouble();
-                Integer estoque = entrada.nextInt();
-                System.out.printf("%06d %-12s %101.2f %11d\n", id, nome, valor, estoque);
-            }
-        } catch (NoSuchElementException ex) {
-            System.out.println("Arquivo com problemas");
-            deuRuim = true;
-        } catch (IllegalStateException ex) {
-            System.out.println("Erro na leitura do arquivo");
-            deuRuim = true;
-        } finally {
-            entrada.close();
-            try {
-                arquivo.close();
-            } catch (IOException ex) {
-                System.out.println("Erro ao fechar o arquivo");
-                deuRuim = true;
-            }
-            if (deuRuim) {
-                System.exit(1);
-            }
-        }
-    } */
 
     private static final Logger logger = LogManager.getLogger(CsvFile.class.getName());
 }

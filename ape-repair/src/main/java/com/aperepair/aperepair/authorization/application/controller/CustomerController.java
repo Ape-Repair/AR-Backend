@@ -1,11 +1,10 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
 import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
-import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.authorization.domain.service.CustomerService;
 import com.aperepair.aperepair.authorization.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -46,6 +45,7 @@ public class CustomerController {
         return customerService.findById(id);
     }
 
+    //TODO: Resolver questão do id já que não retorna no front
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CustomerResponseDto update(
@@ -57,28 +57,29 @@ public class CustomerController {
         return customerService.update(id, updatedCustomer);
     }
 
-    @DeleteMapping
+    //TODO: Fazer dto de request de delete
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public DeleteResponseDto delete(@RequestBody @Valid DeleteRequestDto request) throws NotFoundException {
+    public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {
         logger.info("Calling CustomerService to delete a customer");
 
-        return customerService.delete(request);
+        return customerService.delete(id);
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling CustomerService to authenticate a customer");
 
-        return customerService.login(loginRequestDto);
+        return customerService.login(credentialsRequestDto);
     }
 
-    @PutMapping("/logout")
+    @PatchMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
-    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
+    public LogoutResponseDto logout(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling CustomerService to logout a customer");
 
-        return customerService.logout(loginRequestDto);
+        return customerService.logout(credentialsRequestDto);
     }
 
     @PutMapping("/profile-picture")

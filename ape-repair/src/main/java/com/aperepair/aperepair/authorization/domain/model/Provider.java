@@ -29,6 +29,7 @@ public class Provider {
 
     private String genre;
 
+    @NotBlank
     @Column(name = "cpf", unique = true)
     @CPF
     private String cpf;
@@ -42,10 +43,6 @@ public class Provider {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address addressId;
 
-    @Column(name = "cnpj", unique = true)
-    @CNPJ
-    private String cnpj;
-
     @JsonIgnore
     private String role;
 
@@ -56,7 +53,7 @@ public class Provider {
         super();
     }
 
-    public Provider(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String cnpj, String role, Boolean isAuthenticated) {
+    public Provider(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String role, Boolean isAuthenticated) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -65,7 +62,6 @@ public class Provider {
         this.cpf = cpf;
         this.phone = phone;
         this.addressId = addressId;
-        this.cnpj = cnpj;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
     }
@@ -124,14 +120,6 @@ public class Provider {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
     }
 
     public String getPhone() {

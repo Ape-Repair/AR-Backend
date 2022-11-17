@@ -1,11 +1,9 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
-import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.DeleteResponseDto;
 import com.aperepair.aperepair.authorization.domain.exception.*;
-import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.ProviderResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
@@ -29,8 +27,6 @@ import java.util.List;
 @RequestMapping("/providers")
 public class ProviderController {
 
-    //TODO: refatorar parte de login e logout dos providers;
-
     @Autowired
     private ProviderService providerService;
 
@@ -52,6 +48,7 @@ public class ProviderController {
         return providerService.findById(id);
     }
 
+    //TODO: Resolver questão do id já que não retorna no front
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProviderResponseDto update(
@@ -63,27 +60,28 @@ public class ProviderController {
         return providerService.update(id, updatedProvider);
     }
 
-    @DeleteMapping
+    //TODO: Fazer dto de request de delete (provider)
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException {
+    public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {
         logger.info("Calling ProviderService to delete a provider");
 
-        return providerService.delete(request);
+        return providerService.delete(id);
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling ProviderService to authenticate a customer");
 
-        return providerService.login(loginRequestDto);
+        return providerService.login(credentialsRequestDto);
     }
 
-    @PutMapping("/logout")
-    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
+    @PatchMapping("/logout")
+    public LogoutResponseDto logout(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling ProviderService to logout a customer");
 
-        return providerService.logout(loginRequestDto);
+        return providerService.logout(credentialsRequestDto);
     }
 
     @PutMapping("/profile-picture")

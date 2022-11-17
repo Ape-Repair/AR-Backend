@@ -17,8 +17,6 @@ public class ProviderResponseDto {
 
     private String cpf;
 
-    private String cnpj;
-
     private String phone;
 
     private String role;
@@ -27,24 +25,22 @@ public class ProviderResponseDto {
 
     private AddressResponseDto address;
 
-    public ProviderResponseDto(String name, String email, String genre, String cpf, String cnpj, String phone, String role, Boolean isAuthenticated, AddressResponseDto address) {
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated, AddressResponseDto address) {
         this.name = name;
         this.email = email;
         this.genre = genre;
         this.cpf = cpf;
-        this.cnpj = cnpj;
         this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
         this.address = address;
     }
 
-    public ProviderResponseDto(String name, String email, String genre, String cpf, String cnpj, String phone, String role, Boolean isAuthenticated) {
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
         this.name = name;
         this.email = email;
         this.genre = genre;
         this.cpf = cpf;
-        this.cnpj = cnpj;
         this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
@@ -88,5 +84,29 @@ public class ProviderResponseDto {
 
     public void setAuthenticated(Boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public AddressResponseDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressResponseDto address) {
+        this.address = address;
     }
 }

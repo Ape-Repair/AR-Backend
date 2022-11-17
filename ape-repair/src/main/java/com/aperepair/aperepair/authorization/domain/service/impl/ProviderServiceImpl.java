@@ -1,7 +1,6 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
-import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
@@ -48,19 +47,12 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     public ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException {
         String cpf = request.getCpf();
-        String cnpj = request.getCnpj();
         String phone = request.getPhone();
 
-        if (thisCpfAndCnpjAreNull(cpf, cnpj)) {
-            logger.error("CPF and CNPJ cannot be null");
+        if (thisCpfOrPhoneIsAlreadyRegistered(cpf, phone)) {
+            logger.error("CPF or Phone is already registered");
 
-            throw new BadRequestException("CPF and CNPJ cannot be null");
-        }
-
-        if (thisCpfOrCnpjOrPhoneIsAlreadyRegistered(cpf, cnpj, phone)) {
-            logger.error("CPF or CNPJ or Phone is already registered");
-
-            throw new AlreadyRegisteredException("CPF or CNPJ or Phone is already registered");
+            throw new AlreadyRegisteredException("Provider already registered");
         }
 
         request.setPassword(encoder.encode(request.getPassword()));
@@ -138,7 +130,7 @@ public class ProviderServiceImpl implements ProviderService {
             if (!isAuthenticatedProvider(provider)) {
                 ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
                 logger.error(String.format("Provider: [%s] is not authenticated", providerResponseDto));
-                throw new NotAuthenticatedException(String.format("Provider: [%s] is not authenticated", providerResponseDto));
+                throw new NotAuthenticatedException("Provider is not authenticated");
             }
 
             logger.info(String.format("Provider of id %d found", provider.getId()));
@@ -170,32 +162,33 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException {
-        if (providerRepository.existsById(request.getId())) {
-            Provider provider = providerRepository.findById(request.getId()).get();
-            logger.info(String.format("Provider id %d found", request.getId()));
+    public DeleteResponseDto delete(Integer id) throws NotFoundException {
+        logger.info(String.format("Searching provider with id: [%d]", id));
+
+        if (providerRepository.existsById(id)) {
+            Provider provider = providerRepository.findById(id).get();
+            logger.info(String.format("Provider with id: [%d] found", provider.getId()));
 
             provider.setRole(Role.DELETED.name());
             providerRepository.save(provider);
 
-            logger.info(String.format("Provider id: %d successfully deleted", provider.getId()));
+            logger.info(String.format("Provider id: [%d] successfully deleted", provider.getId()));
 
             DeleteResponseDto response = new DeleteResponseDto(true);
 
             return response;
         }
 
-        logger.error(String.format("Provider with id: [%d] not found", request.getId()));
-        throw new NotFoundException(String.format("Provider with id [%d] not found!", request.getId()));
+        logger.error(String.format("Provider with id: [%d] not found", id));
+        throw new NotFoundException(String.format("Provider with id [%d] not found!", id));
     }
 
-    //TODO: Refatorar login e logout, para deixar igual ao customer;
     @Override
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
 
-        String emailAttempt = loginRequestDto.getEmail();
-        String passwordAttempt = loginRequestDto.getPassword();
+        String emailAttempt = credentialsRequestDto.getEmail();
+        String passwordAttempt = credentialsRequestDto.getPassword();
 
         logger.info(String.format("Searching for provider with email: [%s]", emailAttempt));
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
@@ -232,11 +225,11 @@ public class ProviderServiceImpl implements ProviderService {
         return loginResponseDto;
     }
 
-    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException {
+    public LogoutResponseDto logout(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = loginRequestDto.getEmail();
-        String passwordAttempt = loginRequestDto.getPassword();
+        String emailAttempt = credentialsRequestDto.getEmail();
+        String passwordAttempt = credentialsRequestDto.getPassword();
 
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
 
@@ -269,7 +262,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             if (!isAuthenticatedProvider(provider)) {
                 logger.info("The provider is not authenticated");
-                throw new NotAuthenticatedException("The provider is not authenticated");
+                throw new NotAuthenticatedException("Provider is not authenticated");
             }
         }
 
@@ -330,18 +323,9 @@ public class ProviderServiceImpl implements ProviderService {
         return false;
     }
 
-    private boolean thisCpfOrCnpjOrPhoneIsAlreadyRegistered(String cpf, String cnpj, String phone) {
+    private boolean thisCpfOrPhoneIsAlreadyRegistered(String cpf, String phone) {
         if (providerRepository.existsByCpf(cpf) ||
-                providerRepository.existsByCnpj(cnpj) ||
                 providerRepository.existsByPhone(phone)) return true;
-
-        return false;
-    }
-
-    private boolean thisCpfAndCnpjAreNull(String cpf, String cnpj) {
-        if (cpf == null && cnpj == null) {
-            return true;
-        }
 
         return false;
     }

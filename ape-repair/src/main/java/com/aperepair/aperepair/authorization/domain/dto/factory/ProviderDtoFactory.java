@@ -19,7 +19,6 @@ public class ProviderDtoFactory {
                 providerRequestDto.getCpf(),
                 providerRequestDto.getPhone(),
                 null,
-                providerRequestDto.getCnpj(),
                 providerRequestDto.getRole(),
                 providerRequestDto.isAuthenticated()
         );
@@ -34,7 +33,6 @@ public class ProviderDtoFactory {
                 provider.getEmail(),
                 provider.getGenre(),
                 provider.getCpf(),
-                provider.getCnpj(),
                 provider.getPhone(),
                 provider.getRole(),
                 provider.isAuthenticated(),
@@ -51,7 +49,6 @@ public class ProviderDtoFactory {
                 provider.getEmail(),
                 provider.getGenre(),
                 provider.getCpf(),
-                provider.getCnpj(),
                 provider.getPhone(),
                 provider.getRole(),
                 provider.isAuthenticated()

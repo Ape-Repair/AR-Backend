@@ -1,12 +1,10 @@
 package com.aperepair.aperepair.authorization.application.dto.request;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class DeleteRequestDto {
 
     @NotNull
-    @Min(1)
     private Integer id;
 
     public DeleteRequestDto(Integer id) {
@@ -19,5 +17,12 @@ public class DeleteRequestDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "DeleteRequestDto{" +
+                "id=" + id +
+                '}';
     }
 }

@@ -1,8 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.DeleteRequestDto;
-import com.aperepair.aperepair.authorization.application.dto.request.LoginRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
@@ -52,8 +51,8 @@ public class CustomerServiceImpl implements CustomerService {
         String phone = customerRequestDto.getPhone();
 
         if (thisCpfOrEmailOrPhoneIsAlreadyRegistered(cpf, email, phone)) {
-            logger.error(String.format("Customer: %s already registered", customerRequestDto.toString()));
-            throw new AlreadyRegisteredException(String.format("Customer: %s already registered", customerRequestDto.toString()));
+            logger.error("Cpf or Phone already registered");
+            throw new AlreadyRegisteredException("Customer already registered");
         }
 
         customerRequestDto.setPassword(encoder.encode(customerRequestDto.getPassword()));
@@ -79,7 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info("Foreign key [addressId] updated successfully");
 
         CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
-        logger.info(String.format("Customer: %s registered successfully", customerResponseDto.toString()));
+        logger.info(String.format("Customer: [%s] registered successfully", customerResponseDto.toString()));
 
         return customerResponseDto;
     }
@@ -130,7 +129,7 @@ public class CustomerServiceImpl implements CustomerService {
             if (!isAuthenticatedCustomer(customer)) {
                 CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
                 logger.error(String.format("Customer: [%s] is not authenticated", customerResponseDto));
-                throw new NotAuthenticatedException(String.format("Customer: [%s] is not authenticated", customerResponseDto));
+                throw new NotAuthenticatedException("Customer is not authenticated");
             }
 
             logger.info(String.format("Customer of id %d found", customer.getId()));
@@ -162,31 +161,33 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public DeleteResponseDto delete(DeleteRequestDto request) throws NotFoundException {
-        if (customerRepository.existsById(request.getId())) {
-            Customer customer = customerRepository.findById(request.getId()).get();
-            logger.info(String.format("Customer id %d found", request.getId()));
+    public DeleteResponseDto delete(Integer id) throws NotFoundException {
+        logger.info(String.format("Searching customer with id: [%d]", id));
+
+        if (customerRepository.existsById(id)) {
+            Customer customer = customerRepository.findById(id).get();
+            logger.info(String.format("Customer id %d found", customer.getId()));
 
             customer.setRole(Role.DELETED.name());
             customerRepository.save(customer);
 
-            logger.info(String.format("Customer id: %d successfully deleted", customer.getId()));
+            logger.info(String.format("Customer id: %d delete with success", customer.getId()));
 
             DeleteResponseDto response = new DeleteResponseDto(true);
 
             return response;
         }
 
-        logger.error(String.format("Customer with id: [%d] not found", request.getId()));
-        throw new NotFoundException(String.format("Customer with id [%d] not found!", request.getId()));
+        logger.error(String.format("Customer with id: [%d] not found", id));
+        throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
 
-        String emailAttempt = loginRequestDto.getEmail();
-        String passwordAttempt = loginRequestDto.getPassword();
+        String emailAttempt = credentialsRequestDto.getEmail();
+        String passwordAttempt = credentialsRequestDto.getPassword();
 
         logger.info(String.format("Searching for customer with email: [%s]", emailAttempt));
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
@@ -224,11 +225,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
+    public LogoutResponseDto logout(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = loginRequestDto.getEmail();
-        String passwordAttempt = loginRequestDto.getPassword();
+        String emailAttempt = credentialsRequestDto.getEmail();
+        String passwordAttempt = credentialsRequestDto.getPassword();
 
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
@@ -261,7 +262,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             if (!isAuthenticatedCustomer(customer)) {
                 logger.info("The customer is not authenticated");
-                throw new NotAuthenticatedException("The customer is not authenticated");
+                throw new NotAuthenticatedException("Customer is not authenticated");
             }
         }
 

@@ -184,7 +184,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.CUSTOMER);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(null,false, Role.CUSTOMER);
 
         String emailAttempt = credentialsRequestDto.getEmail();
         String passwordAttempt = credentialsRequestDto.getPassword();
@@ -210,6 +210,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (valid) {
             loginResponseDto.setSuccess(true);
+            loginResponseDto.setId(customer.getId());
         } else {
             logger.info("Password invalid!");
 

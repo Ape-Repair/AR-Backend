@@ -185,7 +185,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(false, Role.PROVIDER);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(null,false, Role.PROVIDER);
 
         String emailAttempt = credentialsRequestDto.getEmail();
         String passwordAttempt = credentialsRequestDto.getPassword();
@@ -211,6 +211,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         if (valid) {
             loginResponseDto.setSuccess(true);
+            loginResponseDto.setId(provider.getId());
         } else {
             logger.info("Password invalid!");
 

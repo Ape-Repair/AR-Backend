@@ -45,7 +45,6 @@ public class CustomerController {
         return customerService.findById(id);
     }
 
-    //TODO: Resolver questão do id já que não retorna no front
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CustomerResponseDto update(

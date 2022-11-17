@@ -48,7 +48,6 @@ public class ProviderController {
         return providerService.findById(id);
     }
 
-    //TODO: Resolver questão do id já que não retorna no front
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProviderResponseDto update(

@@ -1,7 +1,8 @@
 package com.aperepair.aperepair.authorization.domain.service.impl;
 
-import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.CustomerDtoFactory;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -45,18 +47,24 @@ public class CustomerServiceImpl implements CustomerService {
     private ProfilePictureGateway profilePictureGateway;
 
     @Override
-    public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException {
+    public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException, BadRequestException {
         String cpf = customerRequestDto.getCpf();
         String email = customerRequestDto.getEmail();
         String phone = customerRequestDto.getPhone();
+        String genre = customerRequestDto.getGenre();
 
         if (thisCpfOrEmailOrPhoneIsAlreadyRegistered(cpf, email, phone)) {
-            logger.error("Cpf or Phone already registered");
+            logger.error("Cpf or Phone or Email already registered");
             throw new AlreadyRegisteredException("Customer already registered");
         }
 
+        if (!isValidGenre(genre)) {
+            logger.error(String.format("Gender [%s] is not valid", genre));
+            throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
+        }
+
         customerRequestDto.setPassword(encoder.encode(customerRequestDto.getPassword()));
-        logger.info("Customer password encrypted with successfully");
+        logger.info("Customer password encrypted with success");
 
         customerRequestDto.setAuthenticated(false);
         customerRequestDto.setRole(Role.CUSTOMER.name());
@@ -64,7 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = CustomerDtoFactory.toEntity(customerRequestDto);
 
         customerRepository.save(customer);
-        logger.info("Customer saved with successfully");
+        logger.info("Customer saved with success");
 
         Address address = AddressDtoFactory.toEntity(customerRequestDto.getAddress());
 
@@ -121,7 +129,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto update(Integer id, CustomerRequestDto updatedCustomer) throws NotFoundException, NotAuthenticatedException {
+    public CustomerResponseDto update(Integer id, CustomerUpdateRequestDto updatedCustomer) throws NotFoundException, NotAuthenticatedException {
         if (customerRepository.existsById(id)) {
 
             Customer customer = customerRepository.findById(id).get();
@@ -136,8 +144,9 @@ public class CustomerServiceImpl implements CustomerService {
 
             updatedCustomer.setRole(customer.getRole());
             updatedCustomer.setAuthenticated(true);
+            updatedCustomer.setEmail(customer.getEmail());
 
-            Customer newCustomer = CustomerDtoFactory.toEntity(updatedCustomer);
+            Customer newCustomer = CustomerDtoFactory.updatedToEntity(updatedCustomer);
 
             Address address = AddressDtoFactory.toEntity(updatedCustomer.getAddress());
 
@@ -149,9 +158,11 @@ public class CustomerServiceImpl implements CustomerService {
             customerRepository.save(newCustomer);
             addressRepository.save(address);
 
+            AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
+
             logger.info(String.format("Updated customer of id: %d registration data!", newCustomer.getId()));
 
-            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
 
             return updatedCustomerResponseDto;
         }
@@ -184,7 +195,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(null,false, Role.CUSTOMER);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.CUSTOMER);
 
         String emailAttempt = credentialsRequestDto.getEmail();
         String passwordAttempt = credentialsRequestDto.getPassword();
@@ -277,7 +288,7 @@ public class CustomerServiceImpl implements CustomerService {
     ) throws IOException, AwsUploadException, NotFoundException {
         String email = request.getEmail();
 
-        logger.info(String.format("Starting creation profile picture for user email - [%s]",
+        logger.info(String.format("Starting creation/upload profile picture for user email - [%s]",
                 email));
 
         ProfilePictureCreationResponseDto response = new ProfilePictureCreationResponseDto(false);
@@ -329,6 +340,15 @@ public class CustomerServiceImpl implements CustomerService {
                 customerRepository.existsByPhone(phone)) return true;
 
         return false;
+    }
+
+    private boolean isValidGenre(String genre) {
+        String masculine = "MASCULINE";
+        String female = "FEMALE";
+        String other = "OTHER";
+
+        return Objects.equals(genre, masculine) ||
+                Objects.equals(genre, female) || Objects.equals(genre, other);
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

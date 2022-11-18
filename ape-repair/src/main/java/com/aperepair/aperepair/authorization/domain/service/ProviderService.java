@@ -2,6 +2,7 @@ package com.aperepair.aperepair.authorization.domain.service;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.DeleteResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.authorization.application.dto.response.LogoutResponseDto;
@@ -24,7 +25,7 @@ public interface ProviderService {
 
     ResponseEntity<ProviderResponseDto> findById(Integer id);
 
-    ProviderResponseDto update(Integer id, ProviderRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException;
+    ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException;
 
     DeleteResponseDto delete(Integer id) throws NotFoundException;
 

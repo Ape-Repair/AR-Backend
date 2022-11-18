@@ -2,6 +2,7 @@ package com.aperepair.aperepair.authorization.domain.service.impl;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
 import com.aperepair.aperepair.authorization.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.authorization.domain.dto.factory.ProviderDtoFactory;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,11 +50,17 @@ public class ProviderServiceImpl implements ProviderService {
     public ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException {
         String cpf = request.getCpf();
         String phone = request.getPhone();
+        String genre = request.getGenre();
 
         if (thisCpfOrPhoneIsAlreadyRegistered(cpf, phone)) {
             logger.error("CPF or Phone is already registered");
 
             throw new AlreadyRegisteredException("Provider already registered");
+        }
+
+        if (!isValidGenre(genre)) {
+            logger.error(String.format("Gender [%s] is not valid", genre));
+            throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
         }
 
         request.setPassword(encoder.encode(request.getPassword()));
@@ -122,7 +130,7 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ProviderResponseDto update(Integer id, ProviderRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException {
+    public ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException {
         if (providerRepository.existsById(id)) {
 
             Provider provider = providerRepository.findById(id).get();
@@ -137,8 +145,9 @@ public class ProviderServiceImpl implements ProviderService {
 
             updatedProvider.setRole(provider.getRole());
             updatedProvider.setAuthenticated(true);
+            updatedProvider.setEmail(provider.getEmail());
 
-            Provider newProvider = ProviderDtoFactory.toEntity(updatedProvider);
+            Provider newProvider = ProviderDtoFactory.updateToEntity(updatedProvider);
 
             Address address = AddressDtoFactory.toEntity(updatedProvider.getAddress());
 
@@ -150,9 +159,11 @@ public class ProviderServiceImpl implements ProviderService {
             providerRepository.save(newProvider);
             addressRepository.save(address);
 
+            AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
+
             logger.info(String.format("Updated provider of id: %d registration data!", newProvider.getId()));
 
-            ProviderResponseDto updatedProviderResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+            ProviderResponseDto updatedProviderResponseDto = ProviderDtoFactory.toResponseFullDto(provider, addressResponseDto);
 
             return updatedProviderResponseDto;
         }
@@ -329,6 +340,14 @@ public class ProviderServiceImpl implements ProviderService {
                 providerRepository.existsByPhone(phone)) return true;
 
         return false;
+    }
+
+    private boolean isValidGenre(String genre) {
+        String masculine = "MASCULINE";
+        String female = "FEMALE";
+        String other = "OTHER";
+
+        return Objects.equals(genre, masculine) || Objects.equals(genre, female) || Objects.equals(genre, other);
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

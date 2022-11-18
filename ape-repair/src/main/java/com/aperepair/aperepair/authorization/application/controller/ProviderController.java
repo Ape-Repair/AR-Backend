@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.ProviderRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.DeleteResponseDto;
 import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.application.dto.request.CredentialsRequestDto;
@@ -52,14 +53,13 @@ public class ProviderController {
     @ResponseStatus(HttpStatus.OK)
     public ProviderResponseDto update(
             @PathVariable Integer id,
-            @RequestBody @Valid ProviderRequestDto updatedProvider
+            @RequestBody @Valid ProviderUpdateRequestDto updatedProvider
     ) throws NotAuthenticatedException, NotFoundException {
         logger.info("Calling ProviderService to update provider!");
 
         return providerService.update(id, updatedProvider);
     }
 
-    //TODO: Fazer dto de request de delete (provider)
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {

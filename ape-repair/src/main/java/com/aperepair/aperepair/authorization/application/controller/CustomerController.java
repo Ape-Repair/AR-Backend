@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.application.controller;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
@@ -29,7 +30,7 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerResponseDto create(@Valid @RequestBody CustomerRequestDto newCustomer) throws AlreadyRegisteredException {
+    public CustomerResponseDto create(@Valid @RequestBody CustomerRequestDto newCustomer) throws AlreadyRegisteredException, BadRequestException {
         logger.info("Calling CustomerService to create a customer!");
 
         return customerService.create(newCustomer);
@@ -49,14 +50,13 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public CustomerResponseDto update(
             @PathVariable Integer id,
-            @RequestBody @Valid CustomerRequestDto updatedCustomer
+            @RequestBody @Valid CustomerUpdateRequestDto updatedCustomer
     ) throws NotFoundException, NotAuthenticatedException {
         logger.info("Calling CustomerService to update customer!");
 
         return customerService.update(id, updatedCustomer);
     }
 
-    //TODO: Fazer dto de request de delete
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {

@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.authorization.domain.service;
 
 import com.aperepair.aperepair.authorization.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.authorization.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.authorization.domain.exception.*;
 import com.aperepair.aperepair.authorization.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.authorization.application.dto.response.*;
@@ -15,13 +16,13 @@ import java.util.List;
 
 public interface CustomerService {
 
-    CustomerResponseDto create(CustomerRequestDto customer) throws AlreadyRegisteredException;
+    CustomerResponseDto create(CustomerRequestDto customer) throws AlreadyRegisteredException, BadRequestException;
 
     ResponseEntity<List<CustomerResponseDto>> findAll();
 
     ResponseEntity<CustomerResponseDto> findById(Integer id) throws NotFoundException;
 
-    CustomerResponseDto update(Integer id, CustomerRequestDto updatedCustomer) throws NotFoundException, NotAuthenticatedException;
+    CustomerResponseDto update(Integer id, CustomerUpdateRequestDto updatedCustomer) throws NotFoundException, NotAuthenticatedException;
 
     DeleteResponseDto delete(Integer id) throws NotFoundException;
 

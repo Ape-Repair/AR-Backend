@@ -1,8 +1,8 @@
 package com.aperepair.aperepair.report.domain.service.impl;
 
-import com.aperepair.aperepair.authorization.domain.model.Provider;
-import com.aperepair.aperepair.authorization.domain.enums.Role;
-import com.aperepair.aperepair.authorization.domain.repository.ProviderRepository;
+import com.aperepair.aperepair.domain.model.Provider;
+import com.aperepair.aperepair.domain.enums.Role;
+import com.aperepair.aperepair.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.report.domain.model.Admin;
 import com.aperepair.aperepair.report.domain.model.dto.request.AdminLoginRequestDto;
 import com.aperepair.aperepair.report.domain.model.dto.response.AdminLoginResponseDto;

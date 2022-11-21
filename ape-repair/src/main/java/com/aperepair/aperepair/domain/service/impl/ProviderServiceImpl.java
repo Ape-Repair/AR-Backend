@@ -6,7 +6,9 @@ import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
+import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
 import com.aperepair.aperepair.domain.model.Address;
@@ -18,6 +20,7 @@ import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureReques
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
 import com.aperepair.aperepair.resources.aws.dto.response.ProfilePictureCreationResponseDto;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,16 +54,23 @@ public class ProviderServiceImpl implements ProviderService {
         String cpf = request.getCpf();
         String phone = request.getPhone();
         String genre = request.getGenre();
+        String specialtyType = request.getSpecialtyType();
+        String email = request.getEmail();
 
-        if (thisCpfOrPhoneIsAlreadyRegistered(cpf, phone)) {
-            logger.error("CPF or Phone is already registered");
+        if (thisCpfOrPhoneOrEmailIsAlreadyRegistered(cpf, phone, email)) {
+            logger.error("CPF or Phone or Email is already registered");
 
             throw new AlreadyRegisteredException("Provider already registered");
         }
 
-        if (!isValidGenre(genre)) {
+        if (!EnumUtils.isValidEnum(Genre.class, genre)) {
             logger.error(String.format("Gender [%s] is not valid", genre));
             throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
+        }
+
+        if (!EnumUtils.isValidEnum(SpecialtyTypes.class, specialtyType)) {
+            logger.error(String.format("Specialty [%s] is not valid", specialtyType));
+            throw new BadRequestException(String.format("Specialty [%s] is not valid", specialtyType));
         }
 
         request.setPassword(encoder.encode(request.getPassword()));
@@ -130,8 +140,11 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException {
+    public ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException {
         if (providerRepository.existsById(id)) {
+
+            String genre = updatedProvider.getGenre();
+            String specialtyType = updatedProvider.getSpecialtyType();
 
             Provider provider = providerRepository.findById(id).get();
 
@@ -141,11 +154,22 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new NotAuthenticatedException("Provider is not authenticated");
             }
 
+            if (!EnumUtils.isValidEnum(Genre.class, genre)) {
+                logger.error(String.format("Gender [%s] is not valid", genre));
+                throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
+            }
+
+            if (!EnumUtils.isValidEnum(SpecialtyTypes.class, specialtyType)) {
+                logger.error(String.format("Specialty [%s] is not valid", specialtyType));
+                throw new BadRequestException(String.format("Specialty [%s] is not valid", specialtyType));
+            }
+
             logger.info(String.format("Provider of id %d found", provider.getId()));
 
             updatedProvider.setRole(provider.getRole());
             updatedProvider.setAuthenticated(true);
             updatedProvider.setEmail(provider.getEmail());
+            updatedProvider.setCpf(provider.getCpf());
 
             Provider newProvider = ProviderDtoFactory.updateToEntity(updatedProvider);
 
@@ -335,19 +359,11 @@ public class ProviderServiceImpl implements ProviderService {
         return false;
     }
 
-    private boolean thisCpfOrPhoneIsAlreadyRegistered(String cpf, String phone) {
+    private boolean thisCpfOrPhoneOrEmailIsAlreadyRegistered(String cpf, String phone, String email) {
         if (providerRepository.existsByCpf(cpf) ||
-                providerRepository.existsByPhone(phone)) return true;
+                providerRepository.existsByPhone(phone) || providerRepository.existsByEmail(email)) return true;
 
         return false;
-    }
-
-    private boolean isValidGenre(String genre) {
-        String masculine = "MASCULINE";
-        String female = "FEMALE";
-        String other = "OTHER";
-
-        return Objects.equals(genre, masculine) || Objects.equals(genre, female) || Objects.equals(genre, other);
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

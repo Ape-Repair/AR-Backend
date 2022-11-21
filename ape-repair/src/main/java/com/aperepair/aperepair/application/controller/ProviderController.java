@@ -54,7 +54,7 @@ public class ProviderController {
     public ProviderResponseDto update(
             @PathVariable Integer id,
             @RequestBody @Valid ProviderUpdateRequestDto updatedProvider
-    ) throws NotAuthenticatedException, NotFoundException {
+    ) throws NotAuthenticatedException, NotFoundException, BadRequestException {
         logger.info("Calling ProviderService to update provider!");
 
         return providerService.update(id, updatedProvider);

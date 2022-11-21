@@ -24,6 +24,7 @@ public class ProviderUpdateRequestDto {
 
     private String genre;
 
+    @JsonIgnore
     @CPF
     private String cpf;
 
@@ -33,6 +34,9 @@ public class ProviderUpdateRequestDto {
 
     @NotNull
     private AddressRequestDto address;
+
+    @NotBlank
+    private String specialtyType;
 
     @JsonIgnore
     private String role;
@@ -94,6 +98,14 @@ public class ProviderUpdateRequestDto {
 
     public void setAddress(AddressRequestDto address) {
         this.address = address;
+    }
+
+    public String getSpecialtyType() {
+        return specialtyType;
+    }
+
+    public void setSpecialtyType(String specialtyType) {
+        this.specialtyType = specialtyType;
     }
 
     public String getRole() {

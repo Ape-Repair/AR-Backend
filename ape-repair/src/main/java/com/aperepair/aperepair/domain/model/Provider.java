@@ -42,8 +42,6 @@ public class Provider {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address addressId;
 
-//TODO: refatorar services e dtos (factory também), para incluir o cadastro de uma especialidade;
-//TODO: refatorar update para provider poder atualizar sua especialidade
     @NotBlank
     private String specialtyType;
 
@@ -57,7 +55,7 @@ public class Provider {
         super();
     }
 
-    public Provider(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String role, Boolean isAuthenticated) {
+    public Provider(Integer id, String name, String email, String password, String genre, String cpf, String phone, Address addressId, String specialtyType, String role, Boolean isAuthenticated) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -66,6 +64,7 @@ public class Provider {
         this.cpf = cpf;
         this.phone = phone;
         this.addressId = addressId;
+        this.specialtyType = specialtyType;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
     }
@@ -148,5 +147,13 @@ public class Provider {
 
     public void setAuthenticated(Boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public String getSpecialtyType() {
+        return specialtyType;
+    }
+
+    public void setSpecialtyType(String specialtyType) {
+        this.specialtyType = specialtyType;
     }
 }

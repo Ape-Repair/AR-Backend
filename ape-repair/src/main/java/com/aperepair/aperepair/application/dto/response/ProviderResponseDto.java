@@ -25,7 +25,9 @@ public class ProviderResponseDto {
 
     private AddressResponseDto address;
 
-    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated, AddressResponseDto address) {
+    private String specialtyType;
+
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated, AddressResponseDto address, String specialtyType) {
         this.name = name;
         this.email = email;
         this.genre = genre;
@@ -34,9 +36,10 @@ public class ProviderResponseDto {
         this.role = role;
         this.isAuthenticated = isAuthenticated;
         this.address = address;
+        this.specialtyType = specialtyType;
     }
 
-    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated) {
+    public ProviderResponseDto(String name, String email, String genre, String cpf, String phone, String role, Boolean isAuthenticated, String specialtyType) {
         this.name = name;
         this.email = email;
         this.genre = genre;
@@ -44,6 +47,7 @@ public class ProviderResponseDto {
         this.phone = phone;
         this.role = role;
         this.isAuthenticated = isAuthenticated;
+        this.specialtyType = specialtyType;
     }
 
     public String getName() {
@@ -108,5 +112,17 @@ public class ProviderResponseDto {
 
     public void setAddress(AddressResponseDto address) {
         this.address = address;
+    }
+
+    public Boolean getAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public String getSpecialtyType() {
+        return specialtyType;
+    }
+
+    public void setSpecialtyType(String specialtyType) {
+        this.specialtyType = specialtyType;
     }
 }

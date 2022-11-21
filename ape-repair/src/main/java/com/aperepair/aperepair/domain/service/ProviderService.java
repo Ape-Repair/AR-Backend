@@ -25,7 +25,7 @@ public interface ProviderService {
 
     ResponseEntity<ProviderResponseDto> findById(Integer id);
 
-    ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException;
+    ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException;
 
     DeleteResponseDto delete(Integer id) throws NotFoundException;
 

@@ -20,6 +20,7 @@ public class ProviderDtoFactory {
                 providerRequestDto.getCpf(),
                 providerRequestDto.getPhone(),
                 null,
+                providerRequestDto.getSpecialtyType(),
                 providerRequestDto.getRole(),
                 providerRequestDto.isAuthenticated()
         );
@@ -38,6 +39,7 @@ public class ProviderDtoFactory {
                 providerRequestDto.getCpf(),
                 providerRequestDto.getPhone(),
                 null,
+                providerRequestDto.getSpecialtyType(),
                 providerRequestDto.getRole(),
                 providerRequestDto.isAuthenticated()
         );
@@ -55,7 +57,8 @@ public class ProviderDtoFactory {
                 provider.getPhone(),
                 provider.getRole(),
                 provider.isAuthenticated(),
-                addressResponseDto
+                addressResponseDto,
+                provider.getSpecialtyType()
         );
 
         logger.info("Provider transformed to ProviderResponseFullDto successfully");
@@ -70,7 +73,8 @@ public class ProviderDtoFactory {
                 provider.getCpf(),
                 provider.getPhone(),
                 provider.getRole(),
-                provider.isAuthenticated()
+                provider.isAuthenticated(),
+                provider.getSpecialtyType()
         );
 
         logger.info("Provider transformed to ProviderResponsePartialDto with success!");

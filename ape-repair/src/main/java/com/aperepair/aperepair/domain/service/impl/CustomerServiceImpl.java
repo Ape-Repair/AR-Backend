@@ -8,6 +8,7 @@ import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.OrderDtoFactory;
+import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
 import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
 import com.aperepair.aperepair.domain.enums.Status;
@@ -35,12 +36,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-//TODO: refatorar ifs que comparam enum para EnumUtils
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -69,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new AlreadyRegisteredException("Customer already registered");
         }
 
-        if (!isValidGenre(genre)) {
+        if (!EnumUtils.isValidEnum(Genre.class, genre)) {
             logger.error(String.format("Gender [%s] is not valid", genre));
             throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
         }
@@ -384,15 +383,6 @@ public class CustomerServiceImpl implements CustomerService {
                 customerRepository.existsByPhone(phone)) return true;
 
         return false;
-    }
-
-    private boolean isValidGenre(String genre) {
-        String masculine = "MASCULINE";
-        String female = "FEMALE";
-        String other = "OTHER";
-
-        return Objects.equals(genre, masculine) ||
-                Objects.equals(genre, female) || Objects.equals(genre, other);
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

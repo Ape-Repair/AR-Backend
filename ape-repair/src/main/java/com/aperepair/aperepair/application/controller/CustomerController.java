@@ -104,12 +104,18 @@ public class CustomerController {
     @PostMapping("in/create-order")
     @ResponseStatus(HttpStatus.CREATED)
     public void createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException {
-        logger.info("Calling service to create order");
+        logger.info("Calling CustomerService to create order");
 
         customerService.createOrder(request);
     }
 
-//TODO(1): Criar endpoint GET (com path variable por id)para retornar todas orders de um determinado customer
+    @GetMapping("/orders/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderResponseDto> allOrders(@PathVariable Integer id) {
+        logger.info("Calling CustomerService to get all orders of customer");
+
+        return customerService.getAllOrders(id);
+    }
 //TODO(2): Criar controller (MatchController), e endpoint para trazer todas proposal de uma order
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

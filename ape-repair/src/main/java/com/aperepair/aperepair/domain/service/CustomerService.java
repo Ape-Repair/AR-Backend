@@ -36,4 +36,6 @@ public interface CustomerService {
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception;
 
     void createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
+
+    List<OrderResponseDto> getAllOrders(Integer id); //TODO: Criar service impl deste método
 }

@@ -4,7 +4,6 @@ import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
 import com.aperepair.aperepair.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.application.dto.response.OrderResponseDto;
 import com.aperepair.aperepair.application.dto.response.ProviderResponseDto;
-import com.aperepair.aperepair.domain.enums.Status;
 import com.aperepair.aperepair.domain.model.Customer;
 import com.aperepair.aperepair.domain.model.CustomerOrder;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +25,7 @@ public class OrderDtoFactory {
                 false,
                 LocalDateTime.now()
         );
-        logger.info("CreateOrderRequestDto transformed to Order entity with success!");
+        logger.info("CreateOrderRequestDto transformed to CustomerOrder entity with success!");
         return customerOrder;
     }
 
@@ -43,9 +42,28 @@ public class OrderDtoFactory {
                 customerOrder.getCreatedAt()
         );
 
-        logger.info("Order transformed to OrderResponseDto successfully");
+        logger.info("CustomerOrder transformed to OrderResponseDto successfully");
         return orderResponseDto;
     }
+
+    public static OrderResponseDto toResponseWithNullProviderDto(CustomerOrder customerOrder, CustomerResponseDto
+            customerResponseDto) {
+        OrderResponseDto orderResponseDto = new OrderResponseDto(
+                customerOrder.getId(),
+                customerOrder.getServiceType(),
+                customerOrder.getDescription(),
+                customerResponseDto,
+                null,
+                customerOrder.getAmount(),
+                customerOrder.getStatus(),
+                customerOrder.isPaid(),
+                customerOrder.getCreatedAt()
+        );
+
+        logger.info("CustomerOrder transformed to OrderResponseWithProviderNullDto successfully");
+        return orderResponseDto;
+    }
+
 
     private static final Logger logger = LogManager.getLogger(OrderDtoFactory.class.getName());
 }

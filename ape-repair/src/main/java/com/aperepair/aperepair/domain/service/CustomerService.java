@@ -37,5 +37,5 @@ public interface CustomerService {
 
     void createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
 
-    List<OrderResponseDto> getAllOrders(Integer id); //TODO: Criar service impl deste método
+    List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException;
 }

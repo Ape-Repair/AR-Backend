@@ -2,12 +2,14 @@ package com.aperepair.aperepair.domain.repository;
 
 import com.aperepair.aperepair.domain.model.Address;
 import com.aperepair.aperepair.domain.model.Customer;
+import com.aperepair.aperepair.domain.model.CustomerOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Repository

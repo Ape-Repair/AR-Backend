@@ -111,11 +111,12 @@ public class CustomerController {
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderResponseDto> allOrders(@PathVariable Integer id) {
+    public List<OrderResponseDto> allOrders(@PathVariable Integer id) throws NotFoundException {
         logger.info("Calling CustomerService to get all orders of customer");
 
         return customerService.getAllOrders(id);
     }
+
 //TODO(2): Criar controller (MatchController), e endpoint para trazer todas proposal de uma order
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

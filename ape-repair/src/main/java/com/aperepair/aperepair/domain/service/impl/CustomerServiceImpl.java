@@ -366,6 +366,37 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException {
+        if (customerRepository.existsById(id)) {
+            Customer customer = customerRepository.findCustomerById(id);
+            CustomerResponseDto customerResponse = CustomerDtoFactory.toResponsePartialDto(customer);
+
+
+            List<CustomerOrder> customerOrders = orderRepository.getAllOrdersFromCustomerId(id);
+
+            if (customerOrders.isEmpty()) {
+                logger.info(String.format("Customer id [%s] does not have registered orders", id));
+            }
+
+            logger.info("Found customer orders!");
+
+            List<OrderResponseDto> orders = new ArrayList();
+
+            for (CustomerOrder customerOrder : customerOrders) {
+                OrderResponseDto order = OrderDtoFactory.toResponseWithNullProviderDto(
+                        customerOrder, customerResponse
+                );
+
+                orders.add(order);
+            }
+
+            return orders;
+        }
+
+        logger.error(String.format("Customer with id: [%d] not found", id));
+        throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
+    }
+
     private Boolean isAuthenticatedCustomer(Customer customer) {
         if (customer.isAuthenticated()) return true;
 

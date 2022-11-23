@@ -64,6 +64,24 @@ public class OrderDtoFactory {
         return orderResponseDto;
     }
 
+    public static OrderResponseDto toResponseWithNotNullProviderDto(CustomerOrder customerOrder, CustomerResponseDto
+            customerResponseDto, ProviderResponseDto providerResponseDto) {
+        OrderResponseDto orderResponseDto = new OrderResponseDto(
+                customerOrder.getId(),
+                customerOrder.getServiceType(),
+                customerOrder.getDescription(),
+                customerResponseDto,
+                providerResponseDto,
+                customerOrder.getAmount(),
+                customerOrder.getStatus(),
+                customerOrder.isPaid(),
+                customerOrder.getCreatedAt()
+        );
+
+        logger.info("CustomerOrder transformed to OrderResponseWithProviderNotNullDto successfully");
+        return orderResponseDto;
+    }
+
 
     private static final Logger logger = LogManager.getLogger(OrderDtoFactory.class.getName());
 }

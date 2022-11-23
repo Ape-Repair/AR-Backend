@@ -1,8 +1,7 @@
 package com.aperepair.aperepair.domain.model;
 
-import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -21,11 +20,13 @@ public class Proposal {
     @JoinColumn(name = "provider_id", referencedColumnName = "id")
     private Provider providerId;
 
+    @NotBlank
     private String serviceType;
 
     @Column(length = 350)
     private String description;
 
+    @NotNull
     private Double amount;
 
     private boolean accepted;

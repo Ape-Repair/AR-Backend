@@ -8,6 +8,7 @@ import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.CustomerDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.OrderDtoFactory;
+import com.aperepair.aperepair.domain.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
 import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
@@ -17,9 +18,11 @@ import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
 import com.aperepair.aperepair.domain.model.Address;
 import com.aperepair.aperepair.domain.model.Customer;
 import com.aperepair.aperepair.domain.model.CustomerOrder;
+import com.aperepair.aperepair.domain.model.Provider;
 import com.aperepair.aperepair.domain.repository.AddressRepository;
 import com.aperepair.aperepair.domain.repository.CustomerRepository;
 import com.aperepair.aperepair.domain.repository.OrderRepository;
+import com.aperepair.aperepair.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.domain.service.CustomerService;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -55,6 +58,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ProviderRepository providerRepository;
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException, BadRequestException {
@@ -366,9 +372,20 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException {
+    public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException {
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findCustomerById(id);
+
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.info("The customer is not authenticated");
+                throw new NotAuthenticatedException("Customer is not authenticated");
+            }
+
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+                logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+                throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            }
+
             CustomerResponseDto customerResponse = CustomerDtoFactory.toResponsePartialDto(customer);
 
 
@@ -376,6 +393,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             if (customerOrders.isEmpty()) {
                 logger.info(String.format("Customer id [%s] does not have registered orders", id));
+                throw new NoContentException(String.format("Customer id [%s] does not have registered orders", id));
             }
 
             logger.info("Found customer orders!");
@@ -383,11 +401,19 @@ public class CustomerServiceImpl implements CustomerService {
             List<OrderResponseDto> orders = new ArrayList();
 
             for (CustomerOrder customerOrder : customerOrders) {
-                OrderResponseDto order = OrderDtoFactory.toResponseWithNullProviderDto(
-                        customerOrder, customerResponse
-                );
+                if (customerOrder.getProviderId() == null) {
+                    OrderResponseDto order = OrderDtoFactory.toResponseWithNullProviderDto(
+                            customerOrder, customerResponse
+                    );
+                    orders.add(order);
+                } else {
+                    ProviderResponseDto providerResponseDto = getProviderWithIdRegisteredInCustomerOrder(customerOrder);
 
-                orders.add(order);
+                    OrderResponseDto orderWithProviderId = OrderDtoFactory.toResponseWithNotNullProviderDto(
+                        customerOrder, customerResponse, providerResponseDto
+                    );
+                    orders.add(orderWithProviderId);
+                }
             }
 
             return orders;
@@ -414,6 +440,16 @@ public class CustomerServiceImpl implements CustomerService {
                 customerRepository.existsByPhone(phone)) return true;
 
         return false;
+    }
+
+    private ProviderResponseDto getProviderWithIdRegisteredInCustomerOrder(CustomerOrder customerOrder) {
+        Integer id = customerOrder.getProviderId().getId();
+
+        Provider provider = providerRepository.findById(id).get();
+
+        ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+
+        return providerResponseDto;
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

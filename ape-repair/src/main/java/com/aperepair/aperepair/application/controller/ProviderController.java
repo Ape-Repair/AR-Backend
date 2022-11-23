@@ -94,6 +94,7 @@ public class ProviderController {
     }
 
     @PostMapping("/profile-picture")
+    @ResponseStatus(HttpStatus.OK)
     public GetProfilePictureResponseDto getProfilePicture(
             @RequestBody @Valid GetProfilePictureRequestDto request
     ) throws Exception {
@@ -101,6 +102,20 @@ public class ProviderController {
 
         return providerService.getProfilePicture(request);
     }
+
+
+    //TODO: Criar endpoint POST para mandar uma proposal de uma order
+
+    //TODO: Criar endpoint GET para buscar todas as orders direcionadas ao providerId
+
+    /*
+    TODO:
+     PARA O OBSERVER
+     ORDER -> providerId null, mesmo que já tenha recebido proposals, esse campo só será preenchido após
+     o customer aceitar o orçamento
+     */
+
+    //TODO: Ver o vídeo, e pesquisar sobre o padrão!!!
 
     private static final Logger logger = LogManager.getLogger(ProviderController.class.getName());
 }

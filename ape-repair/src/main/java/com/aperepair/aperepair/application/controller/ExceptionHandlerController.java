@@ -89,4 +89,14 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
                 ex.getClass().getName()
         );
     }
+
+    @ExceptionHandler(NoContentException.class)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ApiExceptionResponseDto handleNoContent(Exception ex) {
+        return new ApiExceptionResponseDto(
+                HttpStatus.NO_CONTENT,
+                ex.getMessage(),
+                ex.getClass().getName()
+        );
+    }
 }

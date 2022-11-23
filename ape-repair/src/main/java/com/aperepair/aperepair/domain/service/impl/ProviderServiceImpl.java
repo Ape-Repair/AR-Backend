@@ -406,9 +406,12 @@ public class ProviderServiceImpl implements ProviderService {
 
             Proposal proposal = ProposalDtoFactory.toEntity(request, order);
 
+            proposal.setCustomerOrderId(order);
+            proposal.setProviderId(provider);
+
             proposalRepository.save(proposal);
 
-            ProposalResponseDto proposalResponseDto = new ProposalResponseDto(proposal);
+            ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal);
             logger.info(String.format("Proposal: [%s] save with success!", proposalResponseDto));
 
             String updatedStatus = Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name();

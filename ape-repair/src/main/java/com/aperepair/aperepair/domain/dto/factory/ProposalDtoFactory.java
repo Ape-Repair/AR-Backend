@@ -1,6 +1,7 @@
 package com.aperepair.aperepair.domain.dto.factory;
 
 import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
+import com.aperepair.aperepair.application.dto.response.ProposalResponseDto;
 import com.aperepair.aperepair.domain.model.CustomerOrder;
 import com.aperepair.aperepair.domain.model.Proposal;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +22,22 @@ public class ProposalDtoFactory {
 
         logger.info("CreateProposalRequestDto transformed to Proposal entity with success!");
         return proposal;
+    }
+
+    public static ProposalResponseDto toResponseDto(Proposal proposal) {
+        ProposalResponseDto proposalResponseDto = new ProposalResponseDto(
+                proposal.getId(),
+                proposal.getCustomerOrderId().getId(),
+                proposal.getProviderId().getId(),
+                proposal.getServiceType(),
+                proposal.getDescription(),
+                proposal.getAmount(),
+                false,
+                LocalDateTime.now()
+        );
+
+        logger.info("Proposal entity transformed to ProposalResponseDto with success!");
+        return proposalResponseDto;
     }
 
     private static final Logger logger = LogManager.getLogger(ProposalDtoFactory.class.getName());

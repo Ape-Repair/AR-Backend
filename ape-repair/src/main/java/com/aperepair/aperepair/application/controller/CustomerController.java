@@ -117,6 +117,5 @@ public class CustomerController {
         return customerService.getAllOrders(id);
     }
 
-//TODO(2): Criar controller (MatchController), e endpoint para trazer todas proposal de uma order
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

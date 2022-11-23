@@ -93,4 +93,20 @@ public class Proposal {
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }
+
+    public CustomerOrder getCustomerOrderId() {
+        return customerOrderId;
+    }
+
+    public void setCustomerOrderId(CustomerOrder customerOrderId) {
+        this.customerOrderId = customerOrderId;
+    }
+
+    public Provider getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(Provider providerId) {
+        this.providerId = providerId;
+    }
 }

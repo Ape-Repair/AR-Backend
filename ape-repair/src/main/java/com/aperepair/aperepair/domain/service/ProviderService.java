@@ -1,12 +1,10 @@
 package com.aperepair.aperepair.domain.service;
 
+import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
 import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
-import com.aperepair.aperepair.application.dto.response.DeleteResponseDto;
-import com.aperepair.aperepair.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.application.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -36,4 +34,6 @@ public interface ProviderService {
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request) throws AwsUploadException, IOException, NotFoundException;
 
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException;
+
+    ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException;
 }

@@ -1,19 +1,26 @@
 package com.aperepair.aperepair.domain.service.impl;
 
+import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
 import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
+import com.aperepair.aperepair.domain.dto.factory.ProposalDtoFactory;
 import com.aperepair.aperepair.domain.dto.factory.ProviderDtoFactory;
 import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
 import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
+import com.aperepair.aperepair.domain.enums.Status;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
 import com.aperepair.aperepair.domain.model.Address;
+import com.aperepair.aperepair.domain.model.CustomerOrder;
+import com.aperepair.aperepair.domain.model.Proposal;
 import com.aperepair.aperepair.domain.model.Provider;
 import com.aperepair.aperepair.domain.repository.AddressRepository;
+import com.aperepair.aperepair.domain.repository.OrderRepository;
+import com.aperepair.aperepair.domain.repository.ProposalRepository;
 import com.aperepair.aperepair.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.domain.service.ProviderService;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
@@ -31,7 +38,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,6 +54,12 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Autowired
     private ProfilePictureGateway profilePictureGateway;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ProposalRepository proposalRepository;
 
     @Override
     public ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException {
@@ -180,6 +192,9 @@ public class ProviderServiceImpl implements ProviderService {
 
             address.setId(provider.getAddressId().getId());
 
+            newProvider.setPassword(encoder.encode(updatedProvider.getPassword()));
+            logger.info("Provider password encrypted with successfully");
+
             providerRepository.save(newProvider);
             addressRepository.save(address);
 
@@ -220,7 +235,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(null,false, Role.PROVIDER);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.PROVIDER);
 
         String emailAttempt = credentialsRequestDto.getEmail();
         String passwordAttempt = credentialsRequestDto.getPassword();
@@ -345,6 +360,68 @@ public class ProviderServiceImpl implements ProviderService {
 
         logger.error(String.format("Provider with email [%s] not found!", email));
         throw new NotFoundException(String.format("Provider with email [%s] not found!", email));
+    }
+
+    @Override
+    public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException {
+        Integer providerId = request.getProviderId();
+        Integer orderId = request.getCustomerOrderId();
+
+        if (providerRepository.existsById(providerId)) {
+            Provider provider = providerRepository.findById(providerId).get();
+            String providerSpecialtyType = provider.getSpecialtyType();
+
+            if (!isAuthenticatedProvider(provider)) {
+                ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+
+                logger.error(String.format("Provider: [%s] is not authenticated", providerResponseDto));
+
+                throw new NotAuthenticatedException("Provider is not authenticated");
+            }
+
+            if (!EnumUtils.isValidEnum(SpecialtyTypes.class, providerSpecialtyType)) {
+                logger.error(String.format("Specialty [%s] is not valid at this flow", providerSpecialtyType));
+
+                throw new BadRequestException(String.format("Specialty [%s] is not valid", providerSpecialtyType));
+            }
+
+            logger.info(String.format("Searching order by id: [%d]", orderId));
+            Optional<CustomerOrder> orderOpt = orderRepository.findById(request.getCustomerOrderId());
+
+            if (orderOpt.isEmpty()) {
+                logger.error(String.format("Order with id [%d] not found!", orderId));
+
+                throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
+            }
+
+            CustomerOrder order = orderOpt.get();
+
+            if (providerSpecialtyType != order.getServiceType()) {
+                logger.error("Provider's specialty does not match the specialty required in the order");
+
+                throw new SpecialtyNotMatchWithServiceTypeException(
+                        "Provider's specialty does not match the specialty required in the order"
+                );
+            }
+
+            Proposal proposal = ProposalDtoFactory.toEntity(request, order);
+
+            proposalRepository.save(proposal);
+
+            ProposalResponseDto proposalResponseDto = new ProposalResponseDto(proposal);
+            logger.info(String.format("Proposal: [%s] save with success!", proposalResponseDto));
+
+            String updatedStatus = Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name();
+
+            orderRepository.updateOrderIdByStatus(orderId, updatedStatus);
+            logger.info(String.format("Order id: [%d] - updated status for: [%s] with success!", orderId, updatedStatus));
+
+            return proposalResponseDto;
+        }
+
+        logger.error(String.format("Order with id [%d] not found!", orderId));
+
+        throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
     }
 
     private Boolean isAuthenticatedProvider(Provider provider) {

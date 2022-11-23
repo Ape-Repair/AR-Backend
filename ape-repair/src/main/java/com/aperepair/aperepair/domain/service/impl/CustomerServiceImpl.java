@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.beans.Encoder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,6 +162,7 @@ public class CustomerServiceImpl implements CustomerService {
             updatedCustomer.setRole(customer.getRole());
             updatedCustomer.setAuthenticated(true);
             updatedCustomer.setEmail(customer.getEmail());
+            updatedCustomer.setCpf(customer.getCpf());
 
             Customer newCustomer = CustomerDtoFactory.updatedToEntity(updatedCustomer);
 
@@ -170,6 +172,9 @@ public class CustomerServiceImpl implements CustomerService {
             newCustomer.setAddressId(customer.getAddressId());
 
             address.setId(customer.getAddressId().getId());
+
+            newCustomer.setPassword(encoder.encode(updatedCustomer.getPassword()));
+            logger.info("Customer password encrypted with success");
 
             customerRepository.save(newCustomer);
             addressRepository.save(address);

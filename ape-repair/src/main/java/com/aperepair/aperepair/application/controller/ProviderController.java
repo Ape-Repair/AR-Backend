@@ -1,12 +1,10 @@
 package com.aperepair.aperepair.application.controller;
 
+import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
 import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
-import com.aperepair.aperepair.application.dto.response.DeleteResponseDto;
-import com.aperepair.aperepair.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.application.dto.response.LogoutResponseDto;
-import com.aperepair.aperepair.application.dto.response.ProviderResponseDto;
+import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.service.ProviderService;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
@@ -103,16 +101,18 @@ public class ProviderController {
         return providerService.getProfilePicture(request);
     }
 
+    @PostMapping("/in/create-proposal")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException {
+        logger.info("Calling ProviderService to create proposal!");
 
-    //TODO: Criar endpoint POST para mandar uma proposal de uma order
+        return providerService.createProposal(request);
+    }
 
-    //TODO: Criar endpoint GET para buscar todas as orders direcionadas ao providerId
-
-    /*
-    TODO:
-     PARA O OBSERVER
-     ORDER -> providerId null, mesmo que já tenha recebido proposals, esse campo só será preenchido após
-     o customer aceitar o orçamento
+    /*TODO(1): Criar endpoint GET para buscar todas as orders direcionadas ao providerId;
+        PARA O OBSERVER
+        ORDER -> providerId null, mesmo que já tenha recebido proposals, esse campo só será preenchido após
+        o customer aceitar o orçamento
      */
 
     //TODO: Ver o vídeo, e pesquisar sobre o padrão!!!

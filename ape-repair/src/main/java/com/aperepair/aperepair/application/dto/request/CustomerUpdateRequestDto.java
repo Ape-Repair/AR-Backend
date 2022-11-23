@@ -24,7 +24,7 @@ public class CustomerUpdateRequestDto {
 
     private String genre;
 
-    @NotBlank
+    @JsonIgnore
     @CPF
     private String cpf;
 

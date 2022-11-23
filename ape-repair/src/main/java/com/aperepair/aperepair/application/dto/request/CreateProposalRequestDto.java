@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.application.dto.request;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 public class CreateProposalRequestDto {
 
@@ -11,7 +11,7 @@ public class CreateProposalRequestDto {
     @NotNull
     private Integer providerId;
 
-    @NotNull
+    @Positive
     private Double amount;
 
     public CreateProposalRequestDto(Integer customerOrderId, Integer providerId, Double amount) {

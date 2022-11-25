@@ -36,4 +36,6 @@ public interface ProviderService {
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException;
 
     ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException;
+
+    List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException;
 }

@@ -109,12 +109,12 @@ public class CustomerController {
         customerService.createOrder(request);
     }
 
-    @GetMapping("/{id}/orders")
+    @GetMapping("/{customerId}/orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderResponseDto> allOrders(@PathVariable Integer id) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, NoContentException {
+    public List<OrderResponseDto> allOrders(@PathVariable Integer customerId) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, NoContentException {
         logger.info("Calling CustomerService to get all orders of customer");
 
-        return customerService.getAllOrders(id);
+        return customerService.getAllOrders(customerId);
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());

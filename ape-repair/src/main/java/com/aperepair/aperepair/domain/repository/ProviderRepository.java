@@ -26,6 +26,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Integer> {
 
     List<Provider> findByIsAuthenticatedTrue();
 
+    List<Provider> findBySpecialtyType(String specialtyType);
+
     @Transactional
     @Modifying
     @Query("UPDATE Provider p SET p.addressId = ?1 WHERE p.id = ?2")

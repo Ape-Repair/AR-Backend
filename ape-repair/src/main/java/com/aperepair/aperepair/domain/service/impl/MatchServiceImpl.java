@@ -27,7 +27,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException {
-        if (orderRepository.existsById(orderId)){
+        if (orderRepository.existsById(orderId)) {
             logger.info(String.format("Looking for proposals for the order of id [%d]", orderId));
 
             List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);

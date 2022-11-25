@@ -12,11 +12,14 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<CustomerOrder, Integer> {
 
-    @Query("select co from Customer_Order co where customer_id = ?1")
+    @Query("SELECT co FROM Customer_Order co WHERE customer_id = ?1")
     List<CustomerOrder> getAllOrdersFromCustomerId(Integer id);
 
     @Transactional
     @Modifying
-    @Query("update Customer_Order co set co.status = ?2 where co.id = ?1")
+    @Query("UPDATE Customer_Order co SET co.status = ?2 WHERE co.id = ?1")
     void updateOrderIdByStatus(Integer id, String status);
+
+    @Query("SELECT co FROM Customer_Order co WHERE service_type = ?1 AND paid = false")
+    List<CustomerOrder> findByServiceTypeAvailableOrders(String serviceType);
 }

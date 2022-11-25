@@ -36,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.beans.Encoder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -393,7 +392,6 @@ public class CustomerServiceImpl implements CustomerService {
 
             CustomerResponseDto customerResponse = CustomerDtoFactory.toResponsePartialDto(customer);
 
-
             List<CustomerOrder> customerOrders = orderRepository.getAllOrdersFromCustomerId(id);
 
             if (customerOrders.isEmpty()) {
@@ -415,7 +413,7 @@ public class CustomerServiceImpl implements CustomerService {
                     ProviderResponseDto providerResponseDto = getProviderWithIdRegisteredInCustomerOrder(customerOrder);
 
                     OrderResponseDto orderWithProviderId = OrderDtoFactory.toResponseWithNotNullProviderDto(
-                        customerOrder, customerResponse, providerResponseDto
+                            customerOrder, customerResponse, providerResponseDto
                     );
                     orders.add(orderWithProviderId);
                 }

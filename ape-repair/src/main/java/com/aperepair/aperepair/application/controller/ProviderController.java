@@ -109,13 +109,13 @@ public class ProviderController {
         return providerService.createProposal(request);
     }
 
-    /*TODO(1): Criar endpoint GET para buscar todas as orders direcionadas ao providerId;
-        PARA O OBSERVER
-        ORDER -> providerId null, mesmo que já tenha recebido proposals, esse campo só será preenchido após
-        o customer aceitar o orçamento
-     */
+    @GetMapping("/in/available-orders/{providerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderResponseDto> getAllAvailableOrders(@PathVariable Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException {
+        logger.info("Calling ProviderService to list all available orders");
 
-    //TODO: Ver o vídeo, e pesquisar sobre o padrão!!!
+        return providerService.getAllAvailableOrders(providerId);
+    }
 
     private static final Logger logger = LogManager.getLogger(ProviderController.class.getName());
 }

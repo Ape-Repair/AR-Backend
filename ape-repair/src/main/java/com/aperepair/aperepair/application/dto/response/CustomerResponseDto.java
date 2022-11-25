@@ -62,6 +62,17 @@ public class CustomerResponseDto {
         this.address = address;
     }
 
+    public CustomerResponseDto(Integer id, String name, String email, String genre, String cpf, String phone, String role, boolean isAuthenticated) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.genre = genre;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.role = role;
+        this.isAuthenticated = isAuthenticated;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -5,19 +5,14 @@ import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
-import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
-import com.aperepair.aperepair.domain.dto.factory.ProposalDtoFactory;
-import com.aperepair.aperepair.domain.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.domain.dto.factory.*;
 import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
 import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
 import com.aperepair.aperepair.domain.enums.Status;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
-import com.aperepair.aperepair.domain.model.Address;
-import com.aperepair.aperepair.domain.model.CustomerOrder;
-import com.aperepair.aperepair.domain.model.Proposal;
-import com.aperepair.aperepair.domain.model.Provider;
+import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.AddressRepository;
 import com.aperepair.aperepair.domain.repository.OrderRepository;
 import com.aperepair.aperepair.domain.repository.ProposalRepository;
@@ -427,23 +422,108 @@ public class ProviderServiceImpl implements ProviderService {
         throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
     }
 
-    private Boolean isAuthenticatedProvider(Provider provider) {
-        if (provider.isAuthenticated()) return true;
+    @Override
+    public List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException {
 
-        return false;
+        if (providerRepository.existsById(providerId)) {
+            Provider provider = providerRepository.findById(providerId).get();
+            String providerSpecialtyType = provider.getSpecialtyType();
+
+            if (!isAuthenticatedProvider(provider)) {
+                ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+
+                logger.error(String.format("Provider: [%s] is not authenticated", providerResponseDto));
+
+                throw new NotAuthenticatedException("Provider is not authenticated");
+            }
+
+            switch (providerSpecialtyType) {
+
+                case ("GENERAL_SERVICES"):
+                    List<CustomerOrder> availableOrdersToGeneralServices = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
+                    logger.info("Finding by available orders of specialty type: General Services");
+
+                    if (availableOrdersToGeneralServices.isEmpty()) {
+                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
+                    }
+
+                    List<OrderResponseDto> generalOrders = new ArrayList();
+
+                    for (CustomerOrder order : availableOrdersToGeneralServices) {
+                        Customer customer = order.getCustomerId();
+
+                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+
+                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
+                                order, customerResponseDto, null
+                        );
+
+                        generalOrders.add(orderResponseDto);
+                    }
+
+                    return generalOrders;
+                case ("PLUMBER"):
+                    List<CustomerOrder> availableOrdersToPlumber = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
+
+                    if (availableOrdersToPlumber.isEmpty()) {
+                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
+                    }
+
+                    List<OrderResponseDto> plumberOrders = new ArrayList();
+
+                    for (CustomerOrder order : availableOrdersToPlumber) {
+                        Customer customer = order.getCustomerId();
+
+                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+
+                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
+                                order, customerResponseDto, null
+                        );
+
+                        plumberOrders.add(orderResponseDto);
+                    }
+
+                    return plumberOrders;
+                case ("ELECTRICIAN"):
+                    List<CustomerOrder> availableOrdersToElectrician = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
+
+                    if (availableOrdersToElectrician.isEmpty()) {
+                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
+                    }
+
+                    List<OrderResponseDto> electricianOrders = new ArrayList();
+
+                    for (CustomerOrder order : availableOrdersToElectrician) {
+                        Customer customer = order.getCustomerId();
+
+                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+
+                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
+                                order, customerResponseDto, null
+                        );
+
+                        electricianOrders.add(orderResponseDto);
+                    }
+
+                    return electricianOrders;
+            }
+        }
+
+        logger.error(String.format("Provider with id [%d] not found!", providerId));
+        throw new NotFoundException(String.format("Provider with id [%d] not found!", providerId));
+    }
+
+    private boolean isAuthenticatedProvider(Provider provider) {
+        return provider.isAuthenticated();
     }
 
     private boolean isValidPassword(String passwordAttempt, Provider provider) {
-        if (encoder.matches(passwordAttempt, provider.getPassword())) return true;
-
-        return false;
+        return encoder.matches(passwordAttempt, provider.getPassword());
     }
 
     private boolean thisCpfOrPhoneOrEmailIsAlreadyRegistered(String cpf, String phone, String email) {
-        if (providerRepository.existsByCpf(cpf) ||
-                providerRepository.existsByPhone(phone) || providerRepository.existsByEmail(email)) return true;
-
-        return false;
+        return providerRepository.existsByCpf(cpf) ||
+                providerRepository.existsByPhone(phone) || providerRepository.existsByEmail(email);
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

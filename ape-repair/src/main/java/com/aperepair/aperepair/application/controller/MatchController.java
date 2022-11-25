@@ -22,7 +22,7 @@ public class MatchController {
     @GetMapping("/proposals/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public List<ProposalResponseDto> getProposalsForOrder(@PathVariable Integer orderId) throws NotFoundException, NoContentException {
-        logger.info("Calling MatchService to get proposals for and order");
+        logger.info("Calling MatchService to get proposals for an order");
 
         return matchService.getProposalsForOrder(orderId);
     }

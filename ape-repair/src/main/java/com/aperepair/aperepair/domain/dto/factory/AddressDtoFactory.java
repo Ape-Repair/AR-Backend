@@ -3,13 +3,12 @@ package com.aperepair.aperepair.domain.dto.factory;
 import com.aperepair.aperepair.application.dto.request.AddressRequestDto;
 import com.aperepair.aperepair.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.domain.model.Address;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class AddressDtoFactory {
 
     public static Address toEntity(AddressRequestDto addressRequestDto) {
-        Address address = new Address(
+
+        return new Address(
                 addressRequestDto.getStreet(),
                 addressRequestDto.getStreetNumber(),
                 addressRequestDto.getComplement(),
@@ -17,14 +16,12 @@ public class AddressDtoFactory {
                 addressRequestDto.getDistrict(),
                 addressRequestDto.getCity(),
                 addressRequestDto.getUf()
-                );
-
-        logger.info("AddressRequestDto transformed to Address entity with successfully");
-        return address;
+        );
     }
 
     public static AddressResponseDto toResponseDto(Address address) {
-        AddressResponseDto addressResponseDto = new AddressResponseDto(
+
+        return new AddressResponseDto(
                 address.getStreet(),
                 address.getStreetNumber(),
                 address.getComplement(),
@@ -33,10 +30,5 @@ public class AddressDtoFactory {
                 address.getCity(),
                 address.getUf()
         );
-
-        logger.info("Address transformed to AddressResponseDto successfully");
-        return addressResponseDto;
     }
-
-    private static final Logger logger = LogManager.getLogger(AddressDtoFactory.class.getName());
 }

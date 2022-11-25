@@ -1,17 +1,16 @@
 package com.aperepair.aperepair.domain.dto.factory;
 
-import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
+import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.AddressResponseDto;
 import com.aperepair.aperepair.application.dto.response.CustomerResponseDto;
 import com.aperepair.aperepair.domain.model.Customer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class CustomerDtoFactory {
 
     public static Customer toEntity(CustomerRequestDto customerRequestDto) {
-        Customer customer = new Customer(
+
+        return new Customer(
                 null,
                 customerRequestDto.getName(),
                 customerRequestDto.getEmail(),
@@ -23,12 +22,11 @@ public class CustomerDtoFactory {
                 customerRequestDto.getRole(),
                 customerRequestDto.isAuthenticated()
         );
-        logger.info("CustomerRequestDto transformed to Customer entity with success!");
-        return customer;
     }
 
     public static Customer updatedToEntity(CustomerUpdateRequestDto customerRequestDto) {
-        Customer customer = new Customer(
+
+        return new Customer(
                 null,
                 customerRequestDto.getName(),
                 customerRequestDto.getEmail(),
@@ -40,12 +38,11 @@ public class CustomerDtoFactory {
                 customerRequestDto.getRole(),
                 customerRequestDto.isAuthenticated()
         );
-        logger.info("CustomerRequestDto transformed to Customer entity with success!");
-        return customer;
     }
 
     public static CustomerResponseDto toResponseFullDto(Customer customer, AddressResponseDto addressResponseDto) {
-        CustomerResponseDto customerResponseDto = new CustomerResponseDto(
+
+        return new CustomerResponseDto(
                 customer.getName(),
                 customer.getEmail(),
                 customer.getGenre(),
@@ -55,13 +52,12 @@ public class CustomerDtoFactory {
                 customer.isAuthenticated(),
                 addressResponseDto
         );
-
-        logger.info("Customer transformed to CustomerResponseFullDto successfully");
-        return customerResponseDto;
     }
 
     public static CustomerResponseDto toResponsePartialDto(Customer customer) {
-        CustomerResponseDto customerResponseDto = new CustomerResponseDto(
+
+        return new CustomerResponseDto(
+                customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getGenre(),
@@ -70,10 +66,5 @@ public class CustomerDtoFactory {
                 customer.getRole(),
                 customer.isAuthenticated()
         );
-
-        logger.info("Customer transformed to CustomerResponsePartialDto successfully");
-        return customerResponseDto;
     }
-
-    private static final Logger logger = LogManager.getLogger(CustomerDtoFactory.class.getName());
 }

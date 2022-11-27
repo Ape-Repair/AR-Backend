@@ -38,4 +38,8 @@ public interface CustomerService {
     void createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
 
     List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
+
+    List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException;
+
+    void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException;
 }

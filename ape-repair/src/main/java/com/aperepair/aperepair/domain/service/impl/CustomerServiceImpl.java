@@ -5,24 +5,15 @@ import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
-import com.aperepair.aperepair.domain.dto.factory.AddressDtoFactory;
-import com.aperepair.aperepair.domain.dto.factory.CustomerDtoFactory;
-import com.aperepair.aperepair.domain.dto.factory.OrderDtoFactory;
-import com.aperepair.aperepair.domain.dto.factory.ProviderDtoFactory;
+import com.aperepair.aperepair.domain.dto.factory.*;
 import com.aperepair.aperepair.domain.enums.Genre;
 import com.aperepair.aperepair.domain.enums.Role;
 import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
 import com.aperepair.aperepair.domain.enums.Status;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
-import com.aperepair.aperepair.domain.model.Address;
-import com.aperepair.aperepair.domain.model.Customer;
-import com.aperepair.aperepair.domain.model.CustomerOrder;
-import com.aperepair.aperepair.domain.model.Provider;
-import com.aperepair.aperepair.domain.repository.AddressRepository;
-import com.aperepair.aperepair.domain.repository.CustomerRepository;
-import com.aperepair.aperepair.domain.repository.OrderRepository;
-import com.aperepair.aperepair.domain.repository.ProviderRepository;
+import com.aperepair.aperepair.domain.model.*;
+import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -61,6 +52,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
+    private ProposalRepository proposalRepository;
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException, BadRequestException {
@@ -377,6 +371,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException {
+        //TODO: implementar uma pilha ordenada por createdAt para retornar histórico
+
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findCustomerById(id);
 
@@ -426,23 +422,84 @@ public class CustomerServiceImpl implements CustomerService {
         throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
-    private Boolean isAuthenticatedCustomer(Customer customer) {
-        if (customer.isAuthenticated()) return true;
+    @Override
+    public List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException {
+        if (orderRepository.existsById(orderId)) {
+            logger.info(String.format("Looking for proposals for the order of id [%d]", orderId));
 
-        return false;
+            List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);
+
+            if (proposals.isEmpty()) {
+                logger.info("There are no proposals for this order");
+
+                throw new NoContentException("There are no proposals for this order");
+            }
+
+            List<ProposalResponseDto> proposalResponseDtos = new ArrayList();
+
+            for (Proposal proposal : proposals) {
+                ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal);
+                proposalResponseDtos.add(proposalResponseDto);
+            }
+
+            return proposalResponseDtos;
+        }
+
+        logger.error(String.format("Order with id: [%d] not found", orderId));
+        throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
+    }
+
+    @Override
+    public void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException {
+        if (orderRepository.existsById(orderId) && proposalRepository.existsById(proposalId)) {
+            logger.info("Getting order and proposal from passed id's");
+
+            CustomerOrder order = orderRepository.findById(orderId).get();
+            Proposal proposal = proposalRepository.findById(proposalId).get();
+
+            List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);
+
+            if (proposals.contains(proposal) && validatePrerequisitesForAcceptingAProposal(order)) {
+                logger.info("This proposal and order are VALID");
+
+                final String WAITING_FOR_PAYMENT = Status.WAITING_FOR_PAYMENT.name();
+
+                proposal.setAccepted(true);
+
+                proposalRepository.save(proposal);
+
+                logger.info("Proposal update with success!");
+
+                order.setProviderId(proposal.getProviderId());
+                order.setStatus(WAITING_FOR_PAYMENT);
+                order.setAmount(proposal.getAmount());
+
+                orderRepository.save(order);
+
+                logger.info("Order update with success!");
+
+            } else {
+                logger.error("This proposal and/or order are INVALID for this request");
+
+                throw new InvalidProposalForThisOrderException("This proposal and/or order are INVALID for this request");
+            }
+        } else {
+            logger.error(String.format("Order with id: [%d] and/or Proposal with id: [%d] not found", orderId, proposalId));
+            throw new NotFoundException(String.format("Order with id: [%d] and/or Proposal with id: [%d] not found", orderId, proposalId));
+        }
+    }
+
+    private Boolean isAuthenticatedCustomer(Customer customer) {
+        return customer.isAuthenticated();
     }
 
     private boolean isValidPassword(String passwordAttempt, Customer customer) {
-        if (encoder.matches(passwordAttempt, customer.getPassword())) return true;
-
-        return false;
+        return encoder.matches(passwordAttempt, customer.getPassword());
     }
 
     private boolean thisCpfOrEmailOrPhoneIsAlreadyRegistered(String cpf, String email, String phone) {
-        if (customerRepository.existsByCpf(cpf) || customerRepository.existsByEmail(email) ||
-                customerRepository.existsByPhone(phone)) return true;
-
-        return false;
+        return customerRepository.existsByCpf(cpf) || customerRepository.existsByEmail(email) ||
+                customerRepository.existsByPhone(phone);
     }
 
     private ProviderResponseDto getProviderWithIdRegisteredInCustomerOrder(CustomerOrder customerOrder) {
@@ -453,6 +510,11 @@ public class CustomerServiceImpl implements CustomerService {
         ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
 
         return providerResponseDto;
+    }
+
+    private boolean validatePrerequisitesForAcceptingAProposal(CustomerOrder order) {
+        return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
+                && !order.getStatus().equals(Status.IN_PROGRESS.name()));
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

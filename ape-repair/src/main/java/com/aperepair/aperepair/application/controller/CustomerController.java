@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-//TODO: Atualizar repo de collections
+    //TODO: Atualizar repo de collections
     @Autowired
     private CustomerService customerService;
 
@@ -116,6 +116,35 @@ public class CustomerController {
 
         return customerService.getAllOrders(customerId);
     }
+
+    @GetMapping("/order/{orderId}/available-proposals")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProposalResponseDto> getProposalsForOrder(@PathVariable Integer orderId) throws NotFoundException, NoContentException {
+        logger.info("Calling MatchService to get proposals for an order");
+
+        return customerService.getProposalsForOrder(orderId);
+    }
+
+    @PostMapping("/order/{orderId}/accept-proposal/{proposalId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void acceptProposal(@PathVariable Integer orderId, @PathVariable Integer proposalId) throws InvalidProposalForThisOrderException, NotFoundException {
+        logger.info("Calling Customer Service to accept a proposal for an order");
+
+        customerService.acceptProposal(orderId, proposalId);
+    }
+
+    //TODO: Criar endpoint para realizar pagamento, gerar recibo TXT e salvar na aws;
+//    @PostMapping("/order/{orderId}/payment")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void makePayment(@PathVariable Integer orderId) {
+//        logger.info("Calling CustomerService to make payment for an order");
+//
+//        customerService.makePayment(orderId);
+//    }
+
+    //TODO: Criar endpoint para concluir uma order;
+    //TODO: Criar endpoint para cancelar uma order;
+    //TODO: Criar endpoint para download do recibo;
 
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

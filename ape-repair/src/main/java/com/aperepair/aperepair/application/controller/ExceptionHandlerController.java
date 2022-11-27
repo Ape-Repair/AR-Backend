@@ -45,7 +45,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             AlreadyRegisteredException.class,
             HttpClientErrorException.BadRequest.class,
-            InvalidServiceTypeException.class
+            InvalidServiceTypeException.class,
+            InvalidProposalForThisOrderException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiExceptionResponseDto handleBadRequestException(Exception ex) {

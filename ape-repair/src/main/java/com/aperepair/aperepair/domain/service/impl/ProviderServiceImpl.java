@@ -358,7 +358,7 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException {
+    public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException {
         Integer providerId = request.getProviderId();
         Integer orderId = request.getCustomerOrderId();
 
@@ -397,6 +397,12 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new SpecialtyNotMatchWithServiceTypeException(
                         "Provider's specialty does not match the specialty required in the order"
                 );
+            }
+
+            if (!validatePrerequisitesForCreatingAProposal(order)) {
+                logger.error("Proposal cannot be created for this order");
+
+                throw new InvalidProposalForThisOrderException("Proposal cannot be created for this order");
             }
 
             Proposal proposal = ProposalDtoFactory.toEntity(request, order);
@@ -478,6 +484,11 @@ public class ProviderServiceImpl implements ProviderService {
     private boolean thisCpfOrPhoneOrEmailIsAlreadyRegistered(String cpf, String phone, String email) {
         return providerRepository.existsByCpf(cpf) ||
                 providerRepository.existsByPhone(phone) || providerRepository.existsByEmail(email);
+    }
+
+    private boolean validatePrerequisitesForCreatingAProposal(CustomerOrder order) {
+        return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
+                && !order.getStatus().equals(Status.IN_PROGRESS.name()));
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

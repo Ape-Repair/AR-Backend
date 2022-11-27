@@ -103,7 +103,7 @@ public class ProviderController {
 
     @PostMapping("/in/create-proposal")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException {
+    public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException {
         logger.info("Calling ProviderService to create proposal!");
 
         return providerService.createProposal(request);

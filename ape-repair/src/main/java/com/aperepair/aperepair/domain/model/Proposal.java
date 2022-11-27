@@ -20,6 +20,7 @@ public class Proposal {
     @JoinColumn(name = "provider_id", referencedColumnName = "id")
     private Provider providerId;
 
+    @Column(name = "service_type")
     @NotBlank
     private String serviceType;
 

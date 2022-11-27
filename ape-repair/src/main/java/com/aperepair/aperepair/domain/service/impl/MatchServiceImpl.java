@@ -35,7 +35,7 @@ public class MatchServiceImpl implements MatchService {
             if (proposals.isEmpty()) {
                 logger.info("There are no proposals for this order");
 
-                throw new NoContentException("There are no proposals for this request");
+                throw new NoContentException("There are no proposals for this order");
             }
 
             List<ProposalResponseDto> proposalResponseDtos = new ArrayList();

@@ -1,11 +1,5 @@
 package com.aperepair.aperepair.application.dto.response;
 
-import com.aperepair.aperepair.domain.model.Customer;
-import com.aperepair.aperepair.domain.model.Provider;
-
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;

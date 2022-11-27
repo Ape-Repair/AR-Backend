@@ -15,11 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/matches")
 public class MatchController {
-
+//TODO(melhoria a ser pensada): validar UF para provider poder realizar uma proposta
     @Autowired
     private MatchService matchService;
 
-    @GetMapping("/proposals/{orderId}")
+    @GetMapping("/available-proposals/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public List<ProposalResponseDto> getProposalsForOrder(@PathVariable Integer orderId) throws NotFoundException, NoContentException {
         logger.info("Calling MatchService to get proposals for an order");

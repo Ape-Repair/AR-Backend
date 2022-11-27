@@ -391,7 +391,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             CustomerOrder order = orderOpt.get();
 
-            if (providerSpecialtyType != order.getServiceType()) {
+            if (!EnumUtils.isValidEnum(SpecialtyTypes.class, order.getServiceType())) {
                 logger.error("Provider's specialty does not match the specialty required in the order");
 
                 throw new SpecialtyNotMatchWithServiceTypeException(
@@ -424,8 +424,8 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException {
-
-        if (providerRepository.existsById(providerId)) {
+        boolean providerExists = providerRepository.existsById(providerId);
+        if (providerExists) {
             Provider provider = providerRepository.findById(providerId).get();
             String providerSpecialtyType = provider.getSpecialtyType();
 
@@ -437,76 +437,30 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new NotAuthenticatedException("Provider is not authenticated");
             }
 
-            switch (providerSpecialtyType) {
+            logger.info(String.format("Finding by available orders of specialty type: [%s]", providerSpecialtyType));
 
-                case ("GENERAL_SERVICES"):
-                    List<CustomerOrder> availableOrdersToGeneralServices = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
-                    logger.info("Finding by available orders of specialty type: General Services");
+            List<CustomerOrder> orders = orderRepository
+                    .findByServiceTypeAvailableOrders(providerSpecialtyType);
 
-                    if (availableOrdersToGeneralServices.isEmpty()) {
-                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
-                    }
-
-                    List<OrderResponseDto> generalOrders = new ArrayList();
-
-                    for (CustomerOrder order : availableOrdersToGeneralServices) {
-                        Customer customer = order.getCustomerId();
-
-                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
-
-                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
-                                order, customerResponseDto, null
-                        );
-
-                        generalOrders.add(orderResponseDto);
-                    }
-
-                    return generalOrders;
-                case ("PLUMBER"):
-                    List<CustomerOrder> availableOrdersToPlumber = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
-
-                    if (availableOrdersToPlumber.isEmpty()) {
-                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
-                    }
-
-                    List<OrderResponseDto> plumberOrders = new ArrayList();
-
-                    for (CustomerOrder order : availableOrdersToPlumber) {
-                        Customer customer = order.getCustomerId();
-
-                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
-
-                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
-                                order, customerResponseDto, null
-                        );
-
-                        plumberOrders.add(orderResponseDto);
-                    }
-
-                    return plumberOrders;
-                case ("ELECTRICIAN"):
-                    List<CustomerOrder> availableOrdersToElectrician = orderRepository.findByServiceTypeAvailableOrders(providerSpecialtyType);
-
-                    if (availableOrdersToElectrician.isEmpty()) {
-                        throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
-                    }
-
-                    List<OrderResponseDto> electricianOrders = new ArrayList();
-
-                    for (CustomerOrder order : availableOrdersToElectrician) {
-                        Customer customer = order.getCustomerId();
-
-                        CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
-
-                        OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
-                                order, customerResponseDto, null
-                        );
-
-                        electricianOrders.add(orderResponseDto);
-                    }
-
-                    return electricianOrders;
+            if (orders.isEmpty()) {
+                throw new NoContentException(String.format("There are no orders available for this specialty [%s]", providerSpecialtyType));
             }
+
+            List<OrderResponseDto> availableOrders = new ArrayList();
+
+            for (CustomerOrder order : orders) {
+                Customer customer = order.getCustomerId();
+
+                CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+
+                OrderResponseDto orderResponseDto = OrderDtoFactory.toResponseDto(
+                        order, customerResponseDto, null
+                );
+
+                availableOrders.add(orderResponseDto);
+            }
+
+            return availableOrders;
         }
 
         logger.error(String.format("Provider with id [%d] not found!", providerId));

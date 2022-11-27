@@ -42,4 +42,10 @@ public interface CustomerService {
     List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException;
 
     void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException;
+
+    void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException;
+
+    void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException;
+
+    void cancelOrder(Integer orderId) throws NotFoundException, InvalidOrderToCanceledException;
 }

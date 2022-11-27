@@ -489,6 +489,82 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    @Override
+    public void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException {
+        logger.info(String.format("Finding order with id: [%d]", orderId));
+
+        //TODO: Criar recibo TXT, salvar na aws (gateway);
+
+        if (orderRepository.existsById(orderId)) {
+            CustomerOrder order = orderRepository.findById(orderId).get();
+
+            if (validatePrerequisitesForPaymentAOrder(order)) {
+                logger.info("This order is valid for payment");
+
+                order.setPaid(true);
+                order.setStatus(Status.IN_PROGRESS.name());
+
+                orderRepository.save(order);
+                logger.info("Payment made successfully");
+            } else {
+                logger.error("This order is invalid for payment");
+                throw new InvalidOrderForPaymentException("This order is invalid for payment");
+            }
+        } else {
+            logger.error(String.format("Order with id: [%d] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+        }
+    }
+
+    //TODO: Quem encerra o pedido (Customer ou provider?), qual a regra para encerrar?
+    @Override
+    public void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException {
+        logger.info(String.format("Finding order with id: [%d]", orderId));
+
+        if (orderRepository.existsById(orderId)) {
+            CustomerOrder order = orderRepository.findById(orderId).get();
+
+            if (validatePrerequisitesForConcludeAOrder(order)) {
+                logger.info("This order is valid to be finalized");
+
+                order.setStatus(Status.DONE.name());
+                orderRepository.save(order);
+
+                logger.info("Order conclude successfully");
+            } else {
+                logger.error("This order is invalid to finalized");
+                throw new InvalidOrderToConcludeException("This order is invalid to finalized");
+            }
+        } else {
+            logger.error(String.format("Order with id: [%d] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+        }
+    }
+
+    @Override
+    public void cancelOrder(Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
+        logger.info(String.format("Finding order with id: [%d]", orderId));
+        if (orderRepository.existsById(orderId)) {
+            CustomerOrder order = orderRepository.findById(orderId).get();
+
+            if (!order.getStatus().equals(Status.DONE.name())) {
+                //TODO: Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez?
+                order.setStatus(Status.CANCELED.name());
+                orderRepository.save(order);
+
+                logger.info("Order canceled successfully!");
+            } else {
+                logger.error("This order is invalid to canceled");
+                throw new InvalidOrderToCanceledException("This order is invalid to canceled");
+            }
+
+        } else {
+            logger.error(String.format("Order with id: [%d] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+        }
+
+    }
+
     private Boolean isAuthenticatedCustomer(Customer customer) {
         return customer.isAuthenticated();
     }
@@ -515,6 +591,24 @@ public class CustomerServiceImpl implements CustomerService {
     private boolean validatePrerequisitesForAcceptingAProposal(CustomerOrder order) {
         return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
                 && !order.getStatus().equals(Status.IN_PROGRESS.name()));
+    }
+
+    private boolean validatePrerequisitesForPaymentAOrder(CustomerOrder order) {
+        return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) &&
+                !order.getStatus().equals(Status.DONE.name()) && !order.getStatus().equals(Status.IN_PROGRESS.name())
+                && !order.getStatus().equals(Status.WAITING_FOR_PROPOSAL.name()) &&
+                !order.getStatus().equals(Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name()) && order.getProviderId() != null
+                && order.getAmount() > 0.0
+        );
+    }
+
+    private boolean validatePrerequisitesForConcludeAOrder(CustomerOrder order) {
+        return (order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) &&
+                !order.getStatus().equals(Status.DONE.name()) && order.getStatus().equals(Status.IN_PROGRESS.name())
+                && !order.getStatus().equals(Status.WAITING_FOR_PROPOSAL.name()) &&
+                !order.getStatus().equals(Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name()) && order.getProviderId() != null
+                && order.getAmount() > 0.0
+        );
     }
 
     private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());

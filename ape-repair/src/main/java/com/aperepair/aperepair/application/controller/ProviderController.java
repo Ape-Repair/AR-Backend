@@ -69,14 +69,14 @@ public class ProviderController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public LoginResponseDto login(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling ProviderService to authenticate a customer");
+        logger.info("Calling ProviderService to authenticate a provider");
 
         return providerService.login(credentialsRequestDto);
     }
 
     @PatchMapping("/logout")
     public LogoutResponseDto logout(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling ProviderService to logout a customer");
+        logger.info("Calling ProviderService to logout a provider");
 
         return providerService.logout(credentialsRequestDto);
     }
@@ -86,7 +86,7 @@ public class ProviderController {
     public ProfilePictureCreationResponseDto profilePictureCreation(
             @RequestBody @Valid ProfilePictureCreationRequestDto request
     ) throws IOException, AwsUploadException, NotFoundException {
-        logger.info("Calling ProviderService to upload customer profile image!");
+        logger.info("Calling ProviderService to upload provider profile image!");
 
         return providerService.profilePictureCreation(request);
     }
@@ -96,7 +96,7 @@ public class ProviderController {
     public GetProfilePictureResponseDto getProfilePicture(
             @RequestBody @Valid GetProfilePictureRequestDto request
     ) throws Exception {
-        logger.info("Calling ProviderService to get customer profile image!");
+        logger.info("Calling ProviderService to get provider profile image!");
 
         return providerService.getProfilePicture(request);
     }

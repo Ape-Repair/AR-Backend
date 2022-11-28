@@ -94,7 +94,7 @@ public class ProviderServiceImpl implements ProviderService {
         Address address = AddressDtoFactory.toEntity(request.getAddress());
 
         addressRepository.save(address);
-        logger.info("Address registered successfully for customer");
+        logger.info("Address registered successfully for provider");
 
         AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
 
@@ -343,7 +343,7 @@ public class ProviderServiceImpl implements ProviderService {
     public GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException {
         String email = request.getEmail();
         if (providerRepository.existsByEmail(email)) {
-            logger.info(String.format("Searching profile picture for customer: [%s]", email));
+            logger.info(String.format("Searching profile picture for provider: [%s]", email));
 
             GetProfilePictureResponseDto response = new GetProfilePictureResponseDto(null);
             String imageBase64 = profilePictureGateway.getProfilePicture(request);

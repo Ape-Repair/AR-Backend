@@ -43,9 +43,9 @@ public interface CustomerService {
 
     void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException;
 
-    void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException;
+    void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException;
 
-    void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException;
+    void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException;
 
     void cancelOrder(Integer orderId) throws NotFoundException, InvalidOrderToCanceledException;
 }

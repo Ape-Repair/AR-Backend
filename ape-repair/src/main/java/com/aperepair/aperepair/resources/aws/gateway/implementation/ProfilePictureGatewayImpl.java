@@ -80,7 +80,7 @@ public class ProfilePictureGatewayImpl implements ProfilePictureGateway {
             logger.error("[Failed: AwsS3ImageException] - error in some Amazon S3 service");
             throw new AwsS3ImageException(ex.getMessage());
         } catch (AmazonServiceException ex) {
-            logger.error("[Failed: AwsServiceInternalException] - error in some amazon service");
+            logger.error("[Failed: AwsServiceInternalException] - error in some Amazon service");
             throw new AwsServiceInternalException(ex.getMessage());
         } catch (IOException ex) {
             logger.error("[Failed: IOException] - error at bucket flow");

@@ -29,7 +29,7 @@ public class ProposalDtoFactory {
                 proposal.getServiceType(),
                 proposal.getDescription(),
                 proposal.getAmount(),
-                false,
+                proposal.isAccepted(),
                 LocalDateTime.now()
         );
     }

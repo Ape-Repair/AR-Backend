@@ -12,6 +12,7 @@ import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
 import com.aperepair.aperepair.domain.enums.Status;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
+import com.aperepair.aperepair.domain.gateway.ReceiptOrderGateway;
 import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
@@ -27,6 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +59,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ProposalRepository proposalRepository;
+
+    @Autowired
+    private ReceiptOrderGateway receiptOrderGateway;
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException, BadRequestException {
@@ -371,7 +378,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException {
-        //TODO: implementar uma pilha ordenada por createdAt para retornar histórico
+        //TODO(essencial): implementar uma pilha obj ordenada por createdAt para retornar histórico
 
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findCustomerById(id);
@@ -459,7 +466,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);
 
-            if (proposals.contains(proposal) && validatePrerequisitesForAcceptingAProposal(order)) {
+            if (proposals.contains(proposal) && validatePrerequisitesForAcceptingAProposal(order, proposal)) {
                 logger.info("This proposal and order are VALID");
 
                 final String WAITING_FOR_PAYMENT = Status.WAITING_FOR_PAYMENT.name();
@@ -490,13 +497,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException {
+    public void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException {
         logger.info(String.format("Finding order with id: [%d]", orderId));
-
-        //TODO: Criar recibo TXT, salvar na aws (gateway);
 
         if (orderRepository.existsById(orderId)) {
             CustomerOrder order = orderRepository.findById(orderId).get();
+            Customer customer = order.getCustomerId();
+
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+                logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+                throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            }
+
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.info("The customer is not authenticated");
+                throw new NotAuthenticatedException("Customer is not authenticated");
+            }
 
             if (validatePrerequisitesForPaymentAOrder(order)) {
                 logger.info("This order is valid for payment");
@@ -506,6 +522,13 @@ public class CustomerServiceImpl implements CustomerService {
 
                 orderRepository.save(order);
                 logger.info("Payment made successfully");
+
+                //TODO(essencial): Montar recibo + completo
+                String message = String.format("APE REPAIR - RECIBO\n\nPagamento realizado com sucesso: R$%.2f\n\nDúvidas: Entrar em contato no número: (11)9 0000-0000",
+                        order.getAmount()
+                );
+
+                createReceipt(order, message);
             } else {
                 logger.error("This order is invalid for payment");
                 throw new InvalidOrderForPaymentException("This order is invalid for payment");
@@ -516,13 +539,23 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    //TODO: Quem encerra o pedido (Customer ou provider?), qual a regra para encerrar?
     @Override
-    public void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException {
+    public void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException {
         logger.info(String.format("Finding order with id: [%d]", orderId));
 
         if (orderRepository.existsById(orderId)) {
             CustomerOrder order = orderRepository.findById(orderId).get();
+            Customer customer = order.getCustomerId();
+
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+                logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+                throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            }
+
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.info("The customer is not authenticated");
+                throw new NotAuthenticatedException("Customer is not authenticated");
+            }
 
             if (validatePrerequisitesForConcludeAOrder(order)) {
                 logger.info("This order is valid to be finalized");
@@ -548,7 +581,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerOrder order = orderRepository.findById(orderId).get();
 
             if (!order.getStatus().equals(Status.DONE.name())) {
-                //TODO: Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez?
+                //TODO(desejável): Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez
                 order.setStatus(Status.CANCELED.name());
                 orderRepository.save(order);
 
@@ -557,12 +590,40 @@ public class CustomerServiceImpl implements CustomerService {
                 logger.error("This order is invalid to canceled");
                 throw new InvalidOrderToCanceledException("This order is invalid to canceled");
             }
-
         } else {
             logger.error(String.format("Order with id: [%d] not found", orderId));
             throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
         }
+    }
 
+    private void createReceipt(CustomerOrder order, String message) throws IOException, AwsServiceInternalException {
+        String email = order.getCustomerId().getEmail();
+        Integer orderId = order.getId();
+
+        File receipt = null;
+
+        String key = String.format("%s/order-%d.txt", email, orderId);
+
+        try {
+            receipt = File.createTempFile(String.format("%s-%d", email, orderId), ".txt");
+
+            BufferedWriter buffer = new BufferedWriter(new FileWriter(receipt));
+            buffer.write(message);
+            buffer.close();
+
+            receiptOrderGateway.uploadReceiptOrder(receipt, key, email);
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        } catch (AwsServiceInternalException ex) {
+            throw new AwsServiceInternalException(ex.getMessage());
+        } finally {
+
+            assert receipt != null;
+            receipt.deleteOnExit();
+
+            //assert buffer != null;
+            //buffer.close();
+        }
     }
 
     private Boolean isAuthenticatedCustomer(Customer customer) {
@@ -588,8 +649,8 @@ public class CustomerServiceImpl implements CustomerService {
         return providerResponseDto;
     }
 
-    private boolean validatePrerequisitesForAcceptingAProposal(CustomerOrder order) {
-        return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
+    private boolean validatePrerequisitesForAcceptingAProposal(CustomerOrder order, Proposal proposal) {
+        return (!proposal.isAccepted() && !order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
                 && !order.getStatus().equals(Status.IN_PROGRESS.name()));
     }
 

@@ -133,25 +133,22 @@ public class CustomerController {
         customerService.acceptProposal(orderId, proposalId);
     }
 
-    //TODO: Criar endpoint para realizar pagamento, gerar recibo TXT e salvar na aws;
     @PostMapping("/order/{orderId}/payment")
     @ResponseStatus(HttpStatus.OK)
-    public void makePayment(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderForPaymentException {
+    public void makePayment(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, NotAuthenticatedException, InvalidRoleException, AwsServiceInternalException, IOException {
         logger.info("Calling CustomerService to make payment for an order");
 
         customerService.makePayment(orderId);
     }
 
-    //TODO: Criar endpoint para concluir uma order;
     @PutMapping("/order/{orderId}/conclude")
     @ResponseStatus(HttpStatus.OK)
-    public void concludeOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToConcludeException {
+    public void concludeOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, NotAuthenticatedException, InvalidRoleException {
         logger.info("Calling CustomerService to conclude an order");
 
         customerService.concludeOrder(orderId);
     }
 
-    //TODO: Criar endpoint para cancelar uma order;
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public void cancelOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
@@ -160,7 +157,7 @@ public class CustomerController {
         customerService.cancelOrder(orderId);
     }
 
-    //TODO: Criar endpoint para download do recibo TXT;
+    //TODO(essencial): Criar endpoint para download do recibo TXT;
 
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

@@ -117,5 +117,6 @@ public class ProviderController {
         return providerService.getAllAvailableOrders(providerId);
     }
 
+    //TODO(essencial): Criar endpoint de cancelamento de order, caso ela não tenha sido paga
     private static final Logger logger = LogManager.getLogger(ProviderController.class.getName());
 }

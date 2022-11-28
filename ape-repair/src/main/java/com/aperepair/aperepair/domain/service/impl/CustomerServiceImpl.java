@@ -16,6 +16,7 @@ import com.aperepair.aperepair.domain.gateway.ReceiptOrderGateway;
 import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
+import com.aperepair.aperepair.report.resources.PilhaObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -110,14 +111,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<List<CustomerResponseDto>> findAll() {
-        List<Customer> customers = new ArrayList(customerRepository.findAll());
+        List<Customer> customers = new ArrayList<>(customerRepository.findAll());
 
         if (customers.isEmpty()) {
             logger.info("There are no registered customers");
             return ResponseEntity.status(204).build();
         }
 
-        List<CustomerResponseDto> customersDto = new ArrayList();
+        List<CustomerResponseDto> customersDto = new ArrayList<>();
 
         for (Customer customer : customers) {
             CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
@@ -378,8 +379,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException {
-        //TODO(essencial): implementar uma pilha obj ordenada por createdAt para retornar histórico
-
         if (customerRepository.existsById(id)) {
             Customer customer = customerRepository.findCustomerById(id);
 
@@ -395,7 +394,13 @@ public class CustomerServiceImpl implements CustomerService {
 
             CustomerResponseDto customerResponse = CustomerDtoFactory.toResponsePartialDto(customer);
 
-            List<CustomerOrder> customerOrders = orderRepository.getAllOrdersFromCustomerId(id);
+            List<CustomerOrder> customerOrders = orderRepository.findByAscendingOrderOfCustomer(id);
+
+            PilhaObj<CustomerOrder> pilha = new PilhaObj(customerOrders.size());
+
+            for (CustomerOrder customerOrder : customerOrders) {
+                pilha.push(customerOrder);
+            }
 
             if (customerOrders.isEmpty()) {
                 logger.info(String.format("Customer id [%s] does not have registered orders", id));
@@ -404,9 +409,10 @@ public class CustomerServiceImpl implements CustomerService {
 
             logger.info("Found customer orders!");
 
-            List<OrderResponseDto> orders = new ArrayList();
+            List<OrderResponseDto> orders = new ArrayList<>();
 
-            for (CustomerOrder customerOrder : customerOrders) {
+            for (int i = 0; i < customerOrders.size(); i++) {
+                CustomerOrder customerOrder = pilha.pop();
                 if (customerOrder.getProviderId() == null) {
                     OrderResponseDto order = OrderDtoFactory.toResponseWithNullProviderDto(
                             customerOrder, customerResponse
@@ -442,7 +448,7 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NoContentException("There are no proposals for this order");
             }
 
-            List<ProposalResponseDto> proposalResponseDtos = new ArrayList();
+            List<ProposalResponseDto> proposalResponseDtos = new ArrayList<>();
 
             for (Proposal proposal : proposals) {
                 ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal);
@@ -523,9 +529,11 @@ public class CustomerServiceImpl implements CustomerService {
                 orderRepository.save(order);
                 logger.info("Payment made successfully");
 
-                //TODO(essencial): Montar recibo + completo
-                String message = String.format("APE REPAIR - RECIBO\n\nPagamento realizado com sucesso: R$%.2f\n\nDúvidas: Entrar em contato no número: (11)9 0000-0000",
-                        order.getAmount()
+                String message = String.format("APE REPAIR - RECIBO\n\nCliente: %s\nCPF: %s\n\nPagamento realizado com sucesso: R$%.2f\n\nPrestador: %s\nDúvidas? Entrar em contato no número: (11)9 0000-0000",
+                        customer.getName(),
+                        customer.getCpf(),
+                        order.getAmount(),
+                        order.getProviderId().getName()
                 );
 
                 createReceipt(order, message);

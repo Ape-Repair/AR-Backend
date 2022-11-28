@@ -32,7 +32,7 @@ public class Proposal {
 
     private boolean accepted;
 
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     public Proposal(String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {

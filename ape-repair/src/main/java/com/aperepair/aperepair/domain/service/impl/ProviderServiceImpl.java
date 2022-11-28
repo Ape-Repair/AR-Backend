@@ -18,6 +18,7 @@ import com.aperepair.aperepair.domain.repository.OrderRepository;
 import com.aperepair.aperepair.domain.repository.ProposalRepository;
 import com.aperepair.aperepair.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.domain.service.ProviderService;
+import com.aperepair.aperepair.report.resources.PilhaObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -473,6 +474,82 @@ public class ProviderServiceImpl implements ProviderService {
         throw new NotFoundException(String.format("Provider with id [%d] not found!", providerId));
     }
 
+    @Override
+    public List<OrderResponseDto> getAllOrders(Integer id) throws NotAuthenticatedException, InvalidRoleException, NoContentException, NotFoundException {
+        if (providerRepository.existsById(id)) {
+            Provider provider = providerRepository.findProviderById(id);
+
+            if (!isAuthenticatedProvider(provider)) {
+                logger.info("The provider is not authenticated");
+                throw new NotAuthenticatedException("Provider is not authenticated");
+            }
+
+            if (!EnumUtils.isValidEnum(Role.class, provider.getRole())) {
+                logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
+                throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
+            }
+
+            ProviderResponseDto providerResponse = ProviderDtoFactory.toResponsePartialDto(provider);
+
+            List<CustomerOrder> customerOrders = orderRepository.findByAscendingOrderOfProvider(id);
+
+            PilhaObj<CustomerOrder> pilha = new PilhaObj(customerOrders.size());
+
+            for (CustomerOrder customerOrder : customerOrders) {
+                pilha.push(customerOrder);
+            }
+
+            if (customerOrders.isEmpty()) {
+                logger.info(String.format("Provider id [%s] does not have registered orders", id));
+                throw new NoContentException(String.format("Provider id [%s] does not have registered orders", id));
+            }
+
+            logger.info("Found provider orders!");
+
+            List<OrderResponseDto> orders = new ArrayList<>();
+
+            for (int i = 0; i < customerOrders.size(); i++) {
+                CustomerOrder customerOrder = pilha.pop();
+
+                Customer customer = customerOrder.getCustomerId();
+
+                CustomerResponseDto customerResponse = CustomerDtoFactory.toResponsePartialDto(customer);
+
+                OrderResponseDto order = OrderDtoFactory.toResponseWithNotNullProviderDto(
+                        customerOrder, customerResponse, providerResponse
+                );
+                orders.add(order);
+            }
+
+            return orders;
+        }
+
+        logger.error(String.format("Provider with id: [%d] not found", id));
+        throw new NotFoundException(String.format("Provider with id [%d] not found!", id));
+    }
+
+    @Override
+    public void cancelOrder(Integer orderId) throws InvalidOrderToCanceledException, NotFoundException {
+        logger.info(String.format("Finding order with id: [%d]", orderId));
+        if (orderRepository.existsById(orderId)) {
+            CustomerOrder order = orderRepository.findById(orderId).get();
+
+            if (validatePrerequisitesForCancelOrder(order)) {
+                //TODO(desejável): Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez
+                order.setStatus(Status.CANCELED.name());
+                orderRepository.save(order);
+
+                logger.info("Order canceled successfully by provider!");
+            } else {
+                logger.error("This order is invalid to canceled by provider");
+                throw new InvalidOrderToCanceledException("This order is invalid to canceled by provider");
+            }
+        } else {
+            logger.error(String.format("Order with id: [%d] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+        }
+    }
+
     private boolean isAuthenticatedProvider(Provider provider) {
         return provider.isAuthenticated();
     }
@@ -489,6 +566,11 @@ public class ProviderServiceImpl implements ProviderService {
     private boolean validatePrerequisitesForCreatingAProposal(CustomerOrder order) {
         return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
                 && !order.getStatus().equals(Status.IN_PROGRESS.name()));
+    }
+
+    private boolean validatePrerequisitesForCancelOrder(CustomerOrder order) {
+        return (!order.isPaid() && !order.getStatus().equals(Status.CANCELED.name()) && !order.getStatus().equals(Status.DONE.name())
+                && !order.getStatus().equals(Status.IN_PROGRESS.name()) && !order.getStatus().equals(Status.WAITING_FOR_PROPOSAL));
     }
 
     private static final Logger logger = LogManager.getLogger(ProviderServiceImpl.class.getName());

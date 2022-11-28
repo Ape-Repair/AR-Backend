@@ -35,7 +35,7 @@ public class CustomerOrder {
 
     private boolean paid;
 
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     public CustomerOrder() {

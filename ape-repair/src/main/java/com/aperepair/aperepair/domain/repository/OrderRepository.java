@@ -12,9 +12,6 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<CustomerOrder, Integer> {
 
-    @Query("SELECT co FROM Customer_Order co WHERE customer_id = ?1")
-    List<CustomerOrder> getAllOrdersFromCustomerId(Integer id);
-
     @Transactional
     @Modifying
     @Query("UPDATE Customer_Order co SET co.status = ?2 WHERE co.id = ?1")
@@ -22,4 +19,10 @@ public interface OrderRepository extends JpaRepository<CustomerOrder, Integer> {
 
     @Query("SELECT co FROM Customer_Order co WHERE service_type = ?1 AND paid = false")
     List<CustomerOrder> findByServiceTypeAvailableOrders(String serviceType);
+
+    @Query("SELECT co FROM Customer_Order co WHERE customer_id = ?1 ORDER BY created_at")
+    List<CustomerOrder> findByAscendingOrderOfCustomer(Integer customerId);
+
+    @Query("SELECT co FROM Customer_Order co WHERE provider_id = ?1 ORDER BY created_at")
+    List<CustomerOrder> findByAscendingOrderOfProvider(Integer providerId);
 }

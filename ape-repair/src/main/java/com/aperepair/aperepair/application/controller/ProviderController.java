@@ -117,6 +117,23 @@ public class ProviderController {
         return providerService.getAllAvailableOrders(providerId);
     }
 
-    //TODO(essencial): Criar endpoint de cancelamento de order, caso ela não tenha sido paga
+    //TODO: Refatorar para provider cancelar uma proposta (sugestão: adicionar campo status,
+    // substituir por booleano accepted)
+    @PutMapping("/order/{orderId}/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    public void cancelOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
+        logger.info("Calling ProviderService to cancel an order");
+
+        providerService.cancelOrder(orderId);
+    }
+
+    @GetMapping("/{providerId}/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderResponseDto> allOrders(@PathVariable Integer providerId) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, NoContentException {
+        logger.info("Calling ProviderService to get all orders of provider");
+
+        return providerService.getAllOrders(providerId);
+    }
+
     private static final Logger logger = LogManager.getLogger(ProviderController.class.getName());
 }

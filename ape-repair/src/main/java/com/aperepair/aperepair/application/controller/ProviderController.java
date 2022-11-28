@@ -117,7 +117,7 @@ public class ProviderController {
         return providerService.getAllAvailableOrders(providerId);
     }
 
-    //TODO: Refatorar para provider cancelar uma proposta (sugestão: adicionar campo status,
+    //TODO(Importante): Refatorar para provider cancelar uma proposta (sugestão: adicionar campo status,
     // substituir por booleano accepted)
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)

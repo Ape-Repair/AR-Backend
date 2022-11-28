@@ -18,7 +18,7 @@ import com.aperepair.aperepair.domain.repository.OrderRepository;
 import com.aperepair.aperepair.domain.repository.ProposalRepository;
 import com.aperepair.aperepair.domain.repository.ProviderRepository;
 import com.aperepair.aperepair.domain.service.ProviderService;
-import com.aperepair.aperepair.report.resources.PilhaObj;
+import com.aperepair.aperepair.report.resources.PileObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -493,7 +493,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             List<CustomerOrder> customerOrders = orderRepository.findByAscendingOrderOfProvider(id);
 
-            PilhaObj<CustomerOrder> pilha = new PilhaObj(customerOrders.size());
+            PileObj<CustomerOrder> pilha = new PileObj(customerOrders.size());
 
             for (CustomerOrder customerOrder : customerOrders) {
                 pilha.push(customerOrder);

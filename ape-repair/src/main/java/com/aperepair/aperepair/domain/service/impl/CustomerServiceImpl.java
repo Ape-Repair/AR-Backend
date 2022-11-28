@@ -16,7 +16,7 @@ import com.aperepair.aperepair.domain.gateway.ReceiptOrderGateway;
 import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
-import com.aperepair.aperepair.report.resources.PilhaObj;
+import com.aperepair.aperepair.report.resources.PileObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -396,7 +396,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             List<CustomerOrder> customerOrders = orderRepository.findByAscendingOrderOfCustomer(id);
 
-            PilhaObj<CustomerOrder> pilha = new PilhaObj(customerOrders.size());
+            PileObj<CustomerOrder> pilha = new PileObj(customerOrders.size());
 
             for (CustomerOrder customerOrder : customerOrders) {
                 pilha.push(customerOrder);
@@ -604,7 +604,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    private void createReceipt(CustomerOrder order, String message) throws IOException, AwsServiceInternalException {
+    private void createReceipt(CustomerOrder order, String message) throws AwsServiceInternalException {
         String email = order.getCustomerId().getEmail();
         Integer orderId = order.getId();
 
@@ -613,6 +613,8 @@ public class CustomerServiceImpl implements CustomerService {
         String key = String.format("%s/order-%d.txt", email, orderId);
 
         try {
+            logger.info("Generating transaction receipt");
+
             receipt = File.createTempFile(String.format("%s-%d", email, orderId), ".txt");
 
             BufferedWriter buffer = new BufferedWriter(new FileWriter(receipt));
@@ -625,12 +627,8 @@ public class CustomerServiceImpl implements CustomerService {
         } catch (AwsServiceInternalException ex) {
             throw new AwsServiceInternalException(ex.getMessage());
         } finally {
-
             assert receipt != null;
             receipt.deleteOnExit();
-
-            //assert buffer != null;
-            //buffer.close();
         }
     }
 

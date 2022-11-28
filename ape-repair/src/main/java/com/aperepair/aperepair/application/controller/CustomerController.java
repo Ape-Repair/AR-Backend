@@ -157,7 +157,8 @@ public class CustomerController {
         customerService.cancelOrder(orderId);
     }
 
-    //TODO(essencial): Criar endpoint para download do recibo TXT;
+    //TODO(ENTREGAVEL): Criar endpoint para download do recibo TXT;
+    //TODO(ENTREGAVEL): Criar alguns testes unitários;
 
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

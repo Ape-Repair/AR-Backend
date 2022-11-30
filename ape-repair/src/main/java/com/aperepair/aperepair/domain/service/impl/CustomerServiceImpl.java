@@ -25,6 +25,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ReceiptOrderGateway receiptOrderGateway;
+
+    @Value("${percentage.fee}")
+    private Double fee;
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto customerRequestDto) throws AlreadyRegisteredException, BadRequestException {
@@ -529,10 +533,12 @@ public class CustomerServiceImpl implements CustomerService {
                 orderRepository.save(order);
                 logger.info("Payment made successfully");
 
-                String message = String.format("APE REPAIR - RECIBO\n\nCliente: %s\nCPF: %s\n\nPagamento realizado com sucesso: R$%.2f\n\nPrestador: %s\nDúvidas? Entrar em contato no número: (11)9 0000-0000",
+                final Double TOTAL_PRICE = order.getAmount() * fee;
+
+                String message = String.format("APE REPAIR - RECIBO\n\nCliente: %s\nCPF: %s\n\nPagamento realizado com sucesso: R$%.2f\n\nPrestador: %s\n\nDúvidas? Entrar em contato no número: (11)9 0000-0000",
                         customer.getName(),
                         customer.getCpf(),
-                        order.getAmount(),
+                        TOTAL_PRICE,
                         order.getProviderId().getName()
                 );
 

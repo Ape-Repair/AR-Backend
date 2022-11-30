@@ -1,10 +1,5 @@
 package com.aperepair.aperepair.application.dto.response;
 
-import com.aperepair.aperepair.domain.model.CustomerOrder;
-import com.aperepair.aperepair.domain.model.Proposal;
-import com.aperepair.aperepair.domain.model.Provider;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,7 +9,7 @@ public class ProposalResponseDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer proposalId;
 
     @NotNull
     private Integer customerOrderId;
@@ -36,8 +31,8 @@ public class ProposalResponseDto {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    public ProposalResponseDto(Integer id, Integer customerOrderId, Integer providerId, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
-        this.id = id;
+    public ProposalResponseDto(Integer proposalId, Integer customerOrderId, Integer providerId, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
+        this.proposalId = proposalId;
         this.customerOrderId = customerOrderId;
         this.providerId = providerId;
         this.serviceType = serviceType;
@@ -47,12 +42,12 @@ public class ProposalResponseDto {
         this.createdAt = createdAt;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getProposalId() {
+        return proposalId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setProposalId(Integer proposalId) {
+        this.proposalId = proposalId;
     }
 
     public Integer getCustomerOrderId() {

@@ -15,10 +15,10 @@ public class Customer {
     private Integer id;
 
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 60)
     private String name;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, length = 50)
     @NotBlank
     @Email
     private String email;

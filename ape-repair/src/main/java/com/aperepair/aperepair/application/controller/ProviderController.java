@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/providers")
 public class ProviderController {

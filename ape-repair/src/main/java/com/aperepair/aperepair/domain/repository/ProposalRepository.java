@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProposalRepository extends JpaRepository<Proposal, Integer> {
@@ -17,4 +18,7 @@ public interface ProposalRepository extends JpaRepository<Proposal, Integer> {
     @Modifying
     @Query("select p from Proposal p where customer_order_id = ?1")
     List<Proposal> getAllByCustomerOrderId(Integer id);
+
+    @Query("SELECT p FROM Proposal p WHERE provider_id = ?1 AND order_id = ?2")
+    Optional<Proposal> providerHasAlreadyMadeProposalForThisOrder(Integer providerId, Integer orderId);
 }

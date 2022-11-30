@@ -24,7 +24,7 @@ public class ProposalDtoFactory {
 
         return new ProposalResponseDto(
                 proposal.getId(),
-                proposal.getCustomerOrderId().getId(),
+                proposal.getOrderId().getId(),
                 proposal.getProviderId().getId(),
                 proposal.getServiceType(),
                 proposal.getDescription(),

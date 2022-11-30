@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "Proposal")
 public class Proposal {
 
     @Id
@@ -13,8 +13,8 @@ public class Proposal {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_order_id", referencedColumnName = "id")
-    private CustomerOrder customerOrderId;
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private CustomerOrder orderId;
 
     @OneToOne
     @JoinColumn(name = "provider_id", referencedColumnName = "id")
@@ -95,12 +95,12 @@ public class Proposal {
         this.accepted = accepted;
     }
 
-    public CustomerOrder getCustomerOrderId() {
-        return customerOrderId;
+    public CustomerOrder getOrderId() {
+        return orderId;
     }
 
-    public void setCustomerOrderId(CustomerOrder customerOrderId) {
-        this.customerOrderId = customerOrderId;
+    public void setOrderId(CustomerOrder orderId) {
+        this.orderId = orderId;
     }
 
     public Provider getProviderId() {

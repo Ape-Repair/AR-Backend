@@ -2,12 +2,13 @@ package com.aperepair.aperepair.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.br.CPF;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Entity
+@Entity(name = "Provider")
 public class Provider {
 
     @Id
@@ -15,7 +16,7 @@ public class Provider {
     private Integer id;
 
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 60)
     private String name;
 
     @NotBlank
@@ -42,6 +43,7 @@ public class Provider {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address addressId;
 
+    @Column(name = "specialty_type")
     @NotBlank
     private String specialtyType;
 

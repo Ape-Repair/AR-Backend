@@ -62,6 +62,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ProviderAlreadyMadeProposalForOrderException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiExceptionResponseDto handleConflictException(Exception ex) {
+        return new ApiExceptionResponseDto(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                ex.getClass().getName()
+        );
+    }
+
     @ExceptionHandler({AwsS3ImageException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiExceptionResponseDto handleNotFoundException(

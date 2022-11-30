@@ -359,7 +359,7 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException {
+    public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException {
         Integer providerId = request.getProviderId();
         Integer orderId = request.getCustomerOrderId();
 
@@ -379,6 +379,11 @@ public class ProviderServiceImpl implements ProviderService {
                 logger.error(String.format("Specialty [%s] is not valid at this flow", providerSpecialtyType));
 
                 throw new BadRequestException(String.format("Specialty [%s] is not valid", providerSpecialtyType));
+            }
+
+            if (proposalRepository.providerHasAlreadyMadeProposalForThisOrder(providerId, orderId).isPresent()) {
+                logger.error("Provider has already made a proposal for this order");
+                throw new ProviderAlreadyMadeProposalForOrderException("Provider has already made a proposal for this order");
             }
 
             logger.info(String.format("Searching order by id: [%d]", orderId));
@@ -408,7 +413,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             Proposal proposal = ProposalDtoFactory.toEntity(request, order);
 
-            proposal.setCustomerOrderId(order);
+            proposal.setOrderId(order);
             proposal.setProviderId(provider);
 
             proposalRepository.save(proposal);

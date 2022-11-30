@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Entity
+@Entity(name = "Address")
 public class Address {
 
     @Id
@@ -14,7 +14,7 @@ public class Address {
     private Integer id;
 
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 60)
     private String street;
 
     @Column(name = "street_number")

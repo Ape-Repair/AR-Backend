@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.domain.model;
 
+import com.github.f4b6a3.ulid.Ulid;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -9,8 +11,7 @@ import java.time.LocalDateTime;
 public class CustomerOrder {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @NotBlank
     @Column(name = "service_type")
@@ -48,7 +49,7 @@ public class CustomerOrder {
         this.customerId = customerId;
     }
 
-    public CustomerOrder(Integer id, String serviceType, String description, Customer customerId, Provider providerId, Double amount, String status, boolean paid, LocalDateTime createdAt) {
+    public CustomerOrder(String id, String serviceType, String description, Customer customerId, Provider providerId, Double amount, String status, boolean paid, LocalDateTime createdAt) {
         this.id = id;
         this.serviceType = serviceType;
         this.description = description;
@@ -60,11 +61,11 @@ public class CustomerOrder {
         this.createdAt = createdAt;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -43,28 +43,28 @@ public class ProviderController {
         return providerService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProviderResponseDto> findById(@PathVariable Integer id) {
-        return providerService.findById(id);
+    @GetMapping("/{providerId}")
+    public ResponseEntity<ProviderResponseDto> findById(@PathVariable Integer providerId) {
+        return providerService.findById(providerId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{providerId}")
     @ResponseStatus(HttpStatus.OK)
     public ProviderResponseDto update(
-            @PathVariable Integer id,
+            @PathVariable Integer providerId,
             @RequestBody @Valid ProviderUpdateRequestDto updatedProvider
     ) throws NotAuthenticatedException, NotFoundException, BadRequestException {
         logger.info("Calling ProviderService to update provider!");
 
-        return providerService.update(id, updatedProvider);
+        return providerService.update(providerId, updatedProvider);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{providerId}")
     @ResponseStatus(HttpStatus.OK)
-    public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {
+    public DeleteResponseDto delete(@PathVariable Integer providerId) throws NotFoundException {
         logger.info("Calling ProviderService to delete a provider");
 
-        return providerService.delete(id);
+        return providerService.delete(providerId);
     }
 
     @PostMapping("/login")
@@ -118,11 +118,9 @@ public class ProviderController {
         return providerService.getAllAvailableOrders(providerId);
     }
 
-    //TODO(desejável): Refatorar para provider cancelar uma proposta (sugestão: adicionar campo status,
-    // substituir por booleano accepted)
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public void cancelOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
+    public void cancelOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToCanceledException {
         logger.info("Calling ProviderService to cancel an order");
 
         providerService.cancelOrder(orderId);

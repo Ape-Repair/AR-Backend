@@ -104,10 +104,10 @@ public class CustomerController {
 
     @PostMapping("in/create-order")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException {
+    public OrderUlidResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException {
         logger.info("Calling CustomerService to create order");
 
-        customerService.createOrder(request);
+        return customerService.createOrder(request);
     }
 
     @GetMapping("/{customerId}/orders")
@@ -120,7 +120,7 @@ public class CustomerController {
 
     @GetMapping("/order/{orderId}/available-proposals")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProposalResponseDto> getProposalsForOrder(@PathVariable Integer orderId) throws NotFoundException, NoContentException {
+    public List<ProposalResponseDto> getProposalsForOrder(@PathVariable String orderId) throws NotFoundException, NoContentException {
         logger.info("Calling MatchService to get proposals for an order");
 
         return customerService.getProposalsForOrder(orderId);
@@ -128,7 +128,7 @@ public class CustomerController {
 
     @PostMapping("/order/{orderId}/accept-proposal/{proposalId}")
     @ResponseStatus(HttpStatus.OK)
-    public void acceptProposal(@PathVariable Integer orderId, @PathVariable Integer proposalId) throws InvalidProposalForThisOrderException, NotFoundException {
+    public void acceptProposal(@PathVariable String orderId, @PathVariable Integer proposalId) throws InvalidProposalForThisOrderException, NotFoundException {
         logger.info("Calling Customer Service to accept a proposal for an order");
 
         customerService.acceptProposal(orderId, proposalId);
@@ -136,7 +136,7 @@ public class CustomerController {
 
     @PostMapping("/order/{orderId}/payment")
     @ResponseStatus(HttpStatus.OK)
-    public void makePayment(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, NotAuthenticatedException, InvalidRoleException, AwsServiceInternalException, IOException {
+    public void makePayment(@PathVariable String orderId) throws NotFoundException, InvalidOrderForPaymentException, NotAuthenticatedException, InvalidRoleException, AwsServiceInternalException, IOException {
         logger.info("Calling CustomerService to make payment for an order");
 
         customerService.makePayment(orderId);
@@ -144,7 +144,7 @@ public class CustomerController {
 
     @PutMapping("/order/{orderId}/conclude")
     @ResponseStatus(HttpStatus.OK)
-    public void concludeOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, NotAuthenticatedException, InvalidRoleException {
+    public void concludeOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToConcludeException, NotAuthenticatedException, InvalidRoleException {
         logger.info("Calling CustomerService to conclude an order");
 
         customerService.concludeOrder(orderId);
@@ -152,7 +152,7 @@ public class CustomerController {
 
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public void cancelOrder(@PathVariable Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
+    public void cancelOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToCanceledException {
         logger.info("Calling CustomerService to cancel an order");
 
         customerService.cancelOrder(orderId);

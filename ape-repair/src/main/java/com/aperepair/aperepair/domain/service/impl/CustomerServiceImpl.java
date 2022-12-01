@@ -350,7 +350,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException {
+    public OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException {
         Integer customerId = request.getCustomerId();
 
         if (customerRepository.existsById(customerId)) {
@@ -376,6 +376,8 @@ public class CustomerServiceImpl implements CustomerService {
 
             orderRepository.save(customerOrder);
             logger.info("Order saved with success");
+
+            return new OrderUlidResponseDto(customerOrder.getId());
         } else {
             logger.error(String.format("Customer with id: [%d] not found", customerId));
             throw new NotFoundException(String.format("Customer with id [%d] not found!", customerId));
@@ -440,11 +442,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException {
-        if (orderRepository.existsById(orderId)) {
-            logger.info(String.format("Looking for proposals for the order of id [%d]", orderId));
+    public List<ProposalResponseDto> getProposalsForOrder(String orderId) throws NoContentException, NotFoundException {
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            logger.info(String.format("Looking for proposals for the order of id [%s]", orderId));
 
-            List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);
+            List<Proposal> proposals = proposalRepository.getAllByOrderId(orderId);
 
             if (proposals.isEmpty()) {
                 logger.info("There are no proposals for this order");
@@ -462,19 +464,19 @@ public class CustomerServiceImpl implements CustomerService {
             return proposalResponseDtos;
         }
 
-        logger.error(String.format("Order with id: [%d] not found", orderId));
-        throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
+        logger.error(String.format("Order with id: [%s] not found", orderId));
+        throw new NotFoundException(String.format("Order with id [%s] not found!", orderId));
     }
 
     @Override
-    public void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException {
-        if (orderRepository.existsById(orderId) && proposalRepository.existsById(proposalId)) {
+    public void acceptProposal(String orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException {
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent() && proposalRepository.existsById(proposalId)) {
             logger.info("Getting order and proposal from passed id's");
 
-            CustomerOrder order = orderRepository.findById(orderId).get();
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
             Proposal proposal = proposalRepository.findById(proposalId).get();
 
-            List<Proposal> proposals = proposalRepository.getAllByCustomerOrderId(orderId);
+            List<Proposal> proposals = proposalRepository.getAllByOrderId(orderId);
 
             if (proposals.contains(proposal) && validatePrerequisitesForAcceptingAProposal(order, proposal)) {
                 logger.info("This proposal and order are VALID");
@@ -501,17 +503,17 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidProposalForThisOrderException("This proposal and/or order are INVALID for this request");
             }
         } else {
-            logger.error(String.format("Order with id: [%d] and/or Proposal with id: [%d] not found", orderId, proposalId));
-            throw new NotFoundException(String.format("Order with id: [%d] and/or Proposal with id: [%d] not found", orderId, proposalId));
+            logger.error(String.format("Order with id: [%s] and/or Proposal with id: [%d] not found", orderId, proposalId));
+            throw new NotFoundException(String.format("Order with id: [%s] and/or Proposal with id: [%d] not found", orderId, proposalId));
         }
     }
 
     @Override
-    public void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException {
-        logger.info(String.format("Finding order with id: [%d]", orderId));
+    public void makePayment(String orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException {
+        logger.info(String.format("Finding order with id: [%s]", orderId));
 
-        if (orderRepository.existsById(orderId)) {
-            CustomerOrder order = orderRepository.findById(orderId).get();
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
             Customer customer = order.getCustomerId();
 
             if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
@@ -535,11 +537,12 @@ public class CustomerServiceImpl implements CustomerService {
 
                 final Double TOTAL_PRICE = order.getAmount() * fee;
 
-                String message = String.format("APE REPAIR - RECIBO\n\nCliente: %s\nCPF: %s\n\nPagamento realizado com sucesso: R$%.2f\n\nPrestador: %s\n\nDúvidas? Entrar em contato no número: (11)9 0000-0000",
+                String message = String.format("APE REPAIR - RECIBO\n\nCliente: %s\nCPF: %s\n\nPagamento realizado com sucesso: R$%.2f\n\nPrestador: %s\n\nID: %s\n\nDúvidas? Entrar em contato no número: (11)9 0000-0000",
                         customer.getName(),
                         customer.getCpf(),
                         TOTAL_PRICE,
-                        order.getProviderId().getName()
+                        order.getProviderId().getName(),
+                        orderId
                 );
 
                 createReceipt(order, message);
@@ -548,17 +551,17 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidOrderForPaymentException("This order is invalid for payment");
             }
         } else {
-            logger.error(String.format("Order with id: [%d] not found", orderId));
-            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+            logger.error(String.format("Order with id: [%s] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%s] not found", orderId));
         }
     }
 
     @Override
-    public void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException {
-        logger.info(String.format("Finding order with id: [%d]", orderId));
+    public void concludeOrder(String orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException {
+        logger.info(String.format("Finding order with id: [%s]", orderId));
 
-        if (orderRepository.existsById(orderId)) {
-            CustomerOrder order = orderRepository.findById(orderId).get();
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
             Customer customer = order.getCustomerId();
 
             if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
@@ -583,16 +586,16 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidOrderToConcludeException("This order is invalid to finalized");
             }
         } else {
-            logger.error(String.format("Order with id: [%d] not found", orderId));
-            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+            logger.error(String.format("Order with id: [%s] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%s] not found", orderId));
         }
     }
 
     @Override
-    public void cancelOrder(Integer orderId) throws NotFoundException, InvalidOrderToCanceledException {
-        logger.info(String.format("Finding order with id: [%d]", orderId));
-        if (orderRepository.existsById(orderId)) {
-            CustomerOrder order = orderRepository.findById(orderId).get();
+    public void cancelOrder(String orderId) throws NotFoundException, InvalidOrderToCanceledException {
+        logger.info(String.format("Finding order with id: [%s]", orderId));
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
 
             if (!order.getStatus().equals(Status.DONE.name())) {
                 //TODO(desejável): Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez
@@ -605,23 +608,23 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidOrderToCanceledException("This order is invalid to canceled");
             }
         } else {
-            logger.error(String.format("Order with id: [%d] not found", orderId));
-            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+            logger.error(String.format("Order with id: [%s] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%s] not found", orderId));
         }
     }
 
     private void createReceipt(CustomerOrder order, String message) throws AwsServiceInternalException {
         String email = order.getCustomerId().getEmail();
-        Integer orderId = order.getId();
+        String orderId = order.getId();
 
         File receipt = null;
 
-        String key = String.format("%s/order-%d.txt", email, orderId);
+        String key = String.format("%s/order-%s.txt", email, orderId);
 
         try {
             logger.info("Generating transaction receipt");
 
-            receipt = File.createTempFile(String.format("%s-%d", email, orderId), ".txt");
+            receipt = File.createTempFile(String.format("%s-%s", email, orderId), ".txt");
 
             BufferedWriter buffer = new BufferedWriter(new FileWriter(receipt));
             buffer.write(message);

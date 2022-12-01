@@ -12,7 +12,7 @@ public class ProposalResponseDto {
     private Integer proposalId;
 
     @NotNull
-    private Integer customerOrderId;
+    private String orderId;
 
     @NotNull
     private Integer providerId;
@@ -31,9 +31,9 @@ public class ProposalResponseDto {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    public ProposalResponseDto(Integer proposalId, Integer customerOrderId, Integer providerId, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
+    public ProposalResponseDto(Integer proposalId, String orderId, Integer providerId, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
         this.proposalId = proposalId;
-        this.customerOrderId = customerOrderId;
+        this.orderId = orderId;
         this.providerId = providerId;
         this.serviceType = serviceType;
         this.description = description;
@@ -50,12 +50,12 @@ public class ProposalResponseDto {
         this.proposalId = proposalId;
     }
 
-    public Integer getCustomerOrderId() {
-        return customerOrderId;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setCustomerOrderId(Integer customerOrderId) {
-        this.customerOrderId = customerOrderId;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public Integer getProviderId() {

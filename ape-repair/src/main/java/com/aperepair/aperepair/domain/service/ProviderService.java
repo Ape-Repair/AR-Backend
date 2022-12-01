@@ -21,11 +21,11 @@ public interface ProviderService {
 
     ResponseEntity<List<ProviderResponseDto>> findAll();
 
-    ResponseEntity<ProviderResponseDto> findById(Integer id);
+    ResponseEntity<ProviderResponseDto> findById(Integer providerId);
 
-    ProviderResponseDto update(Integer id, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException;
+    ProviderResponseDto update(Integer providerId, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException;
 
-    DeleteResponseDto delete(Integer id) throws NotFoundException;
+    DeleteResponseDto delete(Integer providerId) throws NotFoundException;
 
     LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException;
 
@@ -39,7 +39,7 @@ public interface ProviderService {
 
     List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException;
 
-    List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
+    List<OrderResponseDto> getAllOrders(Integer providerId) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
 
-    void cancelOrder(Integer orderId) throws InvalidOrderToCanceledException, NotFoundException;
+    void cancelOrder(String orderId) throws InvalidOrderToCanceledException, NotFoundException;
 }

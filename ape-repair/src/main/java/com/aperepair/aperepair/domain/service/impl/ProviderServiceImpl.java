@@ -361,7 +361,7 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     public ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException {
         Integer providerId = request.getProviderId();
-        Integer orderId = request.getCustomerOrderId();
+        String orderId = request.getOrderId();
 
         if (providerRepository.existsById(providerId)) {
             Provider provider = providerRepository.findById(providerId).get();
@@ -386,13 +386,13 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new ProviderAlreadyMadeProposalForOrderException("Provider has already made a proposal for this order");
             }
 
-            logger.info(String.format("Searching order by id: [%d]", orderId));
-            Optional<CustomerOrder> orderOpt = orderRepository.findById(request.getCustomerOrderId());
+            logger.info(String.format("Searching order by id: [%s]", orderId));
+            Optional<CustomerOrder> orderOpt = orderRepository.existsAndFindByOrderUlid(request.getOrderId());
 
             if (orderOpt.isEmpty()) {
-                logger.error(String.format("Order with id [%d] not found!", orderId));
+                logger.error(String.format("Order with id [%s] not found!", orderId));
 
-                throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
+                throw new NotFoundException(String.format("Order with id [%s] not found!", orderId));
             }
 
             CustomerOrder order = orderOpt.get();
@@ -424,14 +424,14 @@ public class ProviderServiceImpl implements ProviderService {
             String updatedStatus = Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name();
 
             orderRepository.updateOrderIdByStatus(orderId, updatedStatus);
-            logger.info(String.format("Order id: [%d] - updated status for: [%s] with success!", orderId, updatedStatus));
+            logger.info(String.format("Order id: [%s] - updated status for: [%s] with success!", orderId, updatedStatus));
 
             return proposalResponseDto;
         }
 
-        logger.error(String.format("Order with id [%d] not found!", orderId));
+        logger.error(String.format("Order with id [%s] not found!", orderId));
 
-        throw new NotFoundException(String.format("Order with id [%d] not found!", orderId));
+        throw new NotFoundException(String.format("Order with id [%s] not found!", orderId));
     }
 
     @Override
@@ -534,10 +534,10 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public void cancelOrder(Integer orderId) throws InvalidOrderToCanceledException, NotFoundException {
-        logger.info(String.format("Finding order with id: [%d]", orderId));
-        if (orderRepository.existsById(orderId)) {
-            CustomerOrder order = orderRepository.findById(orderId).get();
+    public void cancelOrder(String orderId) throws InvalidOrderToCanceledException, NotFoundException {
+        logger.info(String.format("Finding order with id: [%s]", orderId));
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
 
             if (validatePrerequisitesForCancelOrder(order)) {
                 //TODO(desejável): Criar entidade de "lifecycle" de uma order, para registrar o motivo do cancelamento, e quem o fez
@@ -550,8 +550,8 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new InvalidOrderToCanceledException("This order is invalid to canceled by provider");
             }
         } else {
-            logger.error(String.format("Order with id: [%d] not found", orderId));
-            throw new NotFoundException(String.format("Order with id: [%d] not found", orderId));
+            logger.error(String.format("Order with id: [%s] not found", orderId));
+            throw new NotFoundException(String.format("Order with id: [%s] not found", orderId));
         }
     }
 

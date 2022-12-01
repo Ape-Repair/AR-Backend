@@ -6,7 +6,7 @@ import javax.validation.constraints.Positive;
 public class CreateProposalRequestDto {
 
     @NotNull
-    private Integer customerOrderId;
+    private String orderId;
 
     @NotNull
     private Integer providerId;
@@ -14,18 +14,18 @@ public class CreateProposalRequestDto {
     @Positive
     private Double amount;
 
-    public CreateProposalRequestDto(Integer customerOrderId, Integer providerId, Double amount) {
-        this.customerOrderId = customerOrderId;
+    public CreateProposalRequestDto(String orderId, Integer providerId, Double amount) {
+        this.orderId = orderId;
         this.providerId = providerId;
         this.amount = amount;
     }
 
-    public Integer getCustomerOrderId() {
-        return customerOrderId;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setCustomerOrderId(Integer customerOrderId) {
-        this.customerOrderId = customerOrderId;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public Integer getProviderId() {

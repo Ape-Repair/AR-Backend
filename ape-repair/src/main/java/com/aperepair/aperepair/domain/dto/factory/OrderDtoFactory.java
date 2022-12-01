@@ -14,7 +14,7 @@ public class OrderDtoFactory {
     public static CustomerOrder toEntity(CreateOrderRequestDto request, Customer customer, String status) {
 
         return new CustomerOrder(
-                null,
+                request.getOrderId(),
                 request.getServiceType(),
                 request.getDescription(),
                 customer,

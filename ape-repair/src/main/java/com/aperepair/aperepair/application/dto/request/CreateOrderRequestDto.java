@@ -1,11 +1,17 @@
 package com.aperepair.aperepair.application.dto.request;
 
 import com.aperepair.aperepair.application.dto.response.CustomerResponseDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.UlidCreator;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class CreateOrderRequestDto {
+
+    @JsonIgnore
+    private String orderId;
 
     @NotBlank
     private String serviceType;
@@ -17,9 +23,14 @@ public class CreateOrderRequestDto {
     private Integer customerId;
 
     public CreateOrderRequestDto(String serviceType, String description, Integer customerId) {
+        orderId = UlidCreator.getUlid().toString();
         this.serviceType = serviceType;
         this.description = description;
         this.customerId = customerId;
+    }
+
+    public String getOrderId() {
+        return orderId;
     }
 
     public String getServiceType() {

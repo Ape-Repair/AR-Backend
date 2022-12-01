@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class OrderResponseDto {
 
     @NotNull
-    private Integer orderId;
+    private String orderId;
 
     @NotBlank
     private String serviceType;
@@ -29,7 +29,7 @@ public class OrderResponseDto {
 
     private LocalDateTime createdAt;
 
-    public OrderResponseDto(Integer orderId, String serviceType, String description, CustomerResponseDto customerId, ProviderResponseDto providerId, Double amount, String status, boolean paid, LocalDateTime createdAt) {
+    public OrderResponseDto(String orderId, String serviceType, String description, CustomerResponseDto customerId, ProviderResponseDto providerId, Double amount, String status, boolean paid, LocalDateTime createdAt) {
         this.orderId = orderId;
         this.serviceType = serviceType;
         this.description = description;
@@ -41,11 +41,11 @@ public class OrderResponseDto {
         this.createdAt = createdAt;
     }
 
-    public Integer getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 

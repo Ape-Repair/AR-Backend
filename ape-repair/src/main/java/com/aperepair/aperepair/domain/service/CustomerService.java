@@ -35,17 +35,17 @@ public interface CustomerService {
 
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception;
 
-    void createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
+    OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
 
     List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
 
-    List<ProposalResponseDto> getProposalsForOrder(Integer orderId) throws NoContentException, NotFoundException;
+    List<ProposalResponseDto> getProposalsForOrder(String orderId) throws NoContentException, NotFoundException;
 
-    void acceptProposal(Integer orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException;
+    void acceptProposal(String orderId, Integer proposalId) throws NotFoundException, InvalidProposalForThisOrderException;
 
-    void makePayment(Integer orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException;
+    void makePayment(String orderId) throws NotFoundException, InvalidOrderForPaymentException, InvalidRoleException, NotAuthenticatedException, IOException, AwsServiceInternalException;
 
-    void concludeOrder(Integer orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException;
+    void concludeOrder(String orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException;
 
-    void cancelOrder(Integer orderId) throws NotFoundException, InvalidOrderToCanceledException;
+    void cancelOrder(String orderId) throws NotFoundException, InvalidOrderToCanceledException;
 }

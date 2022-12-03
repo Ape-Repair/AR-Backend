@@ -30,10 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -80,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new AlreadyRegisteredException("Customer already registered");
         }
 
-        if (!EnumUtils.isValidEnum(Genre.class, genre)) {
+        if (!EnumUtils.isValidEnum(Genre.class, genre) && !customerRequestDto.getRole().equals(Role.CUSTOMER.name())) {
             logger.error(String.format("Gender [%s] is not valid", genre));
             throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
         }
@@ -236,7 +233,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = optionalCustomer.get();
 
-        if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+        if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && !customer.getRole().equals(Role.CUSTOMER.name())) {
             logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
             throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
         }
@@ -356,7 +353,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerRepository.existsById(customerId)) {
             Customer customer = customerRepository.findCustomerById(customerId);
 
-            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && customer.getRole().equals(Role.CUSTOMER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
             }
@@ -393,7 +390,7 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotAuthenticatedException("Customer is not authenticated");
             }
 
-            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && customer.getRole().equals(Role.CUSTOMER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
             }
@@ -516,7 +513,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
             Customer customer = order.getCustomerId();
 
-            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && customer.getRole().equals(Role.CUSTOMER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
             }
@@ -557,6 +554,41 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public InputStream getReceipt(String orderId) throws InvalidRoleException, NotAuthenticatedException, InvalidOrderStatusException, NotFoundException, AwsServiceInternalException, AwsS3ImageException {
+        logger.info(String.format("Finding order with id: [%s]", orderId));
+
+        if (orderRepository.existsAndFindByOrderUlid(orderId).isPresent()) {
+            CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
+            Customer customer = order.getCustomerId();
+            String email = customer.getEmail();
+
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && !customer.getRole().equals(Role.CUSTOMER.name())) {
+                logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+                throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
+            }
+
+            if (!isAuthenticatedCustomer(customer)) {
+                logger.info("The customer is not authenticated");
+                throw new NotAuthenticatedException("Customer is not authenticated");
+            }
+
+            if (!order.isPaid()) {
+                logger.error("Order status does not allow receipt download");
+                throw new InvalidOrderStatusException("Order status does not allow receipt download");
+            }
+
+            String key = String.format("%s/order-%s.txt", email, orderId);
+
+            InputStream receiptInputStream = receiptOrderGateway.getReceiptOrder(key, email);
+
+            return receiptInputStream;
+        }
+
+        logger.error(String.format("Order with id: [%s] not found", orderId));
+        throw new NotFoundException(String.format("Order with id: [%s] not found", orderId));
+    }
+
+    @Override
     public void concludeOrder(String orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException {
         logger.info(String.format("Finding order with id: [%s]", orderId));
 
@@ -564,7 +596,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerOrder order = orderRepository.existsAndFindByOrderUlid(orderId).get();
             Customer customer = order.getCustomerId();
 
-            if (!EnumUtils.isValidEnum(Role.class, customer.getRole())) {
+            if (!EnumUtils.isValidEnum(Role.class, customer.getRole()) && customer.getRole().equals(Role.CUSTOMER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
             }

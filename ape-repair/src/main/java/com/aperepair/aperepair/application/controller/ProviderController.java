@@ -32,7 +32,7 @@ public class ProviderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProviderResponseDto create(@RequestBody @Valid ProviderRequestDto newProvider) throws AlreadyRegisteredException, BadRequestException {
+    public ProviderResponseDto create(@RequestBody @Valid ProviderRequestDto newProvider) throws AlreadyRegisteredException, BadRequestException, InvalidRoleException {
         logger.info("Calling ProviderService to create a provider!");
 
         return providerService.create(newProvider);
@@ -53,7 +53,7 @@ public class ProviderController {
     public ProviderResponseDto update(
             @PathVariable Integer providerId,
             @RequestBody @Valid ProviderUpdateRequestDto updatedProvider
-    ) throws NotAuthenticatedException, NotFoundException, BadRequestException {
+    ) throws NotAuthenticatedException, NotFoundException, BadRequestException, InvalidRoleException {
         logger.info("Calling ProviderService to update provider!");
 
         return providerService.update(providerId, updatedProvider);
@@ -104,7 +104,7 @@ public class ProviderController {
 
     @PostMapping("/in/create-proposal")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException {
+    public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException, InvalidRoleException {
         logger.info("Calling ProviderService to create proposal!");
 
         return providerService.createProposal(request);
@@ -112,7 +112,7 @@ public class ProviderController {
 
     @GetMapping("/in/available-orders/{providerId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderResponseDto> getAllAvailableOrders(@PathVariable Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException {
+    public List<OrderResponseDto> getAllAvailableOrders(@PathVariable Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException, InvalidRoleException {
         logger.info("Calling ProviderService to list all available orders");
 
         return providerService.getAllAvailableOrders(providerId);

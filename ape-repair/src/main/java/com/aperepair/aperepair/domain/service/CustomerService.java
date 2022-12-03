@@ -12,6 +12,7 @@ import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureRespo
 import com.aperepair.aperepair.resources.aws.dto.response.ProfilePictureCreationResponseDto;
 import org.springframework.http.ResponseEntity;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public interface CustomerService {
@@ -48,4 +49,6 @@ public interface CustomerService {
     void concludeOrder(String orderId) throws NotFoundException, InvalidOrderToConcludeException, InvalidRoleException, NotAuthenticatedException;
 
     void cancelOrder(String orderId) throws NotFoundException, InvalidOrderToCanceledException;
+
+    InputStream getReceipt(String orderId) throws InvalidRoleException, NotAuthenticatedException, InvalidOrderStatusException, NotFoundException, AwsServiceInternalException, AwsS3ImageException;
 }

@@ -1,5 +1,6 @@
 package com.aperepair.aperepair.application.controller;
 
+import com.amazonaws.util.IOUtils;
 import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
 import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
@@ -14,12 +15,12 @@ import com.aperepair.aperepair.resources.aws.dto.response.ProfilePictureCreation
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -159,7 +160,23 @@ public class CustomerController {
     }
 
     //TODO(ENTREGAVEL): Criar endpoint para download do recibo TXT;
-    //TODO(ENTREGAVEL): Criar alguns testes unitários;
+    @GetMapping(
+            value = "/order/{orderId}/receipt",
+            produces = "text/plain"
+    )
+    public ResponseEntity<byte[]> getReceipt(@PathVariable String orderId) throws IOException, NotAuthenticatedException, InvalidOrderStatusException, NotFoundException, InvalidRoleException, AwsServiceInternalException, AwsS3ImageException {
+        logger.info("Calling CustomerService to get a receipt");
 
+        InputStream receiptInputStream = customerService.getReceipt(orderId);
+
+        HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"recibo.txt\"");
+
+        return ResponseEntity.status(200).headers(headers).body(IOUtils.toByteArray(receiptInputStream));
+    }
+
+    //TODO(ENTREGAVEL): Criar alguns testes unitários;
+    //TODO(ENTREGAVEL): Criar interpretador de txt e ajustar download;
+    //TODO(ENTREGAVEL): Implementar fila;
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

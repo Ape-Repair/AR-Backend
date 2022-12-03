@@ -17,13 +17,13 @@ import java.util.List;
 
 public interface ProviderService {
 
-    ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException;
+    ProviderResponseDto create(ProviderRequestDto request) throws BadRequestException, AlreadyRegisteredException, InvalidRoleException;
 
     ResponseEntity<List<ProviderResponseDto>> findAll();
 
     ResponseEntity<ProviderResponseDto> findById(Integer providerId);
 
-    ProviderResponseDto update(Integer providerId, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException;
+    ProviderResponseDto update(Integer providerId, ProviderUpdateRequestDto updatedProvider) throws NotAuthenticatedException, NotFoundException, BadRequestException, InvalidRoleException;
 
     DeleteResponseDto delete(Integer providerId) throws NotFoundException;
 
@@ -35,9 +35,9 @@ public interface ProviderService {
 
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws AwsServiceInternalException, IOException, AwsS3ImageException, NotFoundException;
 
-    ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException;
+    ProposalResponseDto createProposal(CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException, InvalidRoleException;
 
-    List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException;
+    List<OrderResponseDto> getAllAvailableOrders(Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException, InvalidRoleException;
 
     List<OrderResponseDto> getAllOrders(Integer providerId) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
 

@@ -6,6 +6,7 @@ import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.exception.*;
+import com.aperepair.aperepair.report.resources.QueueObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -19,7 +20,7 @@ public interface CustomerService {
 
     CustomerResponseDto create(CustomerRequestDto customer) throws AlreadyRegisteredException, BadRequestException;
 
-    ResponseEntity<List<CustomerResponseDto>> findAll();
+    ResponseEntity<QueueObj<CustomerResponseDto>> findAll();
 
     ResponseEntity<CustomerResponseDto> findById(Integer id) throws NotFoundException;
 

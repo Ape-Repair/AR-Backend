@@ -17,6 +17,7 @@ import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
 import com.aperepair.aperepair.report.resources.PileObj;
+import com.aperepair.aperepair.report.resources.QueueObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -111,7 +112,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<List<CustomerResponseDto>> findAll() {
+    public ResponseEntity<QueueObj<CustomerResponseDto>> findAll() {
         List<Customer> customers = new ArrayList<>(customerRepository.findAll());
 
         if (customers.isEmpty()) {
@@ -119,15 +120,15 @@ public class CustomerServiceImpl implements CustomerService {
             return ResponseEntity.status(204).build();
         }
 
-        List<CustomerResponseDto> customersDto = new ArrayList<>();
+        QueueObj<CustomerResponseDto> queue = new QueueObj(customers.size());
 
         for (Customer customer : customers) {
             CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
-            customersDto.add(customerResponseDto);
+            queue.insert(customerResponseDto);
         }
 
         logger.info("Success in finding registered customers");
-        return ResponseEntity.status(200).body(customersDto);
+        return ResponseEntity.status(200).body(queue);
     }
 
     @Override

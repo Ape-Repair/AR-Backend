@@ -8,6 +8,7 @@ import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.domain.exception.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
+import com.aperepair.aperepair.report.resources.QueueObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;
@@ -40,7 +41,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponseDto>> findAll() {
+    public ResponseEntity<QueueObj<CustomerResponseDto>> findAll() {
         return customerService.findAll();
     }
 

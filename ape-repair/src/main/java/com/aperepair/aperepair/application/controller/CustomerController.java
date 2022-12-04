@@ -178,6 +178,5 @@ public class CustomerController {
 
     //TODO(ENTREGAVEL): Criar alguns testes unitários;
     //TODO(ENTREGAVEL): Criar interpretador de txt e ajustar download;
-    //TODO(ENTREGAVEL): Implementar fila;
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

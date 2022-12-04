@@ -8,9 +8,9 @@ public class LoginResponseDto {
 
     private Boolean success;
 
-    private Role role;
+    private String role;
 
-    public LoginResponseDto(Integer id, Boolean success, Role role) {
+    public LoginResponseDto(Integer id, Boolean success, String role) {
         this.id = id;
         this.success = success;
         this.role = role;
@@ -32,11 +32,11 @@ public class LoginResponseDto {
         this.success = success;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }

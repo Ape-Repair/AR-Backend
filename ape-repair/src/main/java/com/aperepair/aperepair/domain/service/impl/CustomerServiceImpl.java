@@ -219,7 +219,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.CUSTOMER);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.CUSTOMER.name());
 
         String emailAttempt = credentialsRequestDto.getEmail();
         String passwordAttempt = credentialsRequestDto.getPassword();

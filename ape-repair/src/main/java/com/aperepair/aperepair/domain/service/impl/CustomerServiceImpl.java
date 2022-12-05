@@ -63,6 +63,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private ReceiptOrderGateway receiptOrderGateway;
 
+    @Autowired
+    private DashboardServiceImpl dashboardServiceImpl;
+
     @Value("${percentage.fee}")
     private Double fee;
 
@@ -544,6 +547,7 @@ public class CustomerServiceImpl implements CustomerService {
                 );
 
                 createReceipt(order, message);
+                dashboardServiceImpl.addToRecipe(TOTAL_PRICE);
             } else {
                 logger.error("This order is invalid for payment");
                 throw new InvalidOrderForPaymentException("This order is invalid for payment");

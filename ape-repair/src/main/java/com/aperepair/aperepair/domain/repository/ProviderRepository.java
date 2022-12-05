@@ -17,7 +17,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Integer> {
 
     Optional<Provider> findByEmail(String emailAttempt);
 
-    Optional<Provider> findByCpf(String cpf);
+    @Query("SELECT count(p.id) FROM Provider p WHERE p.role = 'PROVIDER'")
+    long countActives();
 
     Boolean existsByCpf(String cpf);
 

@@ -1,5 +1,7 @@
 package com.aperepair.aperepair.report.application.controller;
 
+import com.aperepair.aperepair.domain.model.Dashboard;
+import com.aperepair.aperepair.domain.service.impl.DashboardServiceImpl;
 import com.aperepair.aperepair.report.domain.model.Admin;
 import com.aperepair.aperepair.report.domain.model.dto.request.AdminLoginRequestDto;
 import com.aperepair.aperepair.report.domain.model.dto.response.AdminLoginResponseDto;
@@ -18,6 +20,9 @@ public class AdminController {
 
     @Autowired
     private AdminServiceImpl adminServiceImpl;
+
+    @Autowired
+    private DashboardServiceImpl dashboardService;
 
     @PostMapping
     public ResponseEntity<AdminResponseDto> create(@RequestBody @Valid Admin admin) {
@@ -55,4 +60,10 @@ public class AdminController {
     public ResponseEntity<ListObj<String>> selectionSort() {
         return adminServiceImpl.selectionSort();
     }
+
+    @GetMapping("/dashboards")
+    public Dashboard getAnalytics() {
+        return dashboardService.allAnalytics();
+    }
+
 }

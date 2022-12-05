@@ -65,6 +65,8 @@ public class ProviderServiceImpl implements ProviderService {
         String specialtyType = request.getSpecialtyType();
         String email = request.getEmail();
 
+        request.setRole(Role.PROVIDER.name());
+
         if (thisCpfOrPhoneOrEmailIsAlreadyRegistered(cpf, phone, email)) {
             logger.error("CPF or Phone or Email is already registered");
 
@@ -81,7 +83,7 @@ public class ProviderServiceImpl implements ProviderService {
             throw new BadRequestException(String.format("Specialty [%s] is not valid", specialtyType));
         }
 
-        if (!EnumUtils.isValidEnum(Role.class, request.getRole()) && request.getRole().equals(Role.PROVIDER.name())) {
+        if (!EnumUtils.isValidEnum(Role.class, request.getRole()) || !request.getRole().equals(Role.PROVIDER.name())) {
             logger.fatal(String.format("[%S] - Invalid role for this flow", request.getRole()));
             throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", request.getRole()));
         }
@@ -90,7 +92,6 @@ public class ProviderServiceImpl implements ProviderService {
         logger.info("Provider password encrypted with successfully");
 
         request.setAuthenticated(false);
-        request.setRole(Role.PROVIDER.name());
 
         Provider provider = ProviderDtoFactory.toEntity(request);
 
@@ -177,7 +178,7 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new BadRequestException(String.format("Specialty [%s] is not valid", specialtyType));
             }
 
-            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             }
@@ -256,7 +257,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider provider = optionalProvider.get();
 
-        if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+        if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
             logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
         }
@@ -297,7 +298,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider provider = optionalProvider.get();
 
-        if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+        if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
             logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
         }
@@ -391,7 +392,7 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new BadRequestException(String.format("Specialty [%s] is not valid", providerSpecialtyType));
             }
 
-            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             }
@@ -464,7 +465,7 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new NotAuthenticatedException("Provider is not authenticated");
             }
 
-            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             }
@@ -509,7 +510,7 @@ public class ProviderServiceImpl implements ProviderService {
                 throw new NotAuthenticatedException("Provider is not authenticated");
             }
 
-            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) && provider.getRole().equals(Role.PROVIDER.name())) {
+            if (!EnumUtils.isValidEnum(Role.class, provider.getRole()) || !provider.getRole().equals(Role.PROVIDER.name())) {
                 logger.fatal(String.format("[%S] - Invalid role for this flow", provider.getRole()));
                 throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", provider.getRole()));
             }

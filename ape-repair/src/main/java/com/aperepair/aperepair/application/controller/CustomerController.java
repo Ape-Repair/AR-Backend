@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-    //TODO: Atualizar repo de collections
+
     @Autowired
     private CustomerService customerService;
 
@@ -160,23 +160,29 @@ public class CustomerController {
         customerService.cancelOrder(orderId);
     }
 
-    //TODO(ENTREGAVEL): Criar endpoint para download do recibo TXT;
+    //TODO(ENTREGAVEL): Ajustar download de TXT;
     @GetMapping(
             value = "/order/{orderId}/receipt",
-            produces = "text/plain"
+            produces = "text/plain.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     public ResponseEntity<byte[]> getReceipt(@PathVariable String orderId) throws IOException, NotAuthenticatedException, InvalidOrderStatusException, NotFoundException, InvalidRoleException, AwsServiceInternalException, AwsS3ImageException {
         logger.info("Calling CustomerService to get a receipt");
 
+        String fileName = String.format("receipt-%s", orderId);
+        fileName += ".txt";
+
         InputStream receiptInputStream = customerService.getReceipt(orderId);
 
-        HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"recibo.txt\"");
+        byte[] receiptByteArray = IOUtils.toByteArray(receiptInputStream);
 
-        return ResponseEntity.status(200).headers(headers).body(IOUtils.toByteArray(receiptInputStream));
+        return ResponseEntity.status(200)
+                .header(
+                        "content-disposition",
+                        "attachment; " + "filename="+ fileName
+                ).body(receiptByteArray);
     }
 
-    //TODO(ENTREGAVEL): Criar alguns testes unitários;
-    //TODO(ENTREGAVEL): Criar interpretador de txt e ajustar download;
+    //TODO(developing): Criar alguns testes unitários;
+    //TODO(ENTREGAVEL): Criar interpretador de txt para pegar valor total de transação e salvar na dashboard;
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

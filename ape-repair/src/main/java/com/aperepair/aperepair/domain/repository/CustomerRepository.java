@@ -22,7 +22,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     Optional<Customer> findByEmail(String emailAttempt);
 
-    Optional<Customer> findByCpf(String cpf);
+    @Query("SELECT count(c.id) FROM Customer c WHERE c.role = 'CUSTOMER'")
+    long countActives();
 
     Boolean existsByCpf(String cpf);
 

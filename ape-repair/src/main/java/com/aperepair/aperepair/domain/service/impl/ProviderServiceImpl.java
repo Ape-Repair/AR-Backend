@@ -144,7 +144,10 @@ public class ProviderServiceImpl implements ProviderService {
 
             Provider provider = optionalProvider.get();
 
-            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
+            Address address = provider.getAddressId();
+            AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
+
+            ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponseFullDto(provider, addressResponseDto);
 
             return ResponseEntity.status(200).body(providerResponseDto);
         }

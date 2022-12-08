@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.domain.service.impl;
 
 import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
-import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
@@ -241,11 +241,11 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.PROVIDER.name());
 
-        String emailAttempt = credentialsRequestDto.getEmail();
-        String passwordAttempt = credentialsRequestDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         logger.info(String.format("Searching for provider with email: [%s]", emailAttempt));
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
@@ -283,11 +283,11 @@ public class ProviderServiceImpl implements ProviderService {
         return loginResponseDto;
     }
 
-    public LogoutResponseDto logout(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException {
+    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = credentialsRequestDto.getEmail();
-        String passwordAttempt = credentialsRequestDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         Optional<Provider> optionalProvider = providerRepository.findByEmail(emailAttempt);
 

@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.application.controller;
 
 import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
-import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
@@ -69,17 +69,17 @@ public class ProviderController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoginResponseDto login(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling ProviderService to authenticate a provider");
 
-        return providerService.login(credentialsRequestDto);
+        return providerService.login(loginRequestDto);
     }
 
     @PatchMapping("/logout")
-    public LogoutResponseDto logout(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling ProviderService to logout a provider");
 
-        return providerService.logout(credentialsRequestDto);
+        return providerService.logout(loginRequestDto);
     }
 
     @PutMapping("/profile-picture")

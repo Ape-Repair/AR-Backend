@@ -2,7 +2,7 @@ package com.aperepair.aperepair.application.controller;
 
 import com.amazonaws.util.IOUtils;
 import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
-import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
@@ -71,18 +71,18 @@ public class CustomerController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoginResponseDto login(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling CustomerService to authenticate a customer");
 
-        return customerService.login(credentialsRequestDto);
+        return customerService.login(loginRequestDto);
     }
 
     @PatchMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
-    public LogoutResponseDto logout(@RequestBody @Valid CredentialsRequestDto credentialsRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
+    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
         logger.info("Calling CustomerService to logout a customer");
 
-        return customerService.logout(credentialsRequestDto);
+        return customerService.logout(loginRequestDto);
     }
 
     @PutMapping("/profile-picture")
@@ -160,7 +160,6 @@ public class CustomerController {
         customerService.cancelOrder(orderId);
     }
 
-    //TODO(ENTREGAVEL): Ajustar download de TXT;
     @GetMapping(
             value = "/order/{orderId}/receipt",
             produces = "text/plain.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -182,7 +181,5 @@ public class CustomerController {
                 ).body(receiptByteArray);
     }
 
-    //TODO(developing): Criar alguns testes unitários;
-    //TODO(ENTREGAVEL): Criar interpretador de txt para pegar valor total de transação e salvar na dashboard;
     private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 }

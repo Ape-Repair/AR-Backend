@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.domain.service;
 
 import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
-import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
@@ -27,9 +27,9 @@ public interface ProviderService {
 
     DeleteResponseDto delete(Integer providerId) throws NotFoundException;
 
-    LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException;
+    LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException;
 
-    LogoutResponseDto logout(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException;
+    LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException, NotAuthenticatedException;
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request) throws AwsUploadException, IOException, NotFoundException;
 

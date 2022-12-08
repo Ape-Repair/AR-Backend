@@ -1,7 +1,7 @@
 package com.aperepair.aperepair.domain.service.impl;
 
 import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
-import com.aperepair.aperepair.application.dto.request.CredentialsRequestDto;
+import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
@@ -221,11 +221,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public LoginResponseDto login(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
         LoginResponseDto loginResponseDto = new LoginResponseDto(null, false, Role.CUSTOMER.name());
 
-        String emailAttempt = credentialsRequestDto.getEmail();
-        String passwordAttempt = credentialsRequestDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         logger.info(String.format("Searching for customer with email: [%s]", emailAttempt));
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
@@ -264,11 +264,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public LogoutResponseDto logout(CredentialsRequestDto credentialsRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
+    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = credentialsRequestDto.getEmail();
-        String passwordAttempt = credentialsRequestDto.getPassword();
+        String emailAttempt = loginRequestDto.getEmail();
+        String passwordAttempt = loginRequestDto.getPassword();
 
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 

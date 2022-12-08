@@ -4,7 +4,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-public class CredentialsRequestDto {
+public class LoginRequestDto {
 
     @Email
     private String email;
@@ -13,7 +13,7 @@ public class CredentialsRequestDto {
     @Size(min = 6)
     private String password;
 
-    public CredentialsRequestDto(String email, String password) {
+    public LoginRequestDto(String email, String password) {
         this.email = email;
         this.password = password;
     }

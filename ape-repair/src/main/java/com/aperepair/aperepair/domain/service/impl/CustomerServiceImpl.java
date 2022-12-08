@@ -142,7 +142,10 @@ public class CustomerServiceImpl implements CustomerService {
 
             Customer customer = optionalCustomer.get();
 
-            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponsePartialDto(customer);
+            Address address = customer.getAddressId();
+            AddressResponseDto addressResponseDto = AddressDtoFactory.toResponseDto(address);
+
+            CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
 
             return ResponseEntity.status(200).body(customerResponseDto);
         }

@@ -33,7 +33,7 @@ public class ProviderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProviderResponseDto create(@RequestBody @Valid ProviderRequestDto newProvider) throws AlreadyRegisteredException, BadRequestException, InvalidRoleException {
-        logger.info("Calling ProviderService to create a provider!");
+        logger.info("Calling service to create a provider!");
 
         return providerService.create(newProvider);
     }
@@ -54,7 +54,7 @@ public class ProviderController {
             @PathVariable Integer providerId,
             @RequestBody @Valid ProviderUpdateRequestDto updatedProvider
     ) throws NotAuthenticatedException, NotFoundException, BadRequestException, InvalidRoleException {
-        logger.info("Calling ProviderService to update provider!");
+        logger.info(String.format("Calling service to update provider with id: [%d]", providerId));
 
         return providerService.update(providerId, updatedProvider);
     }
@@ -62,7 +62,7 @@ public class ProviderController {
     @PatchMapping("/{providerId}")
     @ResponseStatus(HttpStatus.OK)
     public DeleteResponseDto delete(@PathVariable Integer providerId) throws NotFoundException {
-        logger.info("Calling ProviderService to delete a provider");
+        logger.info(String.format("Calling service to delete a provider with id: [%d]", providerId));
 
         return providerService.delete(providerId);
     }
@@ -70,14 +70,14 @@ public class ProviderController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling ProviderService to authenticate a provider");
+        logger.info(String.format("Calling service to authenticate a provider with email: %s", loginRequestDto.getEmail()));
 
         return providerService.login(loginRequestDto);
     }
 
     @PatchMapping("/logout")
     public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling ProviderService to logout a provider");
+        logger.info(String.format("Calling service to logout a provider with email: [%s]", loginRequestDto.getEmail()));
 
         return providerService.logout(loginRequestDto);
     }
@@ -87,7 +87,7 @@ public class ProviderController {
     public ProfilePictureCreationResponseDto profilePictureCreation(
             @RequestBody @Valid ProfilePictureCreationRequestDto request
     ) throws IOException, AwsUploadException, NotFoundException {
-        logger.info("Calling ProviderService to upload provider profile image!");
+        logger.info(String.format("Calling service to upload provider profile image for email: [%s]", request.getEmail()));
 
         return providerService.profilePictureCreation(request);
     }
@@ -97,7 +97,7 @@ public class ProviderController {
     public GetProfilePictureResponseDto getProfilePicture(
             @RequestBody @Valid GetProfilePictureRequestDto request
     ) throws Exception {
-        logger.info("Calling ProviderService to get provider profile image!");
+        logger.info(String.format("Calling service to get provider profile image for email: [%s]", request.getEmail()));
 
         return providerService.getProfilePicture(request);
     }
@@ -105,7 +105,7 @@ public class ProviderController {
     @PostMapping("/in/create-proposal")
     @ResponseStatus(HttpStatus.CREATED)
     public ProposalResponseDto createProposal(@Valid @RequestBody CreateProposalRequestDto request) throws NotFoundException, NotAuthenticatedException, BadRequestException, SpecialtyNotMatchWithServiceTypeException, InvalidProposalForThisOrderException, ProviderAlreadyMadeProposalForOrderException, InvalidRoleException {
-        logger.info("Calling ProviderService to create proposal!");
+        logger.info(String.format("Calling service to create proposal for order: [%s]", request.getOrderId()));
 
         return providerService.createProposal(request);
     }
@@ -113,7 +113,7 @@ public class ProviderController {
     @GetMapping("/in/available-orders/{providerId}")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderResponseDto> getAllAvailableOrders(@PathVariable Integer providerId) throws NotAuthenticatedException, BadRequestException, NotFoundException, NoContentException, InvalidRoleException {
-        logger.info("Calling ProviderService to list all available orders");
+        logger.info(String.format("Calling service to list all available orders for provider with id: [%d]", providerId));
 
         return providerService.getAllAvailableOrders(providerId);
     }
@@ -121,7 +121,7 @@ public class ProviderController {
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public void cancelOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToCanceledException {
-        logger.info("Calling ProviderService to cancel an order");
+        logger.info(String.format("Calling service to cancel an order with id: [%s]", orderId));
 
         providerService.cancelOrder(orderId);
     }
@@ -129,7 +129,7 @@ public class ProviderController {
     @GetMapping("/{providerId}/orders")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderResponseDto> allOrders(@PathVariable Integer providerId) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, NoContentException {
-        logger.info("Calling ProviderService to get all orders of provider");
+        logger.info(String.format("Calling service to get all orders of provider with id: [%d]", providerId));
 
         return providerService.getAllOrders(providerId);
     }

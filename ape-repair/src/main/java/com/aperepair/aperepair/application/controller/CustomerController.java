@@ -35,7 +35,7 @@ public class CustomerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerResponseDto create(@Valid @RequestBody CustomerRequestDto newCustomer) throws AlreadyRegisteredException, BadRequestException {
-        logger.info("Calling CustomerService to create a customer!");
+        logger.info("Calling service to create a customer!");
 
         return customerService.create(newCustomer);
     }
@@ -56,7 +56,7 @@ public class CustomerController {
             @PathVariable Integer id,
             @RequestBody @Valid CustomerUpdateRequestDto updatedCustomer
     ) throws NotFoundException, NotAuthenticatedException {
-        logger.info("Calling CustomerService to update customer!");
+        logger.info(String.format("Calling service to update customer with id [%d]", id));
 
         return customerService.update(id, updatedCustomer);
     }
@@ -64,7 +64,7 @@ public class CustomerController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public DeleteResponseDto delete(@PathVariable Integer id) throws NotFoundException {
-        logger.info("Calling CustomerService to delete a customer");
+        logger.info(String.format("Calling service to delete a customer with id [%d]", id));
 
         return customerService.delete(id);
     }
@@ -72,7 +72,7 @@ public class CustomerController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling CustomerService to authenticate a customer");
+        logger.info(String.format("Calling service to authenticate a customer with email [%s]", loginRequestDto.getEmail()));
 
         return customerService.login(loginRequestDto);
     }
@@ -80,7 +80,7 @@ public class CustomerController {
     @PatchMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
-        logger.info("Calling CustomerService to logout a customer");
+        logger.info(String.format("Calling service to logout a customer with email [%s]", loginRequestDto.getEmail()));
 
         return customerService.logout(loginRequestDto);
     }
@@ -90,7 +90,7 @@ public class CustomerController {
     public ProfilePictureCreationResponseDto profilePictureCreation(
             @RequestBody @Valid ProfilePictureCreationRequestDto request
     ) throws IOException, AwsUploadException, NotFoundException {
-        logger.info("Calling CustomerService to upload customer profile image!");
+        logger.info(String.format("Calling service to upload customer profile image for customer with email: [%s]", request.getEmail()));
 
         return customerService.profilePictureCreation(request);
     }
@@ -99,7 +99,7 @@ public class CustomerController {
     public GetProfilePictureResponseDto getProfilePicture(
             @RequestBody @Valid GetProfilePictureRequestDto request
     ) throws Exception {
-        logger.info("Calling CustomerService to get customer profile image!");
+        logger.info(String.format("Calling service to get customer profile image for customer with email: [%s]", request.getEmail()));
 
         return customerService.getProfilePicture(request);
     }
@@ -107,7 +107,7 @@ public class CustomerController {
     @PostMapping("in/create-order")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderUlidResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException {
-        logger.info("Calling CustomerService to create order");
+        logger.info(String.format("Calling service to create order of customer with id: [%d]", request.getCustomerId()));
 
         return customerService.createOrder(request);
     }
@@ -115,7 +115,7 @@ public class CustomerController {
     @GetMapping("/{customerId}/orders")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderResponseDto> allOrders(@PathVariable Integer customerId) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, NoContentException {
-        logger.info("Calling CustomerService to get all orders of customer");
+        logger.info(String.format("Calling service to get all orders of customer: [%d]", customerId));
 
         return customerService.getAllOrders(customerId);
     }
@@ -123,7 +123,7 @@ public class CustomerController {
     @GetMapping("/order/{orderId}/available-proposals")
     @ResponseStatus(HttpStatus.OK)
     public List<ProposalResponseDto> getProposalsForOrder(@PathVariable String orderId) throws NotFoundException, NoContentException {
-        logger.info("Calling MatchService to get proposals for an order");
+        logger.info(String.format("Calling MatchService to get proposals for an order with id: [%d]", orderId));
 
         return customerService.getProposalsForOrder(orderId);
     }
@@ -131,7 +131,7 @@ public class CustomerController {
     @PostMapping("/order/{orderId}/accept-proposal/{proposalId}")
     @ResponseStatus(HttpStatus.OK)
     public void acceptProposal(@PathVariable String orderId, @PathVariable Integer proposalId) throws InvalidProposalForThisOrderException, NotFoundException {
-        logger.info("Calling Customer Service to accept a proposal for an order");
+        logger.info(String.format("Calling service to accept proposal with id: [%s] for an order with id [%d]", orderId, proposalId));
 
         customerService.acceptProposal(orderId, proposalId);
     }
@@ -139,7 +139,7 @@ public class CustomerController {
     @PostMapping("/order/{orderId}/payment")
     @ResponseStatus(HttpStatus.OK)
     public void makePayment(@PathVariable String orderId) throws NotFoundException, InvalidOrderForPaymentException, NotAuthenticatedException, InvalidRoleException, AwsServiceInternalException, IOException {
-        logger.info("Calling CustomerService to make payment for an order");
+        logger.info(String.format("Calling service to make payment for an order with id: [%s]", orderId));
 
         customerService.makePayment(orderId);
     }
@@ -147,7 +147,7 @@ public class CustomerController {
     @PutMapping("/order/{orderId}/conclude")
     @ResponseStatus(HttpStatus.OK)
     public void concludeOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToConcludeException, NotAuthenticatedException, InvalidRoleException {
-        logger.info("Calling CustomerService to conclude an order");
+        logger.info(String.format("Calling service to conclude an order with id: [%s]", orderId));
 
         customerService.concludeOrder(orderId);
     }
@@ -155,7 +155,7 @@ public class CustomerController {
     @PutMapping("/order/{orderId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public void cancelOrder(@PathVariable String orderId) throws NotFoundException, InvalidOrderToCanceledException {
-        logger.info("Calling CustomerService to cancel an order");
+        logger.info(String.format("Calling service to cancel an order with id: [%s]", orderId));
 
         customerService.cancelOrder(orderId);
     }
@@ -165,7 +165,7 @@ public class CustomerController {
             produces = "text/plain.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     public ResponseEntity<byte[]> getReceipt(@PathVariable String orderId) throws IOException, NotAuthenticatedException, InvalidOrderStatusException, NotFoundException, InvalidRoleException, AwsServiceInternalException, AwsS3ImageException {
-        logger.info("Calling CustomerService to get a receipt");
+        logger.info(String.format("Calling service to get a receipt for order: [%s]", orderId));
 
         String fileName = String.format("receipt-%s", orderId);
         fileName += ".txt";

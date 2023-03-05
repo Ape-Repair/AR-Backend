@@ -17,6 +17,4 @@ public interface AdminService {
     ResponseEntity<Void> delete(Integer id);
 
     ResponseEntity<AdminLoginResponseDto> login(AdminLoginRequestDto adminLoginRequestDto);
-
-    ResponseEntity<Void> generateCsvFile();
 }

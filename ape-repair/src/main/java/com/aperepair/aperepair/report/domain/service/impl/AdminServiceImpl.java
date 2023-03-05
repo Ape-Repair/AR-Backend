@@ -139,14 +139,6 @@ public class AdminServiceImpl implements AdminService {
         return ResponseEntity.status(200).body(adminLoginResponseDto);
     }
 
-    public ResponseEntity<Void> generateCsvFile() {
-        List<Provider> providers = providerRepository.findAll();
-        if (providers.isEmpty()) return ResponseEntity.noContent().build();
-
-        CsvFile.writeCsvFile(providers);
-        return ResponseEntity.status(201).build();
-    }
-
     public ResponseEntity<ListObj<String>> selectionSort() {
         List<Provider> providers = providerRepository.findAll();
 

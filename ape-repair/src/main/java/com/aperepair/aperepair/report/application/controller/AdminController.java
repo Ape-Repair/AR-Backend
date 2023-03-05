@@ -51,16 +51,6 @@ public class AdminController {
         return adminServiceImpl.login(adminLoginRequestDto);
     }
 
-    @GetMapping("/write-csv-file")
-    public ResponseEntity<Void> generateCsvFile() {
-        return adminServiceImpl.generateCsvFile();
-    }
-
-    @GetMapping("/file-order")
-    public ResponseEntity<ListObj<String>> selectionSort() {
-        return adminServiceImpl.selectionSort();
-    }
-
     @GetMapping("/dashboards")
     public Dashboard getAnalytics() {
         return dashboardService.allAnalytics();

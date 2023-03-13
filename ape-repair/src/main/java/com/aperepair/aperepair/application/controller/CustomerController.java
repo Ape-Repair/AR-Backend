@@ -123,7 +123,7 @@ public class CustomerController {
     @GetMapping("/order/{orderId}/available-proposals")
     @ResponseStatus(HttpStatus.OK)
     public List<ProposalResponseDto> getProposalsForOrder(@PathVariable String orderId) throws NotFoundException, NoContentException {
-        logger.info(String.format("Calling MatchService to get proposals for an order with id: [%d]", orderId));
+        logger.info(String.format("Calling MatchService to get proposals for an order with id: [%s]", orderId));
 
         return customerService.getProposalsForOrder(orderId);
     }

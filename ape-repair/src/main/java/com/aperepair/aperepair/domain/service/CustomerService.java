@@ -5,7 +5,7 @@ import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
-import com.aperepair.aperepair.domain.exception.*;
+import com.aperepair.aperepair.application.exception.*;
 import com.aperepair.aperepair.report.resources.QueueObj;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
@@ -37,7 +37,7 @@ public interface CustomerService {
 
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception;
 
-    OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException;
+    OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, NoContentException, StatusInvalidToCreateOrder;
 
     List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
 

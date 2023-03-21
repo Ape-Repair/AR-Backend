@@ -1,11 +1,11 @@
 package com.aperepair.aperepair.application;
 
-import com.aperepair.aperepair.application.controller.CustomerController;
+import controller.CustomerController;
 import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.response.LoginResponseDto;
-import com.aperepair.aperepair.domain.exception.BadCredentialsException;
-import com.aperepair.aperepair.domain.exception.InvalidRoleException;
-import com.aperepair.aperepair.domain.exception.NotFoundException;
+import com.aperepair.aperepair.application.exception.BadCredentialsException;
+import com.aperepair.aperepair.application.exception.InvalidRoleException;
+import com.aperepair.aperepair.application.exception.NotFoundException;
 import com.aperepair.aperepair.domain.model.Address;
 import com.aperepair.aperepair.domain.model.Customer;
 import com.aperepair.aperepair.domain.repository.CustomerRepository;

@@ -5,14 +5,14 @@ import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
 import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
+import com.aperepair.aperepair.application.exception.*;
 import com.aperepair.aperepair.domain.dto.factory.*;
-import com.aperepair.aperepair.domain.enums.Genre;
-import com.aperepair.aperepair.domain.enums.Role;
-import com.aperepair.aperepair.domain.enums.SpecialtyTypes;
-import com.aperepair.aperepair.domain.enums.Status;
-import com.aperepair.aperepair.domain.exception.*;
-import com.aperepair.aperepair.domain.gateway.ProfilePictureGateway;
-import com.aperepair.aperepair.domain.gateway.ReceiptOrderGateway;
+import com.aperepair.aperepair.domain.model.enums.Genre;
+import com.aperepair.aperepair.domain.model.enums.Role;
+import com.aperepair.aperepair.domain.model.enums.SpecialtyTypes;
+import com.aperepair.aperepair.domain.model.enums.Status;
+import com.aperepair.aperepair.resources.aws.gateway.ProfilePictureGateway;
+import com.aperepair.aperepair.resources.aws.gateway.ReceiptOrderGateway;
 import com.aperepair.aperepair.domain.model.*;
 import com.aperepair.aperepair.domain.repository.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
@@ -354,7 +354,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException {
+    public OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, NoContentException, StatusInvalidToCreateOrder {
         Integer customerId = request.getCustomerId();
 
         if (customerRepository.existsById(customerId)) {
@@ -373,6 +373,17 @@ public class CustomerServiceImpl implements CustomerService {
             if (!EnumUtils.isValidEnum(SpecialtyTypes.class, request.getServiceType())) {
                 logger.info("Service type of order is not valid!");
                 throw new InvalidServiceTypeException("Service type of order is not valid");
+            }
+
+            List<OrderResponseDto> allOrders = getAllOrders(customerId);
+
+            if (!validatePrerequisitesForCreateAnOrder(allOrders)) {
+                logger.error(
+                        String.format(
+                        "It is not allowed to create a new order while one is in " +
+                                "progress for customer id: [%d]", customerId)
+                );
+                throw new StatusInvalidToCreateOrder("It is not allowed to create a new order while one is in progress");
             }
 
             logger.info(String.format("Creating order for customer: [%s]", customer.getEmail()));
@@ -683,6 +694,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Boolean isAuthenticatedCustomer(Customer customer) {
         return customer.isAuthenticated();
+    }
+
+    private boolean validatePrerequisitesForCreateAnOrder(List<OrderResponseDto> allOrders) {
+        for (OrderResponseDto order: allOrders) {
+            if (
+                    order.getStatus() == Status.WAITING_FOR_PROPOSAL.name()
+                            || order.getStatus() == Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name()
+                            || order.getStatus() == Status.WAITING_FOR_PAYMENT.name()
+                            || order.getStatus() == Status.IN_PROGRESS.name()
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isValidPassword(String passwordAttempt, Customer customer) {

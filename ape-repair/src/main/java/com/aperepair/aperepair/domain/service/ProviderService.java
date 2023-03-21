@@ -5,7 +5,7 @@ import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderRequestDto;
 import com.aperepair.aperepair.application.dto.request.ProviderUpdateRequestDto;
 import com.aperepair.aperepair.application.dto.response.*;
-import com.aperepair.aperepair.domain.exception.*;
+import com.aperepair.aperepair.application.exception.*;
 import com.aperepair.aperepair.resources.aws.dto.request.GetProfilePictureRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.request.ProfilePictureCreationRequestDto;
 import com.aperepair.aperepair.resources.aws.dto.response.GetProfilePictureResponseDto;

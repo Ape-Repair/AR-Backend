@@ -1,7 +1,5 @@
 package com.aperepair.aperepair.application.dto.response;
 
-import com.aperepair.aperepair.domain.enums.Role;
-
 public class LoginResponseDto {
 
     private Integer id;

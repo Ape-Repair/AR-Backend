@@ -43,6 +43,7 @@ public class Customer {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address addressId;
 
+    //TODO: Colocar o @Enumerated e remover validações de enums nas services (DISCOVERY)
     @JsonIgnore
     private String role;
 

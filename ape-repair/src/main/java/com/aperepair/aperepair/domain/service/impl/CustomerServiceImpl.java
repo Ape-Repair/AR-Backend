@@ -375,15 +375,17 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidServiceTypeException("Service type of order is not valid");
             }
 
-            List<OrderResponseDto> allOrders = getAllOrders(customerId);
+            if (orderRepository.findOrdersByCustomerId(customerId).isPresent()){
+                List<OrderResponseDto> allOrders = orderRepository.findOrdersByCustomerId(customerId).get();
 
-            if (!validatePrerequisitesForCreateAnOrder(allOrders)) {
-                logger.error(
-                        String.format(
-                        "It is not allowed to create a new order while one is in " +
-                                "progress for customer id: [%d]", customerId)
-                );
-                throw new StatusInvalidToCreateOrder("It is not allowed to create a new order while one is in progress");
+                if (!validatePrerequisitesForCreateAnOrder(allOrders)) {
+                    logger.error(
+                            String.format(
+                            "It is not allowed to create a new order while one is in " +
+                                    "progress for customer id: [%d]", customerId)
+                    );
+                    throw new StatusInvalidToCreateOrder("It is not allowed to create a new order while one is in progress");
+                }
             }
 
             logger.info(String.format("Creating order for customer: [%s]", customer.getEmail()));

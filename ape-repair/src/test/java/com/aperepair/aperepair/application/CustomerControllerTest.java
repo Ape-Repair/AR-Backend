@@ -1,6 +1,6 @@
 package com.aperepair.aperepair.application;
 
-import controller.CustomerController;
+import com.aperepair.aperepair.application.controller.CustomerController;
 import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
 import com.aperepair.aperepair.application.dto.response.LoginResponseDto;
 import com.aperepair.aperepair.application.exception.BadCredentialsException;

@@ -1,4 +1,4 @@
-package controller;
+package com.aperepair.aperepair.application.controller;
 
 import com.aperepair.aperepair.application.dto.request.CreateProposalRequestDto;
 import com.aperepair.aperepair.application.dto.request.LoginRequestDto;

@@ -1,4 +1,4 @@
-package controller;
+package com.aperepair.aperepair.application.controller;
 
 import com.amazonaws.util.IOUtils;
 import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;

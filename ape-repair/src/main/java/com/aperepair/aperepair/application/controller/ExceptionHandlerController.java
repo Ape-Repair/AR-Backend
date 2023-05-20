@@ -88,7 +88,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             NotAuthenticatedException.class,
-            SpecialtyNotMatchWithServiceTypeException.class
+            SpecialtyNotMatchWithServiceTypeException.class,
+            InvalidRoleException.class
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiExceptionResponseDto handleNotAuthenticated(

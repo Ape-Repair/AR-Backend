@@ -71,7 +71,8 @@ public class CustomerController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException {
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) throws
+            NotFoundException, InvalidRoleException, BadCredentialsException {
         logger.info(String.format("Calling service to authenticate a customer with email [%s]", loginRequestDto.getEmail()));
 
         return customerService.login(loginRequestDto);

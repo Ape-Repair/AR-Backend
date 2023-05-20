@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -87,7 +88,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         customerRequestDto.setPassword(encoder.encode(customerRequestDto.getPassword()));
-        logger.info("Customer password encrypted with success");
+        logger.info(String.format("Customer password encrypted with success for email: [%s]", email));
 
         customerRequestDto.setAuthenticated(false);
         customerRequestDto.setRole(Role.CUSTOMER.name());
@@ -106,7 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Integer customerId = customer.getId();
         customerRepository.updateAddressIdById(address, customerId);
-        logger.info("Foreign key [addressId] updated successfully");
+        logger.info(String.format("Foreign key [%d] updated successfully", address.getId()));
 
         CustomerResponseDto customerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
         logger.info(String.format("Customer: [%s] registered successfully", customerResponseDto.toString()));
@@ -192,9 +193,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             logger.info(String.format("Updated customer of id: %d registration data!", newCustomer.getId()));
 
-            CustomerResponseDto updatedCustomerResponseDto = CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
-
-            return updatedCustomerResponseDto;
+            return CustomerDtoFactory.toResponseFullDto(customer, addressResponseDto);
         }
 
         logger.error(String.format("Customer with id: [%d] not found", id));
@@ -600,9 +599,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             String key = String.format("%s/order-%s.txt", email, orderId);
 
-            InputStream receiptInputStream = receiptOrderGateway.getReceiptOrder(key, email);
-
-            return receiptInputStream;
+            return receiptOrderGateway.getReceiptOrder(key, email);
         }
 
         logger.error(String.format("Order with id: [%s] not found", orderId));
@@ -701,10 +698,10 @@ public class CustomerServiceImpl implements CustomerService {
     private boolean validatePrerequisitesForCreateAnOrder(List<OrderResponseDto> allOrders) {
         for (OrderResponseDto order: allOrders) {
             if (
-                    order.getStatus() == Status.WAITING_FOR_PROPOSAL.name()
-                            || order.getStatus() == Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name()
-                            || order.getStatus() == Status.WAITING_FOR_PAYMENT.name()
-                            || order.getStatus() == Status.IN_PROGRESS.name()
+                    Objects.equals(order.getStatus(), Status.WAITING_FOR_PROPOSAL.name())
+                            || Objects.equals(order.getStatus(), Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name())
+                            || Objects.equals(order.getStatus(), Status.WAITING_FOR_PAYMENT.name())
+                            || Objects.equals(order.getStatus(), Status.IN_PROGRESS.name())
             ) {
                 return false;
             }
@@ -726,9 +723,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Provider provider = providerRepository.findById(id).get();
 
-        ProviderResponseDto providerResponseDto = ProviderDtoFactory.toResponsePartialDto(provider);
-
-        return providerResponseDto;
+        return ProviderDtoFactory.toResponsePartialDto(provider);
     }
 
     private boolean validatePrerequisitesForAcceptingAProposal(CustomerOrder order, Proposal proposal) {

@@ -1,10 +1,7 @@
 package com.aperepair.aperepair.application.controller;
 
 import com.amazonaws.util.IOUtils;
-import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
-import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
+import com.aperepair.aperepair.application.dto.request.*;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.application.exception.*;
 import com.aperepair.aperepair.domain.service.CustomerService;
@@ -80,10 +77,10 @@ public class CustomerController {
 
     @PatchMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
-    public LogoutResponseDto logout(@RequestBody @Valid LoginRequestDto loginRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
-        logger.info(String.format("Calling service to logout a customer with email [%s]", loginRequestDto.getEmail()));
+    public LogoutResponseDto logout(@RequestBody @Valid LogoutRequestDto logoutRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
+        logger.info(String.format("Calling service to logout a customer with email [%s]", logoutRequestDto.getEmail()));
 
-        return customerService.logout(loginRequestDto);
+        return customerService.logout(logoutRequestDto);
     }
 
     @PutMapping("/profile-picture")

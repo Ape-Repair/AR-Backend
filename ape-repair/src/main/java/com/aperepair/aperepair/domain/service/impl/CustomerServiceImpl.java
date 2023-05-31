@@ -1,9 +1,6 @@
 package com.aperepair.aperepair.domain.service.impl;
 
-import com.aperepair.aperepair.application.dto.request.CreateOrderRequestDto;
-import com.aperepair.aperepair.application.dto.request.LoginRequestDto;
-import com.aperepair.aperepair.application.dto.request.CustomerRequestDto;
-import com.aperepair.aperepair.application.dto.request.CustomerUpdateRequestDto;
+import com.aperepair.aperepair.application.dto.request.*;
 import com.aperepair.aperepair.application.dto.response.*;
 import com.aperepair.aperepair.application.exception.*;
 import com.aperepair.aperepair.domain.dto.factory.*;
@@ -266,11 +263,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public LogoutResponseDto logout(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
+    public LogoutResponseDto logout(LogoutRequestDto logoutRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
 
-        String emailAttempt = loginRequestDto.getEmail();
-        String passwordAttempt = loginRequestDto.getPassword();
+        String emailAttempt = logoutRequestDto.getEmail();
 
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
 
@@ -288,23 +284,15 @@ public class CustomerServiceImpl implements CustomerService {
 
         logger.info(String.format("Initiating logout from email customer [%s]", emailAttempt));
 
-        boolean valid = isValidPassword(passwordAttempt, customer);
 
-        if (valid && isAuthenticatedCustomer(customer)) {
+        if (isAuthenticatedCustomer(customer)) {
             logoutResponse.setSuccess(true);
             customer.setAuthenticated(false);
 
             customerRepository.save(customer);
         } else {
-            if (!valid) {
-                logger.info("Password invalid!");
-                throw new BadCredentialsException("Password invalid!");
-            }
-
-            if (!isAuthenticatedCustomer(customer)) {
-                logger.info("The customer is not authenticated");
-                throw new NotAuthenticatedException("Customer is not authenticated");
-            }
+            logger.info("The customer is not authenticated");
+            throw new NotAuthenticatedException("Customer is not authenticated");
         }
 
         logger.info("Logout successfully executed!");
@@ -374,14 +362,14 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new InvalidServiceTypeException("Service type of order is not valid");
             }
 
-            if (orderRepository.findOrdersByCustomerId(customerId).isPresent()){
+            if (orderRepository.findOrdersByCustomerId(customerId).isPresent()) {
                 List<OrderResponseDto> allOrders = orderRepository.findOrdersByCustomerId(customerId).get();
 
                 if (!validatePrerequisitesForCreateAnOrder(allOrders)) {
                     logger.error(
                             String.format(
-                            "It is not allowed to create a new order while one is in " +
-                                    "progress for customer id: [%d]", customerId)
+                                    "It is not allowed to create a new order while one is in " +
+                                            "progress for customer id: [%d]", customerId)
                     );
                     throw new StatusInvalidToCreateOrder("It is not allowed to create a new order while one is in progress");
                 }
@@ -696,7 +684,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private boolean validatePrerequisitesForCreateAnOrder(List<OrderResponseDto> allOrders) {
-        for (OrderResponseDto order: allOrders) {
+        for (OrderResponseDto order : allOrders) {
             if (
                     Objects.equals(order.getStatus(), Status.WAITING_FOR_PROPOSAL.name())
                             || Objects.equals(order.getStatus(), Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name())

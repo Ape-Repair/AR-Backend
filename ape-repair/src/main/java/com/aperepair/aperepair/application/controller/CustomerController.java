@@ -77,10 +77,10 @@ public class CustomerController {
 
     @PatchMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
-    public LogoutResponseDto logout(@RequestBody @Valid LogoutRequestDto logoutRequestDto) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, BadCredentialsException {
-        logger.info(String.format("Calling service to logout a customer with email [%s]", logoutRequestDto.getEmail()));
+    public LogoutResponseDto logout() {
+        logger.info("Calling service to logout a customer");
 
-        return customerService.logout(logoutRequestDto);
+        return customerService.logout();
     }
 
     @PutMapping("/profile-picture")

@@ -20,6 +20,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     @Query("UPDATE Customer c SET c.addressId = ?1 WHERE c.id = ?2")
     void updateAddressIdById(Address addressId, Integer customerId);
 
+    @Query("SELECT c From Customer c WHERE c.email = ?1")
     Optional<Customer> findByEmail(String emailAttempt);
 
     @Query("SELECT count(c.id) FROM Customer c WHERE c.role = 'CUSTOMER'")

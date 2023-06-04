@@ -79,6 +79,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new AlreadyRegisteredException("Customer already registered");
         }
 
+        customerRequestDto.setRole(Role.CUSTOMER.name());
         if (!EnumUtils.isValidEnum(Genre.class, genre) && !customerRequestDto.getRole().equals(Role.CUSTOMER.name())) {
             logger.error(String.format("Gender [%s] is not valid", genre));
             throw new BadRequestException(String.format("Gender [%s] is not valid", genre));
@@ -88,7 +89,6 @@ public class CustomerServiceImpl implements CustomerService {
         logger.info(String.format("Customer password encrypted with success for email: [%s]", email));
 
         customerRequestDto.setAuthenticated(false);
-        customerRequestDto.setRole(Role.CUSTOMER.name());
 
         Customer customer = CustomerDtoFactory.toEntity(customerRequestDto);
 
@@ -263,37 +263,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public LogoutResponseDto logout(LogoutRequestDto logoutRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException {
+    public LogoutResponseDto logout() {
         LogoutResponseDto logoutResponse = new LogoutResponseDto(false);
-
-        String emailAttempt = logoutRequestDto.getEmail();
-
-        Optional<Customer> optionalCustomer = customerRepository.findByEmail(emailAttempt);
-
-        if (optionalCustomer.isEmpty()) {
-            logger.error(String.format("Customer with email: [%s] - Not Found!", emailAttempt));
-            throw new NotFoundException(String.format("Customer with email [%s] not found!", emailAttempt));
-        }
-
-        Customer customer = optionalCustomer.get();
-
-        if (customer.getRole() != Role.CUSTOMER.name()) {
-            logger.fatal(String.format("[%S] - Invalid role for this flow", customer.getRole()));
-            throw new InvalidRoleException(String.format("[%S] - Invalid role for this flow", customer.getRole()));
-        }
-
-        logger.info(String.format("Initiating logout from email customer [%s]", emailAttempt));
-
-
-        if (isAuthenticatedCustomer(customer)) {
-            logoutResponse.setSuccess(true);
-            customer.setAuthenticated(false);
-
-            customerRepository.save(customer);
-        } else {
-            logger.info("The customer is not authenticated");
-            throw new NotAuthenticatedException("Customer is not authenticated");
-        }
 
         logger.info("Logout successfully executed!");
         return logoutResponse;

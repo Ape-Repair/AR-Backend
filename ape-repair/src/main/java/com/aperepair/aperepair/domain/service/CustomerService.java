@@ -27,7 +27,7 @@ public interface CustomerService {
 
     LoginResponseDto login(LoginRequestDto loginRequestDto) throws NotFoundException, InvalidRoleException, BadCredentialsException;
 
-    LogoutResponseDto logout(LogoutRequestDto logoutRequestDto) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, BadCredentialsException;
+    LogoutResponseDto logout();
 
     ProfilePictureCreationResponseDto profilePictureCreation(ProfilePictureCreationRequestDto request)
             throws IOException, AwsUploadException, NotFoundException;

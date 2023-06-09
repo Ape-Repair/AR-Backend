@@ -312,7 +312,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, NoContentException, StatusInvalidToCreateOrder {
+    public OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, StatusInvalidToCreateOrder {
         Integer customerId = request.getCustomerId();
 
         if (customerRepository.existsById(customerId)) {

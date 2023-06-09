@@ -104,7 +104,7 @@ public class CustomerController {
 
     @PostMapping("in/create-order")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderUlidResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException, StatusInvalidToCreateOrder, NoContentException {
+    public OrderUlidResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto request) throws NotAuthenticatedException, NotFoundException, InvalidRoleException, InvalidServiceTypeException, StatusInvalidToCreateOrder {
         logger.info(String.format("Calling service to create order of customer with id: [%d]", request.getCustomerId()));
 
         return customerService.createOrder(request);

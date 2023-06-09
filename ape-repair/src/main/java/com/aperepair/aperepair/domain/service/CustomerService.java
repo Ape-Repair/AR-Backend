@@ -34,7 +34,7 @@ public interface CustomerService {
 
     GetProfilePictureResponseDto getProfilePicture(GetProfilePictureRequestDto request) throws Exception;
 
-    OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, NoContentException, StatusInvalidToCreateOrder;
+    OrderUlidResponseDto createOrder(CreateOrderRequestDto request) throws NotFoundException, NotAuthenticatedException, InvalidRoleException, InvalidServiceTypeException, StatusInvalidToCreateOrder;
 
     List<OrderResponseDto> getAllOrders(Integer id) throws NotFoundException, InvalidRoleException, NotAuthenticatedException, NoContentException;
 

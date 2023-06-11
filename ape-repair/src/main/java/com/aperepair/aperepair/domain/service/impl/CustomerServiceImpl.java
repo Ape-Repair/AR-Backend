@@ -411,9 +411,8 @@ public class CustomerServiceImpl implements CustomerService {
 
             return orders;
         }
-
-        logger.error(String.format("Customer with id: [%d] not found", id));
-        throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
+            logger.error(String.format("Customer with id: [%d] not found", id));
+            throw new NotFoundException(String.format("Customer with id [%d] not found!", id));
     }
 
     @Override

@@ -437,7 +437,7 @@ public class ProviderServiceImpl implements ProviderService {
 
             proposalRepository.save(proposal);
 
-            ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal);
+            ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal, provider.getName(), provider.getPhone());
             logger.info(String.format("Proposal: [%s] save with success!", proposalResponseDto));
 
             String updatedStatus = Status.WAITING_FOR_PROPOSAL_TO_BE_ACCEPTED.name();

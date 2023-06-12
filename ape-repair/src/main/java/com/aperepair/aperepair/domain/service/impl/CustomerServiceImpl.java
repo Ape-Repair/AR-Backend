@@ -431,7 +431,10 @@ public class CustomerServiceImpl implements CustomerService {
             List<ProposalResponseDto> proposalResponseDtos = new ArrayList<>();
 
             for (Proposal proposal : proposals) {
-                ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal);
+                String providerName = providerRepository.findById(proposal.getProviderId().getId()).get().getName();
+                String providerPhone = providerRepository.findById(proposal.getProviderId().getId()).get().getPhone();
+
+                ProposalResponseDto proposalResponseDto = ProposalDtoFactory.toResponseDto(proposal, providerName, providerPhone);
                 proposalResponseDtos.add(proposalResponseDto);
             }
 

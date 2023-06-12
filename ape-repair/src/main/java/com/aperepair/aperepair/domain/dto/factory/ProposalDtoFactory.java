@@ -20,12 +20,14 @@ public class ProposalDtoFactory {
         );
     }
 
-    public static ProposalResponseDto toResponseDto(Proposal proposal) {
+    public static ProposalResponseDto toResponseDto(Proposal proposal, String providerName, String providerPhone) {
 
         return new ProposalResponseDto(
                 proposal.getId(),
                 proposal.getOrderId().getId(),
                 proposal.getProviderId().getId(),
+                providerName,
+                providerPhone,
                 proposal.getServiceType(),
                 proposal.getDescription(),
                 proposal.getAmount(),

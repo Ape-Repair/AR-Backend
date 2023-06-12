@@ -17,6 +17,12 @@ public class ProposalResponseDto {
     @NotNull
     private Integer providerId;
 
+    @NotNull
+    private String providerName;
+
+    @NotNull
+    private String providerPhone;
+
     @NotBlank
     private String serviceType;
 
@@ -31,10 +37,12 @@ public class ProposalResponseDto {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    public ProposalResponseDto(Integer proposalId, String orderId, Integer providerId, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
+    public ProposalResponseDto(Integer proposalId, String orderId, Integer providerId, String providerName, String providerPhone, String serviceType, String description, Double amount, boolean accepted, LocalDateTime createdAt) {
         this.proposalId = proposalId;
         this.orderId = orderId;
         this.providerId = providerId;
+        this.providerName = providerName;
+        this.providerPhone = providerPhone;
         this.serviceType = serviceType;
         this.description = description;
         this.amount = amount;
@@ -64,6 +72,22 @@ public class ProposalResponseDto {
 
     public void setProviderId(Integer providerId) {
         this.providerId = providerId;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
+    }
+
+    public String getProviderPhone() {
+        return providerPhone;
+    }
+
+    public void setProviderPhone(String providerPhone) {
+        this.providerPhone = providerPhone;
     }
 
     public String getServiceType() {
